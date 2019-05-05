@@ -14,25 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Plugin event observers are registered here.
- *
- * @package     local_providerapi
- * @category    event
- * @copyright   2019 Çağlar MERSİNLİ <ceremy@gmail.com>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+
+/*
+* short_description
+*
+* long_description
+*
+* @package    local_providerapi
+* @copyright  2019 çağlar MERSİNLİ <ceremy@gmail.com>
+* @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+*/
+namespace local_providerapi\webservice\institution;
 
 defined('MOODLE_INTERNAL') || die();
+global $CFG;
+require_once($CFG->libdir . "/externallib.php");
 
-// For more information about the Events API, please visit:
-// https://docs.moodle.org/dev/Event_2.
+class external extends external_api{
 
-$observers = array(
 
-    array(
-        'eventname' => '\core\event\course_deleted',
-        'callback' => 'coursedeleted',
-        'includefile' => '/local/providerapi/classes/observer/course.php',
-    ),
-);
+}

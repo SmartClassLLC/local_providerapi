@@ -15,27 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin strings are defined here.
+ * Plugin internal classes, functions and constants are defined here.
  *
  * @package     local_providerapi
- * @category    string
  * @copyright   2019 Çağlar MERSİNLİ <ceremy@gmail.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'providerapi';
 
-// Capabilities.
-$string['providerapi:add_group_to_course'] = 'Add Course Grouping';
-$string['providerapi:add_grouping_to_course'] = 'Add Course Grouping';
-$string['providerapi:create_user'] = 'Create User';
-$string['providerapi:delete_course_group'] = 'Delete course group';
-$string['providerapi:delete_user'] = 'Delete User ';
-$string['providerapi:edit_course_group'] = 'Create course group';
-$string['providerapi:edit_user'] = 'Edit User';
-$string['providerapi:enrol_course'] = 'Enrol Course';
-$string['providerapi:get_shared_courses'] = 'Get Shared Course from İnstitution';
-$string['providerapi:get_site_info'] = 'Get Site İnfo';
-$string['providerapi:check_institution'] = 'Check Institution İnm moodle instilation';
+
+
