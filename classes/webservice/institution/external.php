@@ -26,11 +26,24 @@
 */
 namespace local_providerapi\webservice\institution;
 
+use external_api;
+use external_function_parameters;
+use external_multiple_structure;
+use external_single_structure;
+use external_value;
+
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->libdir . "/externallib.php");
 
-class external extends external_api{
+class external extends external_api
+{
 
-
+    public static function checkinstitution_parameters() {
+        return new external_function_parameters(
+            array(
+                'institutionKey' => new external_value(PARAM_TEXT, 'Institution Key')
+            )
+        );
+    }
 }

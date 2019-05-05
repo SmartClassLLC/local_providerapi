@@ -28,9 +28,9 @@ defined('MOODLE_INTERNAL') || die();
 
 $functions = array(
 
-    'local_providerapi_checkInstitution' => array(
+    'local_providerapi_checkinstitution' => array(
         'classname' => 'local_providerapi\webservice\institution\external',
-        'methodname' => 'checkInstitution',
+        'methodname' => 'checkinstitution',
         'description' => 'check institution exist moodle',
         'type' => 'read',
         'capabilities' => 'local/providerapi:check_institution'
@@ -41,7 +41,7 @@ $functions = array(
 $services = array(
     'ProviderApi' => array(
         'functions' => array(
-            'local_providerapi_checkInstitution'
+            'local_providerapi_checkinstitution'
         ),
         'restrictedusers' => 0,
         'enabled' => 1,
