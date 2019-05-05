@@ -38,12 +38,26 @@ require_once($CFG->libdir . "/externallib.php");
 
 class external extends external_api
 {
-
+    /**
+     * Undocumented function
+     *
+     * @return external_function_parameters
+     */
     public static function checkinstitution_parameters() {
         return new external_function_parameters(
             array(
-                'institutionKey' => new external_value(PARAM_TEXT, 'Institution Key')
+                'institutionkey' => new external_value(PARAM_TEXT, 'Institution Key')
             )
         );
     }
+
+    public static function checkinstitution($institutionkey) {
+        $params = self::validate_parameters(self::checkinstitution_parameters(), array(
+            'institutionkey' => $institutionkey
+        ));
+    }
+
+
+
+
 }
