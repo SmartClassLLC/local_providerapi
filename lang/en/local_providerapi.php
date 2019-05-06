@@ -39,3 +39,8 @@ $string['providerapi:enrol_course'] = 'Enrol Course';
 $string['providerapi:get_shared_courses'] = 'Get Shared Course from İnstitution';
 $string['providerapi:get_site_info'] = 'Get Site İnfo';
 $string['providerapi:check_institution'] = 'Check Institution in moodle instilation';
+$string['local/providerapi:viewrootnav'] = 'View root navigation of providerapi plugin';
+$string['local/providerapi:viewinstitutionnav'] = 'View institution tab';
+
+// Strings.
+$string['institutions'] = 'Institutions';

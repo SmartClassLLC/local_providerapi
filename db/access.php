@@ -33,6 +33,20 @@ $capabilities = [
         'archetypes' => [
         ],
     ],
+    'local/providerapi:viewrootnav' => [
+        'captype' => 'view',
+        'contextlevel' => 10,
+        'archetypes' => [
+            'manager' => CAP_ALLOW
+        ],
+    ],
+    'local/providerapi:viewinstitutionnav' => [
+        'captype' => 'view',
+        'contextlevel' => 10,
+        'archetypes' => [
+            'manager' => CAP_ALLOW
+        ],
+    ],
     'local/providerapi:check_institution' => [
         'captype' => 'view',
         'contextlevel' => 10,

@@ -24,6 +24,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_providerapi\local\institution;
+
+use local_providerapi\local\modelbase;
+use local_providerapi\local\navigation;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -36,8 +40,19 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class institution{
+class institution extends modelbase{
+    use navigation;
 
+    protected static $dbname = "local_providerapi_institutions";
+
+    protected static $pages = array(
+        'main' => array(
+            'url' => '/local/providerapi/modules/institution/index.php',
+            'text' => 'institutions',
+            'icon' => '',
+    ),
+
+    );
 
 }
 
