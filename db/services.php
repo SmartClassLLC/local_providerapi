@@ -33,7 +33,8 @@ $functions = array(
         'methodname' => 'checkinstitution',
         'description' => 'check institution exist moodle',
         'type' => 'read',
-        'capabilities' => 'local/providerapi:check_institution'
+        'capabilities' => 'local/providerapi:check_institution',
+        'services' => array('providerapi')
     )
 
 );
@@ -43,7 +44,7 @@ $services = array(
         'functions' => array(
             'local_providerapi_checkinstitution'
         ),
-        'restrictedusers' => 0,
+        'restrictedusers' => 1,
         'enabled' => 1,
         'shortname' => 'providerapi'
     )

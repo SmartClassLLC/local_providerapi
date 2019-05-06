@@ -39,7 +39,7 @@ require_once($CFG->libdir . "/externallib.php");
 class external extends external_api
 {
     /**
-     * Undocumented function
+     *
      *
      * @return external_function_parameters
      */
@@ -51,13 +51,27 @@ class external extends external_api
         );
     }
 
+    /**
+     *
+     *
+     * @param [type] $institutionkey
+     * @return bool
+     */
     public static function checkinstitution($institutionkey) {
         $params = self::validate_parameters(self::checkinstitution_parameters(), array(
             'institutionkey' => $institutionkey
         ));
+
+        $systemcontext = get_system_context();
+        self::validate_context($systemcontext);
+        require_capability('local/providerapi:check_institution', $systemcontext);
+
+        return true;
     }
 
-
+    public static function checkinstitution_returns() {
+        return new external_value(PARAM_BOOL, 'ok');
+    }
 
 
 }

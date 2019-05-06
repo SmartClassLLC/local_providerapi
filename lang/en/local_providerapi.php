@@ -38,4 +38,4 @@ $string['providerapi:edit_user'] = 'Edit User';
 $string['providerapi:enrol_course'] = 'Enrol Course';
 $string['providerapi:get_shared_courses'] = 'Get Shared Course from İnstitution';
 $string['providerapi:get_site_info'] = 'Get Site İnfo';
-$string['providerapi:check_institution'] = 'Check Institution İnm moodle instilation';
+$string['providerapi:check_institution'] = 'Check Institution in moodle instilation';
