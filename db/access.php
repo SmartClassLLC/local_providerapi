@@ -27,92 +27,120 @@ defined('MOODLE_INTERNAL') || die();
 
 $capabilities = [
 
-    'local/providerapi:get_shared_courses' => [
-        'captype' => 'view',
-        'contextlevel' => 10,
-        'archetypes' => [
+        'local/providerapi:get_shared_courses' => [
+                'captype' => 'view',
+                'contextlevel' => 10,
+                'archetypes' => [
+                ],
         ],
-    ],
-    'local/providerapi:viewrootnav' => [
-        'captype' => 'view',
-        'contextlevel' => 10,
-        'archetypes' => [
-            'manager' => CAP_ALLOW
+        'local/providerapi:viewrootnav' => [
+                'captype' => 'view',
+                'contextlevel' => 10,
+                'archetypes' => [
+                        'manager' => CAP_ALLOW
+                ],
         ],
-    ],
-    'local/providerapi:viewinstitutionnav' => [
-        'captype' => 'view',
-        'contextlevel' => 10,
-        'archetypes' => [
-            'manager' => CAP_ALLOW
+        'local/providerapi:viewinstitutionnav' => [
+                'captype' => 'view',
+                'contextlevel' => 10,
+                'archetypes' => [
+                        'manager' => CAP_ALLOW
+                ],
         ],
-    ],
-    'local/providerapi:check_institution' => [
-        'captype' => 'view',
-        'contextlevel' => 10,
-        'archetypes' => [
+        'local/providerapi:createinstitution' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                        'manager' => CAP_ALLOW
+                ],
         ],
-    ],
-    'local/providerapi:get_site_info' => [
-        'captype' => 'view',
-        'contextlevel' => 10,
-        'archetypes' => [
+        'local/providerapi:editinstitution' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                        'manager' => CAP_ALLOW
+                ],
         ],
-    ],
+        'local/providerapi:deleteinstitution' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                        'manager' => CAP_ALLOW
+                ],
+        ],
+        'local/providerapi:check_institution' => [
+                'captype' => 'view',
+                'contextlevel' => 10,
+                'archetypes' => [
+                ],
+        ],
+        'local/providerapi:sharedcourse' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                ],
+        ],
+        'local/providerapi:deletesharedcourse' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                ],
+        ],
+        'local/providerapi:get_site_info' => [
+                'captype' => 'view',
+                'contextlevel' => 10,
+                'archetypes' => [
+                ],
+        ],
+        'local/providerapi:enrol_course' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                ],
+        ],
+        'local/providerapi:add_group_to_course' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                ],
+        ],
+        'local/providerapi:add_grouping_to_course' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                ],
+        ],
+        'local/providerapi:create_user' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                ],
+        ],
+        'local/providerapi:edit_user' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                ],
+        ],
 
-    'local/providerapi:enrol_course' => [
-        'captype' => 'write',
-        'contextlevel' => 10,
-        'archetypes' => [
+        'local/providerapi:delete_user' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                ],
         ],
-    ],
 
-    'local/providerapi:add_group_to_course' => [
-        'captype' => 'write',
-        'contextlevel' => 10,
-        'archetypes' => [
+        'local/providerapi:delete_course_group' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                ],
         ],
-    ],
 
-    'local/providerapi:add_grouping_to_course' => [
-        'captype' => 'write',
-        'contextlevel' => 10,
-        'archetypes' => [
+        'local/providerapi:edit_course_group' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                ],
         ],
-    ],
-
-    'local/providerapi:create_user' => [
-        'captype' => 'write',
-        'contextlevel' => 10,
-        'archetypes' => [
-        ],
-    ],
-
-    'local/providerapi:edit_user' => [
-        'captype' => 'write',
-        'contextlevel' => 10,
-        'archetypes' => [
-        ],
-    ],
-
-    'local/providerapi:delete_user' => [
-        'captype' => 'write',
-        'contextlevel' => 10,
-        'archetypes' => [
-        ],
-    ],
-
-    'local/providerapi:delete_course_group' => [
-        'captype' => 'write',
-        'contextlevel' => 10,
-        'archetypes' => [
-        ],
-    ],
-
-    'local/providerapi:edit_course_group' => [
-        'captype' => 'write',
-        'contextlevel' => 10,
-        'archetypes' => [
-        ],
-    ],
 ];

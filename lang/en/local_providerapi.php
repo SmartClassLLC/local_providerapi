@@ -41,6 +41,13 @@ $string['providerapi:get_site_info'] = 'Get Site İnfo';
 $string['providerapi:check_institution'] = 'Check Institution in moodle instilation';
 $string['local/providerapi:viewrootnav'] = 'View root navigation of providerapi plugin';
 $string['local/providerapi:viewinstitutionnav'] = 'View institution tab';
+$string['local/providerapi:createinstitution'] = 'Create Institution';
+$string['local/providerapi:editinstitution'] = 'Edit Institution';
+$string['local/providerapi:deleteinstitution'] = 'Delete Institution';
+$string['local/providerapi:sharedcourse'] = 'Share Course';
+$string['local/providerapi:deletesharedcourse'] = 'Delete Shared Course';
 
 // Strings.
 $string['institutions'] = 'Institutions';
+$string['addinstitution'] = 'Add Institution';
+$string['error'] = 'some errors occurred';

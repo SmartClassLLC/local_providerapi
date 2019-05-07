@@ -36,7 +36,7 @@ function local_providerapi_extend_navigation(global_navigation $nav) {
 
         // Institutions.
 
-        $institutions = $root->add(get_string('instutions', 'local_providerapi'),
+        $institutions = $root->add(get_string('institutions', 'local_providerapi'),
         new moodle_url('/local/providerapi/modules/institution/index.php'),
         navigation_node::TYPE_SETTING, null, 'institutionmodule', null);
         $institutions->nodetype = navigation_node::NODETYPE_BRANCH;

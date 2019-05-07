@@ -23,22 +23,30 @@
  * @copyright  2019 çağlar MERSİNLİ <ceremy@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace local_providerapi\local;
 defined('MOODLE_INTERNAL') || die();
 
 use action_menu;
 use action_menu_link_secondary;
+use context_system;
 use moodle_url;
 use navigation_node;
 use pix_icon;
 
-trait navigation{
+/**
+ * Trait navigation
+ *
+ * @package local_providerapi\local
+ */
+trait navigation {
+
     /**
-     * Trait nav
-     *
-     * @param  $node
-     * @param  $pages
-     * @return void
+     * @param navigation_node $node
+     * @param null $pages
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
      */
     public static function generate_nodes($node, $pages = null) {
         if (empty($pages)) {
@@ -49,9 +57,9 @@ trait navigation{
             foreach ($pages as $key => $page) {
                 $url = (isset($page['url']) and !empty($page['url'])) ? new moodle_url($page['url']) : null;
                 $icon = (isset($page['icon']) and
-                !empty($page['icon'])) ? new pix_icon($page['icon'], '', 'local_providerapi') : null;
-                $nodemain = $node->add(get_string($page['text'] , 'local_providerapi'),
-                $url, navigation_node::TYPE_SETTING, null, $key, $icon);
+                        !empty($page['icon'])) ? new pix_icon($page['icon'], '', 'local_providerapi') : null;
+                $nodemain = $node->add(get_string($page['text'], 'local_providerapi'),
+                        $url, navigation_node::TYPE_SETTING, null, $key, $icon);
                 $nodemain->nodetype = navigation_node::NODETYPE_LEAF;
                 if (isset($page['flat']) and $page['flat'] === 1) {
                     $nodemain->showinflatnavigation = 1;
@@ -70,10 +78,12 @@ trait navigation{
         }
 
     }
+
     /**
-     * Setting page
-     *
-     * @return void
+     * @return string
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
      */
     public static function generate_setting_menu() {
         global $OUTPUT;
@@ -95,6 +105,5 @@ trait navigation{
             return null;
         }
     }
-
 
 }

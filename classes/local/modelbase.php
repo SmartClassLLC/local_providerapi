@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Model Base class
  *
@@ -24,9 +23,18 @@
  * @copyright  2019 çağlar MERSİNLİ <ceremy@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
- namespace local_providerapi\local;
- defined('MOODLE_INTERNAL') || die();
 
+namespace local_providerapi\local;
+
+use coding_exception;
+
+defined('MOODLE_INTERNAL') || die();
+
+/**
+ * Class modelbase
+ *
+ * @package local_providerapi\local
+ */
 abstract class modelbase {
 
     /**
@@ -40,33 +48,32 @@ abstract class modelbase {
     protected static $pages = array();
 
     /**
-     * @var stdClass
+     * @var \stdClass
      */
     protected $_data;
 
     /**
      * modelbase constructor.
      *
-     * @param stdClass $data
+     * @param \stdClass $data
      */
-    public function __construct(stdClass $data) {
+    public function __construct(\stdClass $data) {
         $this->_data = $data;
     }
 
     /**
-     * @param int|stdClass $id
+     * @param int|\stdClass $id
      * @return self
      * @throws \dml_exception
      */
     abstract public static function get($id);
 
     /**
-     * @param navigation_node $node
+     * @param \navigation_node $node
      * @param null $pages
      * @throws \moodle_exception
      * @throws coding_exception
      */
-
 
     /**
      * @param $id
@@ -182,7 +189,5 @@ abstract class modelbase {
      *
      */
     abstract protected function delete_event($id);
-
-
 
 }

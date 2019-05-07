@@ -23,6 +23,7 @@
  * @copyright  2019 çağlar MERSİNLİ <ceremy@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace local_providerapi\local\institution;
 
 use local_providerapi\local\modelbase;
@@ -39,20 +40,57 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2019 çağlar MERSİNLİ <ceremy@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-class institution extends modelbase{
+class institution extends modelbase {
     use navigation;
 
     protected static $dbname = "local_providerapi_institutions";
 
     protected static $pages = array(
-        'main' => array(
-            'url' => '/local/providerapi/modules/institution/index.php',
-            'text' => 'institutions',
-            'icon' => '',
-    ),
+           /* 'main' => array(
+                    'url' => '/local/providerapi/modules/institution/index.php',
+                    'text' => 'institutions',
+                    'icon' => '',
+            ),*/
 
     );
 
+    /**
+     * @param int|\stdClass $id
+     * @return self
+     * @throws \dml_exception
+     */
+    public static function get($id) {
+        // TODO: Implement get() method.
+    }
+
+    /**
+     * yeni kayıt için event olayı yazılacak
+     *
+     * @param $id
+     *
+     */
+    protected function create_event($id) {
+        // TODO: Implement create_event() method.
+    }
+
+    /**
+     * güncelleme için event olayı yazılacak
+     *
+     * @param $id
+     *
+     */
+    protected function update_event($id) {
+        // TODO: Implement update_event() method.
+    }
+
+    /**
+     * silme için event olayı yazılacak
+     *
+     * @param $id
+     *
+     */
+    protected function delete_event($id) {
+        // TODO: Implement delete_event() method.
+    }
 }
 
