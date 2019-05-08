@@ -43,10 +43,9 @@ defined('MOODLE_INTERNAL') || die();
 class institution extends modelbase {
     use navigation;
 
-    protected static $dbname = "local_providerapi_institutions";
+    protected static $dbname = "local_providerapi_companies";
 
-    protected static $pages = array(
-           /* 'main' => array(
+    protected static $pages = array(/* 'main' => array(
                     'url' => '/local/providerapi/modules/institution/index.php',
                     'text' => 'institutions',
                     'icon' => '',
@@ -60,7 +59,13 @@ class institution extends modelbase {
      * @throws \dml_exception
      */
     public static function get($id) {
-        // TODO: Implement get() method.
+        global $DB;
+        if (!is_object($id)) {
+            $data = $DB->get_record(self::$dbname, array('id' => $id), '*', MUST_EXIST);
+        } else {
+            $data = $id;
+        }
+        return new self($data);
     }
 
     /**

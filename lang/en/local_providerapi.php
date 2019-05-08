@@ -50,6 +50,8 @@ $string['local/providerapi:deletesharedcourse'] = 'Delete Shared Course';
 // Helpbuttons.
 $string['fullname'] = 'Institution fullname explain';
 $string['fullname_help'] = 'Institution fullname';
+$string['secretkeyhelp'] = 'Help';
+$string['secretkeyhelp_help'] = 'secretkey for webservice auth.';
 
 $string['shortname'] = 'Institution shortname explain';
 $string['shortname_help'] = 'Institution shortname must contain 3 characters';
@@ -58,3 +60,5 @@ $string['shortname_help'] = 'Institution shortname must contain 3 characters';
 $string['institutions'] = 'Institutions';
 $string['addinstitution'] = 'Add Institution';
 $string['error'] = 'some errors occurred';
+$string['secretkey'] = 'Secret Key';
+

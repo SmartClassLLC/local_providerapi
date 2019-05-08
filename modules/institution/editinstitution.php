@@ -82,7 +82,8 @@ $editoroptions = array(
         'maxbytes' => FILE_AREA_MAX_BYTES_UNLIMITED,
         'trusttext' => false,
         'forcehttps' => false,
-        'context' => $context
+        'context' => $context,
+        'enable_filemanagement' => false
 );
 
 if ($institution->id !== -1) {

@@ -66,7 +66,19 @@ class addinstitution extends moodleform {
         $mform->addElement('text', 'shortname', get_string('shortname'), ['maxlength' => 3, 'size' => 10]);
         $mform->setType('shortname', PARAM_TEXT);
         $mform->addRule('shortname', get_string('required'), 'required', null, 'client');
+        $mform->addRule('shortname', null, 'lettersonly', null, 'client');
         $mform->addHelpButton('shortname', 'shortname', 'local_providerapi');
+
+        $mform->addElement('passwordunmask', 'secretkey', get_string('secretkey', 'local_providerapi'),
+                ['maxlength' => 10, 'size' => 20]);
+        $mform->setType('secretkey', PARAM_ALPHANUM);
+        $mform->addRule('secretkey', null, 'alphanumeric', null, 'client');
+        $mform->addRule('secretkey', get_string('required'), 'required', null, 'client');
+        $mform->addRule('secretkey', get_string('required'), 'maxlength', '10', 'client');
+        $mform->addHelpButton('secretkey', 'secretkeyhelp', 'local_providerapi');
+
+        $mform->addElement('editor', 'description_editor', get_string('description'), null, $editoroptions);
+        $mform->setType('description_editor', PARAM_RAW);
 
         $this->add_action_buttons();
         $this->set_data($data);
