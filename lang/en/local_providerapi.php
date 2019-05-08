@@ -56,6 +56,14 @@ $string['secretkeyhelp_help'] = 'secretkey for webservice auth.';
 $string['shortname'] = 'Institution shortname explain';
 $string['shortname_help'] = 'Institution shortname must contain 3 characters';
 
+// Events.
+$string['createdinstitution'] = 'Institution Created';
+$string['updatedinstitution'] = 'Institution Updated';
+$string['deletedinstitution'] = 'Institution Deleted';
+$string['eventcreated'] = 'The {$a->objname} with id {$a->objid} has created by {$a->by}';
+$string['eventupdated'] = 'The {$a->objname} with id {$a->objid} has updated by {$a->by}';
+$string['eventdeleted'] = 'The {$a->objname} with id {$a->objid} has deleted by {$a->by}';
+
 // Strings.
 $string['institutions'] = 'Institutions';
 $string['addinstitution'] = 'Add Institution';

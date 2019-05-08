@@ -26,6 +26,9 @@
 
 namespace local_providerapi\local\institution;
 
+use local_providerapi\event\institution_created;
+use local_providerapi\event\institution_deleted;
+use local_providerapi\event\institution_updated;
 use local_providerapi\local\modelbase;
 use local_providerapi\local\navigation;
 
@@ -35,6 +38,13 @@ defined('MOODLE_INTERNAL') || die();
  * department class
  *
  * long_description
+ *
+ * @property-read int id
+ * @property-read int createrid
+ * @property-read int modifiedby
+ * @property-read  string name
+ * @property-read  string shortname
+ * @property-read  string secretkey
  *
  * @package    local_providerapi
  * @copyright  2019 çağlar MERSİNLİ <ceremy@gmail.com>
@@ -104,7 +114,6 @@ class institution extends modelbase {
         return array($select, $from, $wheres, $params);
     }
 
-
     /**
      * yeni kayıt için event olayı yazılacak
      *
@@ -112,7 +121,7 @@ class institution extends modelbase {
      *
      */
     protected function create_event($id) {
-        // TODO: Implement create_event() method.
+        institution_created::create_from_objectid($id)->trigger();
     }
 
     /**
@@ -122,17 +131,17 @@ class institution extends modelbase {
      *
      */
     protected function update_event($id) {
-        // TODO: Implement update_event() method.
+        institution_updated::create_from_objectid($id)->trigger();
     }
 
     /**
      * silme için event olayı yazılacak
      *
-     * @param $id
+     * @param \stdClass $data
      *
      */
-    protected function delete_event($id) {
-        // TODO: Implement delete_event() method.
+    protected function delete_event($data) {
+        institution_deleted::create_from_objectid($data)->trigger();
     }
 }
 

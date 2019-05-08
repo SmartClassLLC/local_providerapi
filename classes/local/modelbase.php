@@ -185,9 +185,9 @@ abstract class modelbase {
     /**
      * silme için event olayı yazılacak
      *
-     * @param $id
+     * @param \stdClass $data
      *
      */
-    abstract protected function delete_event($id);
+    abstract protected function delete_event($data);
 
 }
