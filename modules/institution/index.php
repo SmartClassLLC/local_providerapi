@@ -24,6 +24,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_providerapi\local\institution\institution;
+use local_providerapi\output\institution\table_institutions;
+
 require('../../../../config.php');
 require_once($CFG->dirroot . '/local/providerapi/locallib.php');
 
@@ -50,15 +53,22 @@ $node = $PAGE->navigation->find('institutionmodule', navigation_node::TYPE_SETTI
 
 $output = $PAGE->get_renderer('local_providerapi', 'institution');
 
-echo $output->header();
+$table = new table_institutions($baseurl, 50);
+list($select, $from, $where, $params) = institution::get_sql();
+$table->set_sql($select, $from, $where, $params);
 
-if ($node) {
-    call_user_func_array('print_tabs', $node->get_tabs_array());
+if (!$table->is_downloading()) {
+    echo $output->header();
+    if ($node) {
+        call_user_func_array('print_tabs', $node->get_tabs_array());
+    }
+    if (has_capability('local/providerapi:createinstitution', $context)) {
+        $output->addbutton(new moodle_url('/local/providerapi/modules/institution/editinstitution.php', array('id' => -1)),
+                get_string('addinstitution', 'local_providerapi'));
+    }
 }
+echo $output->render_table($table);
 
-if (has_capability('local/providerapi:createinstitution', $context)) {
-    $output->addbutton(new moodle_url('/local/providerapi/modules/institution/editinstitution.php', array('id' => -1)),
-            get_string('addinstitution', 'local_providerapi'));
+if (!$table->is_downloading()) {
+    echo $output->footer();
 }
-
-echo $output->footer();

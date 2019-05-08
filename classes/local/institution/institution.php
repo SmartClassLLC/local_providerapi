@@ -43,8 +43,14 @@ defined('MOODLE_INTERNAL') || die();
 class institution extends modelbase {
     use navigation;
 
-    protected static $dbname = "local_providerapi_companies";
+    /**
+     * @var string
+     */
+    public static $dbname = "local_providerapi_companies";
 
+    /**
+     * @var array
+     */
     protected static $pages = array(/* 'main' => array(
                     'url' => '/local/providerapi/modules/institution/index.php',
                     'text' => 'institutions',
@@ -67,6 +73,37 @@ class institution extends modelbase {
         }
         return new self($data);
     }
+
+    /**
+     * @param string $additionalwhere
+     * @param array $additionalparams
+     * @return array
+     */
+    public static function get_sql($additionalwhere = '', $additionalparams = array()) {
+
+        $wheres = array();
+        $params = array();
+        $select = "cmp.* ";
+        $joins = array('{local_providerapi_companies} cmp');
+        // $joins[] = 'JOIN {local_cms_sinav_bolums} sb ON s.id = sb.sinavid';
+
+        $wheres[] = ' cmp.secretkey IS NOT null';
+
+        if (!empty($additionalwhere)) {
+            $wheres[] = $additionalwhere;
+            $params = array_merge($params, $additionalparams);
+        }
+
+        $from = implode("\n", $joins);
+        if ($wheres) {
+            $wheres = implode(' AND ', $wheres);
+        } else {
+            $wheres = '';
+        }
+
+        return array($select, $from, $wheres, $params);
+    }
+
 
     /**
      * yeni kayıt için event olayı yazılacak

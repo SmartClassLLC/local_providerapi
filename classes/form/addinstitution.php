@@ -27,6 +27,7 @@
 namespace local_providerapi\form;
 
 use coding_exception;
+use local_providerapi\local\institution\institution;
 use moodleform;
 
 defined('MOODLE_INTERNAL') || die();
@@ -58,15 +59,16 @@ class addinstitution extends moodleform {
 
         $mform->addElement('header', 'institution', get_string('general'));
 
-        $mform->addElement('text', 'fullname', get_string('name'), ['maxlength' => 254, 'size' => 50]);
-        $mform->setType('fullname', PARAM_TEXT);
-        $mform->addRule('fullname', get_string('required'), 'required', null, 'client');
-        $mform->addHelpButton('fullname', 'fullname', 'local_providerapi');
+        $mform->addElement('text', 'name', get_string('name'), ['maxlength' => 254, 'size' => 50]);
+        $mform->setType('name', PARAM_TEXT);
+        $mform->addRule('name', get_string('required'), 'required', null, 'client');
+        $mform->addHelpButton('name', 'fullname', 'local_providerapi');
         // Shortname.
         $mform->addElement('text', 'shortname', get_string('shortname'), ['maxlength' => 3, 'size' => 10]);
         $mform->setType('shortname', PARAM_TEXT);
         $mform->addRule('shortname', get_string('required'), 'required', null, 'client');
         $mform->addRule('shortname', null, 'lettersonly', null, 'client');
+        $mform->addRule('shortname', null, 'maxlength', '254', 'client');
         $mform->addHelpButton('shortname', 'shortname', 'local_providerapi');
 
         $mform->addElement('passwordunmask', 'secretkey', get_string('secretkey', 'local_providerapi'),
@@ -74,7 +76,7 @@ class addinstitution extends moodleform {
         $mform->setType('secretkey', PARAM_ALPHANUM);
         $mform->addRule('secretkey', null, 'alphanumeric', null, 'client');
         $mform->addRule('secretkey', get_string('required'), 'required', null, 'client');
-        $mform->addRule('secretkey', get_string('required'), 'maxlength', '10', 'client');
+        $mform->addRule('secretkey', null, 'maxlength', '10', 'client');
         $mform->addHelpButton('secretkey', 'secretkeyhelp', 'local_providerapi');
 
         $mform->addElement('editor', 'description_editor', get_string('description'), null, $editoroptions);
@@ -91,8 +93,38 @@ class addinstitution extends moodleform {
      * @return array
      */
     public function validation($data, $files) {
+        global $DB;
         $data = (object) $data;
         $err = array();
+        $select = "name = ?";
+        $param = array($data->name);
+        if (!empty($data->id)) {
+            $select .= " AND id <> ?";
+            $param[] = $data->id;
+        }
+        if ($DB->record_exists_select(institution::$dbname, $select, $param)) {
+            $err['name'] = get_string('alreadyexists', 'local_providerapi', 'name');
+        }
+
+        $select = "shortname = ?";
+        $param = array($data->shortname);
+        if (!empty($data->id)) {
+            $select .= " AND id <> ?";
+            $param[] = $data->id;
+        }
+        if ($DB->record_exists_select(institution::$dbname, $select, $param)) {
+            $err['shortname'] = get_string('alreadyexists', 'local_providerapi', 'shortname');
+        }
+
+        $select = "secretkey = ?";
+        $param = array($data->secretkey);
+        if (!empty($data->id)) {
+            $select .= " AND id <> ?";
+            $param[] = $data->id;
+        }
+        if ($DB->record_exists_select(institution::$dbname, $select, $param)) {
+            $err['secretkey'] = get_string('alreadyexists', 'local_providerapi', 'secretkey');
+        }
 
         return $err;
     }

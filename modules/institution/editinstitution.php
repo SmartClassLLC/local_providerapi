@@ -38,7 +38,7 @@ $context = context_system::instance();
 
 // Params.
 $id = optional_param('id', -1, PARAM_INT);
-
+$delid = optional_param('delid', null, PARAM_INT);
 // Baseurl.
 $baseurl = new moodle_url('/local/providerapi/modules/institution/editinstitution.php');
 $institutionurl = new moodle_url('/local/providerapi/modules/institution/index.php');
@@ -56,6 +56,16 @@ $PAGE->set_context($context);
 $PAGE->set_title(get_string('institutions', 'local_providerapi'));
 $PAGE->set_pagelayout('base');
 $PAGE->set_heading(get_string('institutions', 'local_providerapi'));
+
+if ($delid and has_capability('local/providerapi:deleteinstitution', $context) and confirm_sesskey()) {
+    if (institution::get($delid)->delete()) {
+        notification::success(get_string('success'));
+    }
+    redirect($returnurl);
+}
+
+
+
 
 // Nav.
 $node = $PAGE->navigation->find('institutionmodule', navigation_node::TYPE_SETTING);

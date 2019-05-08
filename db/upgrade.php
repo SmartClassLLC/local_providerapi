@@ -66,6 +66,18 @@ function xmldb_local_providerapi_upgrade($oldversion) {
         // Providerapi savepoint reached.
         upgrade_plugin_savepoint(true, 2019050206, 'local', 'providerapi');
     }
+    if ($oldversion < 2019050207) {
+
+        // Rename field fullname on table local_providerapi_companies to NEWNAMEGOESHERE.
+        $table = new xmldb_table('local_providerapi_companies');
+        $field = new xmldb_field('fullname', XMLDB_TYPE_CHAR, '254', null, XMLDB_NOTNULL, null, null, 'id');
+
+        // Launch rename field fullname.
+        $dbman->rename_field($table, $field, 'name');
+
+        // Providerapi savepoint reached.
+        upgrade_plugin_savepoint(true, 2019050207, 'local', 'providerapi');
+    }
 
     return true;
 }

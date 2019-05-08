@@ -61,4 +61,7 @@ $string['institutions'] = 'Institutions';
 $string['addinstitution'] = 'Add Institution';
 $string['error'] = 'some errors occurred';
 $string['secretkey'] = 'Secret Key';
+$string['alreadyexists'] = '{$a} already exist';
+$string['manage'] = 'Manage';
+$string['areyousuredel'] = 'Are you sure delete {$a} ?';
 
