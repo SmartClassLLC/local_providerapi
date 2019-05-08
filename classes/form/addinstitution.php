@@ -58,9 +58,15 @@ class addinstitution extends moodleform {
 
         $mform->addElement('header', 'institution', get_string('general'));
 
-        $mform->addElement('text', 'name', get_string('name'), ['size' => 50]);
-        $mform->setType('name', PARAM_TEXT);
-        $mform->addRule('name', get_string('required'), 'required', null, 'client');
+        $mform->addElement('text', 'fullname', get_string('name'), ['maxlength' => 254, 'size' => 50]);
+        $mform->setType('fullname', PARAM_TEXT);
+        $mform->addRule('fullname', get_string('required'), 'required', null, 'client');
+        $mform->addHelpButton('fullname', 'fullname', 'local_providerapi');
+        // Shortname.
+        $mform->addElement('text', 'shortname', get_string('shortname'), ['maxlength' => 3, 'size' => 10]);
+        $mform->setType('shortname', PARAM_TEXT);
+        $mform->addRule('shortname', get_string('required'), 'required', null, 'client');
+        $mform->addHelpButton('shortname', 'shortname', 'local_providerapi');
 
         $this->add_action_buttons();
         $this->set_data($data);

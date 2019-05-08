@@ -30,7 +30,7 @@ use local_providerapi\local\institution\institution;
 
 require('../../../../config.php');
 require_once($CFG->dirroot . '/local/providerapi/locallib.php');
-
+require_once($CFG->libdir . '/formslib.php');
 require_login();
 
 // System context.

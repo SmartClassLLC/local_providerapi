@@ -47,6 +47,13 @@ $string['local/providerapi:deleteinstitution'] = 'Delete Institution';
 $string['local/providerapi:sharedcourse'] = 'Share Course';
 $string['local/providerapi:deletesharedcourse'] = 'Delete Shared Course';
 
+// Helpbuttons.
+$string['fullname'] = 'Institution fullname explain';
+$string['fullname_help'] = 'Institution fullname';
+
+$string['shortname'] = 'Institution shortname explain';
+$string['shortname_help'] = 'Institution shortname must contain 3 characters';
+
 // Strings.
 $string['institutions'] = 'Institutions';
 $string['addinstitution'] = 'Add Institution';
