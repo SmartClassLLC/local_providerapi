@@ -42,8 +42,35 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2019 Çağlar MERSİNLİ <ceremy@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class local_providerapi_client_testcase extends advanced_testcase {
+class local_providerapi_institution_testcase extends advanced_testcase {
 
     // Write the tests here as public funcions.
+    public function test_institution_created() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $institution = new stdClass();
+        $institution->name = 'test institution';
+        $institution->shortname = 'TES';
+        $institution->secretkey = '123456';
+        $institution->description = 'test description';
+        $institution->descriptionformat = FORMAT_HTML;
+
+        $id = \local_providerapi\local\institution\institution::get($institution)->create();
+        $this->assertNotEmpty($id);
+
+        $new = $DB->get_record('local_providerapi_companies', array('id' => $id));
+        $this->assertSame($institution->name, $new->name);
+        $this->assertSame($institution->shortname, $new->shortname);
+        $this->assertSame($institution->secretkey, $new->secretkey);
+        $this->assertSame($institution->description, $new->description);
+        $this->assertEquals($institution->descriptionformat, $new->descriptionformat);
+        $this->assertNotEmpty($new->createrid);
+        $this->assertNotEmpty($new->modifiedby);
+        $this->assertNotEmpty($new->timecreated);
+        $this->assertNotEmpty($new->timemodified);
+
+    }
 
 }
