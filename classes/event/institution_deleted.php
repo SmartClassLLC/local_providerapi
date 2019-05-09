@@ -69,7 +69,10 @@ class institution_deleted extends \core\event\base {
         $data = array(
                 'objectid' => $record->id,
                 'context' => \context_system::instance(),
-                'userid' => $USER->id
+                'userid' => $USER->id,
+                'other' => [
+                        'cohortid' => $record->cohortid
+                ]
         );
 
         $event = self::create($data);

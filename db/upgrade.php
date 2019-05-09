@@ -76,6 +76,34 @@ function xmldb_local_providerapi_upgrade($oldversion) {
         // Providerapi savepoint reached.
         upgrade_plugin_savepoint(true, 2019050207, 'local', 'providerapi');
     }
+    if ($oldversion < 2019050208) {
 
+        // Define field cohortid to be added to local_providerapi_companies.
+        $table = new xmldb_table('local_providerapi_companies');
+        $field = new xmldb_field('cohortid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'secretkey');
+
+        // Conditionally launch add field cohortid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $key = new xmldb_key('cohortid', XMLDB_KEY_FOREIGN, ['cohortid'], 'cohort', ['id']);
+
+        // Launch add key cohortid.
+        $dbman->add_key($table, $key);
+        // Providerapi savepoint reached.
+        upgrade_plugin_savepoint(true, 2019050208, 'local', 'providerapi');
+    }
+    if ($oldversion < 2019050210) {
+
+        // Define key secretkey (unique) to be added to local_providerapi_companies.
+        $table = new xmldb_table('local_providerapi_companies');
+        $key = new xmldb_key('secretkey', XMLDB_KEY_UNIQUE, ['secretkey']);
+
+        // Launch add key secretkey.
+        $dbman->add_key($table, $key);
+
+        // Providerapi savepoint reached.
+        upgrade_plugin_savepoint(true, 2019050210, 'local', 'providerapi');
+    }
     return true;
 }

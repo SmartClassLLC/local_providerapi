@@ -26,6 +26,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_providerapi';
 $plugin->release = '0.1.0';
-$plugin->version = 2019050207;
+$plugin->version = 2019050210;
 $plugin->requires = 2018120300;
 $plugin->maturity = MATURITY_ALPHA;

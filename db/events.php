@@ -39,5 +39,15 @@ $observers = array(
                 'eventname' => '\local_providerapi\event\institution_created',
                 'callback' => 'institutioncreated',
                 'includefile' => '/local/providerapi/classes/observer/institution.php',
+        ),
+        array(
+                'eventname' => '\local_providerapi\event\institution_updated',
+                'callback' => 'institutionupdated',
+                'includefile' => '/local/providerapi/classes/observer/institution.php',
+        ),
+        array(
+                'eventname' => '\local_providerapi\event\institution_deleted',
+                'callback' => 'institutiondeleted',
+                'includefile' => '/local/providerapi/classes/observer/institution.php',
         )
 );

@@ -43,6 +43,7 @@ defined('MOODLE_INTERNAL') || die();
  * @property-read int id
  * @property-read int createrid
  * @property-read int modifiedby
+ * @property-read int cohortid
  * @property-read  string name
  * @property-read  string shortname
  * @property-read  string secretkey
@@ -123,9 +124,22 @@ class institution extends modelbase {
     public function createcohort() {
         $data = new \stdClass();
         $data->name = format_string($this->name);
-        $data->idnumber = uniqid($this->shortname.'_');
+        $data->idnumber = uniqid($this->shortname . '_');
         return cohortHelper::create($data);
     }
+
+    /**
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function updatecohort() {
+        $data = new \stdClass();
+        $data->id = $this->cohortid;
+        $data->name = format_string($this->name);
+        $data->idnumber = uniqid($this->shortname . '_');
+        return cohortHelper::update($data);
+    }
+
 
     /**
      * yeni kayıt için event olayı yazılacak

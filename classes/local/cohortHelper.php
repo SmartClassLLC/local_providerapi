@@ -58,4 +58,37 @@ class cohortHelper {
         return cohort_add_cohort($data);
     }
 
+    /**
+     * expect id,name,idnumber
+     *
+     * @param \stdClass $data
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public static function update(\stdClass $data) {
+        if (!is_object($data)) {
+            throw new \coding_exception('data must be object');
+        }
+        $data->contextid = context_system::instance()->id;
+        $data->component = 'local_providerapi';
+        $data->description = get_string('createdbyplugin', 'local_providerapi');
+
+        return cohort_update_cohort($data);
+    }
+
+    /**
+     * @param int $cohortid
+     * @throws \coding_exception
+     */
+    public static function delete(int $cohortid) {
+        global $DB;
+        if (!is_int($cohortid)) {
+            throw new \coding_exception('data must be int');
+        }
+        $cohort = $DB->get_record('cohort', array('id' => $cohortid));
+        if ($cohort) {
+            cohort_delete_cohort($cohort);
+        }
+    }
+
 }

@@ -23,15 +23,48 @@
  */
 
 use local_providerapi\event\institution_created;
+use local_providerapi\event\institution_deleted;
+use local_providerapi\event\institution_updated;
+use local_providerapi\local\cohortHelper;
 use local_providerapi\local\institution\institution;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * @param institution_created $event
+ * @throws coding_exception
+ * @throws dml_exception
+ */
 function institutioncreated(institution_created $event) {
+    global $DB;
     $institutionid = $event->objectid;
     $institution = institution::get($institutionid);
     // Create cohort.
-    $cohortid = $institution->create();
+    $cohortid = $institution->createcohort();
+    $DB->set_field(institution::$dbname, 'cohortid', $cohortid, array('id' => $institutionid));
+}
+
+/**
+ * @param institution_updated $event
+ * @throws dml_exception
+ */
+function institutionupdated(institution_updated $event) {
+    $institutionid = $event->objectid;
+    $institution = institution::get($institutionid);
+    // Create cohort.
+    $institution->updatecohort();
+
+}
+
+/**
+ * @param institution_deleted $event
+ * @throws coding_exception
+ */
+function institutiondeleted(institution_deleted $event) {
+    $cohortid = $event->other['cohortid'];
+    if (!empty($cohortid)) {
+        cohortHelper::delete($cohortid);
+    }
 
 }
 
