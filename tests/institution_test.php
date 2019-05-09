@@ -49,7 +49,7 @@ class local_providerapi_institution_testcase extends advanced_testcase {
         global $DB;
 
         $this->resetAfterTest();
-
+        $this->setAdminUser();
         $institution = new stdClass();
         $institution->name = 'test institution';
         $institution->shortname = 'TES';
