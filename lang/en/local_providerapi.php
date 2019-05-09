@@ -51,7 +51,7 @@ $string['local/providerapi:deletesharedcourse'] = 'Delete Shared Course';
 $string['fullname'] = 'Institution fullname explain';
 $string['fullname_help'] = 'Institution fullname';
 $string['secretkeyhelp'] = 'Help';
-$string['secretkeyhelp_help'] = 'secretkey for webservice auth.';
+$string['secretkeyhelp_help'] = 'secretkey for webservice auth.Min 6 , max 10 characters only accept alphanumeric';
 
 $string['shortname'] = 'Institution shortname explain';
 $string['shortname_help'] = 'Institution shortname must contain 3 characters';
@@ -72,4 +72,5 @@ $string['secretkey'] = 'Secret Key';
 $string['alreadyexists'] = '{$a} already exist';
 $string['manage'] = 'Manage';
 $string['areyousuredel'] = 'Are you sure delete {$a} ?';
+$string['notcorrect'] = 'Not correct';
 

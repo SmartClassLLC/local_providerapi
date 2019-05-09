@@ -68,7 +68,8 @@ class addinstitution extends moodleform {
         $mform->setType('shortname', PARAM_TEXT);
         $mform->addRule('shortname', get_string('required'), 'required', null, 'client');
         $mform->addRule('shortname', null, 'lettersonly', null, 'client');
-        $mform->addRule('shortname', null, 'maxlength', '254', 'client');
+        $mform->addRule('shortname', null, 'maxlength', '3', 'client');
+        $mform->addRule('shortname', null, 'minlength', '3', 'client');
         $mform->addHelpButton('shortname', 'shortname', 'local_providerapi');
 
         $mform->addElement('passwordunmask', 'secretkey', get_string('secretkey', 'local_providerapi'),
@@ -77,6 +78,7 @@ class addinstitution extends moodleform {
         $mform->addRule('secretkey', null, 'alphanumeric', null, 'client');
         $mform->addRule('secretkey', get_string('required'), 'required', null, 'client');
         $mform->addRule('secretkey', null, 'maxlength', '10', 'client');
+        $mform->addRule('secretkey', null, 'minlength', '6', 'client');
         $mform->addHelpButton('secretkey', 'secretkeyhelp', 'local_providerapi');
 
         $mform->addElement('editor', 'description_editor', get_string('description'), null, $editoroptions);
@@ -124,6 +126,15 @@ class addinstitution extends moodleform {
         }
         if ($DB->record_exists_select(institution::$dbname, $select, $param)) {
             $err['secretkey'] = get_string('alreadyexists', 'local_providerapi', 'secretkey');
+        }
+
+        $lenghtsecretkey = strlen($data->secretkey);
+        if ($lenghtsecretkey < 3 || $lenghtsecretkey > 10) {
+            $err['secretkey'] = get_string('notcorrect', 'local_providerapi');
+        }
+        $lenghtshortname = strlen($data->shortname);
+        if ($lenghtshortname < 3 || $lenghtshortname > 3) {
+            $err['shortname'] = get_string('notcorrect', 'local_providerapi');
         }
 
         return $err;
