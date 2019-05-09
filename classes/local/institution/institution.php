@@ -29,6 +29,7 @@ namespace local_providerapi\local\institution;
 use local_providerapi\event\institution_created;
 use local_providerapi\event\institution_deleted;
 use local_providerapi\event\institution_updated;
+use local_providerapi\local\cohortHelper;
 use local_providerapi\local\modelbase;
 use local_providerapi\local\navigation;
 
@@ -112,6 +113,18 @@ class institution extends modelbase {
         }
 
         return array($select, $from, $wheres, $params);
+    }
+
+    /**
+     * @return int
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function createcohort() {
+        $data = new \stdClass();
+        $data->name = format_string($this->name);
+        $data->idnumber = uniqid($this->shortname.'_');
+        return cohortHelper::create($data);
     }
 
     /**

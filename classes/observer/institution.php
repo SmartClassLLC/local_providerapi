@@ -23,10 +23,15 @@
  */
 
 use local_providerapi\event\institution_created;
+use local_providerapi\local\institution\institution;
 
 defined('MOODLE_INTERNAL') || die();
 
 function institutioncreated(institution_created $event) {
+    $institutionid = $event->objectid;
+    $institution = institution::get($institutionid);
+    // Create cohort.
+    $cohortid = $institution->create();
 
 }
 

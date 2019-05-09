@@ -32,8 +32,21 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/cohort/lib.php');
 
+/**
+ * Class cohortHelper
+ *
+ * @package local_providerapi\local
+ */
 class cohortHelper {
 
+    /**
+     * expect name,idnumber
+     *
+     * @param \stdClass $data
+     * @return int
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
     public static function create(\stdClass $data) {
         if (!is_object($data)) {
             throw new \coding_exception('data must be object');
@@ -41,6 +54,8 @@ class cohortHelper {
         $data->contextid = context_system::instance()->id;
         $data->component = 'local_providerapi';
         $data->description = get_string('createdbyplugin', 'local_providerapi');
+
+        return cohort_add_cohort($data);
     }
 
 }
