@@ -30,9 +30,24 @@ defined('MOODLE_INTERNAL') || die();
 
 $observers = array(
 
-    array(
-        'eventname' => '\core\event\course_deleted',
-        'callback' => 'coursedeleted',
-        'includefile' => '/local/providerapi/classes/observer/course.php',
-    ),
+        array(
+                'eventname' => '\core\event\course_deleted',
+                'callback' => 'coursedeleted',
+                'includefile' => '/local/providerapi/classes/observer/course.php',
+        ),
+        array(
+                'eventname' => '\local_providerapi\event\institution_created',
+                'callback' => 'institutioncreated',
+                'includefile' => '/local/providerapi/classes/observer/institution.php',
+        ),
+        array(
+                'eventname' => '\local_providerapi\event\institution_updated',
+                'callback' => 'institutionupdated',
+                'includefile' => '/local/providerapi/classes/observer/institution.php',
+        ),
+        array(
+                'eventname' => '\local_providerapi\event\institution_deleted',
+                'callback' => 'institutiondeleted',
+                'includefile' => '/local/providerapi/classes/observer/institution.php',
+        )
 );

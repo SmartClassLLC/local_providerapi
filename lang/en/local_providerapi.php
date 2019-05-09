@@ -38,4 +38,40 @@ $string['providerapi:edit_user'] = 'Edit User';
 $string['providerapi:enrol_course'] = 'Enrol Course';
 $string['providerapi:get_shared_courses'] = 'Get Shared Course from İnstitution';
 $string['providerapi:get_site_info'] = 'Get Site İnfo';
-$string['providerapi:check_institution'] = 'Check Institution İnm moodle instilation';
+$string['providerapi:check_institution'] = 'Check Institution in moodle instilation';
+$string['local/providerapi:viewrootnav'] = 'View root navigation of providerapi plugin';
+$string['local/providerapi:viewinstitutionnav'] = 'View institution tab';
+$string['local/providerapi:createinstitution'] = 'Create Institution';
+$string['local/providerapi:editinstitution'] = 'Edit Institution';
+$string['local/providerapi:deleteinstitution'] = 'Delete Institution';
+$string['local/providerapi:sharedcourse'] = 'Share Course';
+$string['local/providerapi:deletesharedcourse'] = 'Delete Shared Course';
+
+// Helpbuttons.
+$string['fullname'] = 'Institution fullname explain';
+$string['fullname_help'] = 'Institution fullname';
+$string['secretkeyhelp'] = 'Help';
+$string['secretkeyhelp_help'] = 'secretkey for webservice auth.Min 6 , max 10 characters only accept alphanumeric';
+
+$string['shortname'] = 'Institution shortname explain';
+$string['shortname_help'] = 'Institution shortname must contain 3 characters';
+
+// Events.
+$string['createdinstitution'] = 'Institution Created';
+$string['updatedinstitution'] = 'Institution Updated';
+$string['deletedinstitution'] = 'Institution Deleted';
+$string['eventcreated'] = 'The {$a->objname} with id {$a->objid} has created by {$a->by}';
+$string['eventupdated'] = 'The {$a->objname} with id {$a->objid} has updated by {$a->by}';
+$string['eventdeleted'] = 'The {$a->objname} with id {$a->objid} has deleted by {$a->by}';
+
+// Strings.
+$string['institutions'] = 'Institutions';
+$string['addinstitution'] = 'Add Institution';
+$string['error'] = 'some errors occurred';
+$string['secretkey'] = 'Secret Key';
+$string['alreadyexists'] = '{$a} already exist';
+$string['manage'] = 'Manage';
+$string['areyousuredel'] = 'Are you sure delete {$a} ?';
+$string['notcorrect'] = 'Not correct';
+$string['createdbyplugin'] = 'Created by Providerapi';
+

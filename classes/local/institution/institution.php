@@ -23,7 +23,16 @@
  * @copyright  2019 çağlar MERSİNLİ <ceremy@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace local_providerapi\local\institution;
+
+use local_providerapi\event\institution_created;
+use local_providerapi\event\institution_deleted;
+use local_providerapi\event\institution_updated;
+use local_providerapi\local\cohortHelper;
+use local_providerapi\local\modelbase;
+use local_providerapi\local\navigation;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -31,13 +40,133 @@ defined('MOODLE_INTERNAL') || die();
  *
  * long_description
  *
+ * @property-read int id
+ * @property-read int createrid
+ * @property-read int modifiedby
+ * @property-read int cohortid
+ * @property-read  string name
+ * @property-read  string shortname
+ * @property-read  string secretkey
+ *
  * @package    local_providerapi
  * @copyright  2019 çağlar MERSİNLİ <ceremy@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+class institution extends modelbase {
+    use navigation;
 
-class institution{
+    /**
+     * @var string
+     */
+    public static $dbname = "local_providerapi_companies";
 
+    /**
+     * @var array
+     */
+    protected static $pages = array(/* 'main' => array(
+                    'url' => '/local/providerapi/modules/institution/index.php',
+                    'text' => 'institutions',
+                    'icon' => '',
+            ),*/
 
+    );
+
+    /**
+     * @param int|\stdClass $id
+     * @return self
+     * @throws \dml_exception
+     */
+    public static function get($id) {
+        global $DB;
+        if (!is_object($id)) {
+            $data = $DB->get_record(self::$dbname, array('id' => $id), '*', MUST_EXIST);
+        } else {
+            $data = $id;
+        }
+        return new self($data);
+    }
+
+    /**
+     * @param string $additionalwhere
+     * @param array $additionalparams
+     * @return array
+     */
+    public static function get_sql($additionalwhere = '', $additionalparams = array()) {
+
+        $wheres = array();
+        $params = array();
+        $select = "cmp.* ";
+        $joins = array('{local_providerapi_companies} cmp');
+
+        $wheres[] = ' cmp.secretkey IS NOT null';
+
+        if (!empty($additionalwhere)) {
+            $wheres[] = $additionalwhere;
+            $params = array_merge($params, $additionalparams);
+        }
+
+        $from = implode("\n", $joins);
+        if ($wheres) {
+            $wheres = implode(' AND ', $wheres);
+        } else {
+            $wheres = '';
+        }
+
+        return array($select, $from, $wheres, $params);
+    }
+
+    /**
+     * @return int
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function createcohort() {
+        $data = new \stdClass();
+        $data->name = format_string($this->name);
+        $data->idnumber = uniqid($this->shortname . '_');
+        return cohortHelper::create($data);
+    }
+
+    /**
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function updatecohort() {
+        $data = new \stdClass();
+        $data->id = $this->cohortid;
+        $data->name = format_string($this->name);
+        $data->idnumber = uniqid($this->shortname . '_');
+        return cohortHelper::update($data);
+    }
+
+    /**
+     * yeni kayıt için event olayı yazılacak
+     *
+     * @param $id
+     *
+     */
+    protected function create_event($id) {
+        institution_created::create_from_objectid($id)->trigger();
+    }
+
+    /**
+     * güncelleme için event olayı yazılacak
+     *
+     * @param $id
+     *
+     */
+    protected function update_event($id) {
+        institution_updated::create_from_objectid($id)->trigger();
+    }
+
+    /**
+     * silme için event olayı yazılacak
+     *
+     * @param \stdClass $data
+     *
+     */
+    protected function delete_event($data) {
+        institution_deleted::create_from_objectid($data)->trigger();
+    }
 }
 

@@ -15,25 +15,39 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin upgrade helper functions are defined here.
+ * Renderer
  *
- * @package     local_providerapi
- * @category    upgrade
- * @copyright   2019 Çağlar MERSİNLİ <ceremy@gmail.com>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * long_description
+ *
+ * @package    local_providerapi
+ * @copyright  2019 çağlar MERSİNLİ <ceremy@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace local_providerapi\output\institution;
+
+use renderable;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Helper function used by the upgrade.php file.
+ * Class renderer
+ *
+ * @package local_providerapi\output\institution
  */
-function local_providerapi_helper_function() {
-    global $DB;
+class renderer extends \local_providerapi\output\renderer {
 
-    // Please note that you should always be performing any task using raw (low
-    // level) database access exclusively, avoiding any use of the Moodle APIs.
-    //
-    // For more information please read the available Moodle documentation:
-    // https://docs.moodle.org/dev/Upgrade_API
+    /**
+     * @param renderable $renderable
+     * @return string
+     */
+    public function render_table(renderable $renderable) {
+        $o = '';
+        ob_start();
+        $renderable->out($renderable->pagesize, false);
+        $o .= ob_get_contents();
+        ob_end_clean();
+        return $o;
+    }
+
 }
