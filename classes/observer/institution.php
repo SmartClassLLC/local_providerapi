@@ -15,29 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin event observers are registered here.
+ * Plugin internal classes, functions and constants are defined here.
  *
  * @package     local_providerapi
- * @category    event
  * @copyright   2019 Çağlar MERSİNLİ <ceremy@gmail.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_providerapi\event\institution_created;
+
 defined('MOODLE_INTERNAL') || die();
 
-// For more information about the Events API, please visit:
-// https://docs.moodle.org/dev/Event_2.
+function institutioncreated(institution_created $event) {
 
-$observers = array(
+}
 
-        array(
-                'eventname' => '\core\event\course_deleted',
-                'callback' => 'coursedeleted',
-                'includefile' => '/local/providerapi/classes/observer/course.php',
-        ),
-        array(
-                'eventname' => '\local_providerapi\event\institution_created',
-                'callback' => 'institutioncreated',
-                'includefile' => '/local/providerapi/classes/observer/institution.php',
-        )
-);
+
+
+
