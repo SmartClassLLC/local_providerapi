@@ -97,7 +97,6 @@ class institution extends modelbase {
         $params = array();
         $select = "cmp.* ";
         $joins = array('{local_providerapi_companies} cmp');
-        // $joins[] = 'JOIN {local_cms_sinav_bolums} sb ON s.id = sb.sinavid';
 
         $wheres[] = ' cmp.secretkey IS NOT null';
 
@@ -139,7 +138,6 @@ class institution extends modelbase {
         $data->idnumber = uniqid($this->shortname . '_');
         return cohortHelper::update($data);
     }
-
 
     /**
      * yeni kayıt için event olayı yazılacak
