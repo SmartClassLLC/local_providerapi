@@ -57,7 +57,13 @@ class local_providerapi_institution_testcase extends advanced_testcase {
         $institution->description = 'test description';
         $institution->descriptionformat = FORMAT_HTML;
 
+        // Catch Events.
+        $sink = $this->redirectEvents();
         $id = \local_providerapi\local\institution\institution::get($institution)->create();
+        // Capture the event.
+        $events = $sink->get_events();
+        $sink->close();
+
         $this->assertNotEmpty($id);
 
         $new = $DB->get_record('local_providerapi_companies', array('id' => $id));
@@ -70,6 +76,13 @@ class local_providerapi_institution_testcase extends advanced_testcase {
         $this->assertNotEmpty($new->modifiedby);
         $this->assertNotEmpty($new->timecreated);
         $this->assertNotEmpty($new->timemodified);
+
+        // Validate the event.
+        $this->assertCount(1, $events);
+        $event = $events[0];
+        $this->assertInstanceOf('\local_providerapi\event\institution_created', $event);
+        $this->assertEquals(\local_providerapi\local\institution\institution::$dbname, $event->objecttable);
+        $this->assertEquals($id, $event->objectid);
 
     }
 
