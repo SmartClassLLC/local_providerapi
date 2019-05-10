@@ -67,6 +67,9 @@ if (!$table->is_downloading()) {
     // Check Institution.
     $output->checkinstitution();
 
+    $output->addbutton(new moodle_url('/local/providerapi/modules/course/edit.php', array('id' => -1)),
+            get_string('assigncourse', 'local_providerapi'));
+
 }
 
 if (!$table->is_downloading()) {

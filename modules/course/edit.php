@@ -25,7 +25,7 @@
  */
 
 use core\notification;
-use local_providerapi\form\addinstitution;
+use local_providerapi\form\assigncourse;
 use local_providerapi\local\institution\institution;
 
 require('../../../../config.php');
@@ -40,8 +40,8 @@ $context = context_system::instance();
 $id = optional_param('id', -1, PARAM_INT);
 $delid = optional_param('delid', null, PARAM_INT);
 // Baseurl.
-$baseurl = new moodle_url('/local/providerapi/modules/institution/editinstitution.php');
-$institutionurl = new moodle_url('/local/providerapi/modules/institution/index.php');
+$baseurl = new moodle_url('/local/providerapi/modules/course/edit.php');
+$institutionurl = new moodle_url('/local/providerapi/modules/course/index.php');
 $returnurl = optional_param('returnurl', null, PARAM_LOCALURL);
 
 if ($returnurl) {
@@ -53,9 +53,9 @@ if ($returnurl) {
 // Page settings.
 $PAGE->set_url($baseurl);
 $PAGE->set_context($context);
-$PAGE->set_title(get_string('institutions', 'local_providerapi'));
+$PAGE->set_title(get_string('courses', 'local_providerapi'));
 $PAGE->set_pagelayout('base');
-$PAGE->set_heading(get_string('institutions', 'local_providerapi'));
+$PAGE->set_heading(get_string('courses', 'local_providerapi'));
 
 if ($delid and has_capability('local/providerapi:deleteinstitution', $context) and confirm_sesskey()) {
     if (institution::get($delid)->delete()) {
@@ -64,17 +64,12 @@ if ($delid and has_capability('local/providerapi:deleteinstitution', $context) a
     redirect($returnurl);
 }
 
-// Cap edit?
-if ($id != -1) {
-    require_capability('local/providerapi:editinstitution', $context);
-}
-
 // Nav.
-$node = $PAGE->navigation->find('institutionmodule', navigation_node::TYPE_SETTING);
+$node = $PAGE->navigation->find('coursemodule', navigation_node::TYPE_SETTING);
 
 if ($node) {
     if ($id === -1) {
-        $mynode = $node->add('Adding...', $baseurl);
+        $mynode = $node->add('Assign...', $baseurl);
     } else {
         $mynode = $node->add('Editing...', $baseurl);
     }
@@ -89,24 +84,8 @@ if ($id == -1) {
 
 }
 
-$editoroptions = array(
-        'maxfiles' => EDITOR_UNLIMITED_FILES,
-        'maxbytes' => FILE_AREA_MAX_BYTES_UNLIMITED,
-        'trusttext' => false,
-        'forcehttps' => false,
-        'context' => $context,
-        'enable_filemanagement' => false
-);
-
-if ($institution->id !== -1) {
-    $institution = file_prepare_standard_editor($institution, 'description', $editoroptions, $context, 'local_providerapi',
-            'institutiondescription',
-            $institution->id);
-}
-
-$form = new addinstitution(new moodle_url($PAGE->url, array('returnurl' => $returnurl)),
+$form = new assigncourse(new moodle_url($PAGE->url, array('returnurl' => $returnurl)),
         array(
-                'editoroptions' => $editoroptions,
                 'data' => $institution
         ));
 
@@ -115,13 +94,9 @@ if ($form->is_cancelled()) {
 } else if ($new = $form->get_data()) {
     if ($new->id == -1) {
         unset($new->id);
-        $new->description = '';
-        $new->descriptionformat = FORMAT_HTML;
 
         if ($new->id = institution::get($new)->create()) {
-            $new = file_postupdate_standard_editor($new, 'description', $editoroptions, $context, 'local_providerapi',
-                    'institutiondescription', $new->id);
-            institution::get($new)->update();
+
             notification::success(get_string('success'));
             redirect($institutionurl);
         } else {
@@ -130,17 +105,14 @@ if ($form->is_cancelled()) {
         }
 
     } else {
-        $new = file_postupdate_standard_editor($new, 'description', $editoroptions, $context, 'local_providerapi',
-                'institutiondescription', $new->id);
 
-        institution::get($new)->update();
         notification::success(get_string('success'));
         redirect($institutionurl);
 
     }
 }
 
-$output = $PAGE->get_renderer('local_providerapi', 'institution');
+$output = $PAGE->get_renderer('local_providerapi');
 
 echo $output->header();
 
