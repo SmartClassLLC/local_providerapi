@@ -74,4 +74,5 @@ $string['manage'] = 'Manage';
 $string['areyousuredel'] = 'Are you sure delete {$a} ?';
 $string['notcorrect'] = 'Not correct';
 $string['createdbyplugin'] = 'Created by Providerapi';
+$string['courses'] = 'Courses';
 

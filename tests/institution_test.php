@@ -84,6 +84,13 @@ class local_providerapi_institution_testcase extends advanced_testcase {
         $this->assertEquals(\local_providerapi\local\institution\institution::$dbname, $event->objecttable);
         $this->assertEquals($id, $event->objectid);
 
+        // validate create cohort.
+        $cohort = $DB->get_record('cohort', array(
+                'name' => $institution->name,
+                'contextid' => context_system::instance()->id,
+                'component' => 'local_providerapi'
+        ));
+
     }
 
 }

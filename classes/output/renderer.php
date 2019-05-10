@@ -26,6 +26,7 @@
 
 namespace local_providerapi\output;
 
+use local_providerapi\local\institution\institution;
 use renderable;
 use single_button;
 
@@ -61,6 +62,15 @@ class renderer extends \plugin_renderer_base {
         $addbutton->tooltip = $text;
         echo $this->render($addbutton);
         echo $this->box('', 'clearfix');
+    }
+
+    public function institutionmenu() {
+        globaL $SESSION;
+
+        $url = new \moodle_url('/local/providerapi/switch.php');
+        $options = institution::get_menu();
+        $select = new \single_select($url, 'institutionid', $options, $SESSION->institution);
+
     }
 
 }

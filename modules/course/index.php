@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * short_description
+ * course index
  *
  * long_description
  *
@@ -37,16 +37,16 @@ require_login();
 $context = context_system::instance();
 
 // Caps.
-
+require_capability('local/providerapi:sharedcourse', $context);
 // Baseurl.
-$baseurl = new moodle_url('/local/providerapi/modules/institution/index.php');
+$baseurl = new moodle_url('/local/providerapi/modules/course/index.php');
 
 // Page settings.
 $PAGE->set_url($baseurl);
 $PAGE->set_context($context);
-$PAGE->set_title(get_string('institutions', 'local_providerapi'));
+$PAGE->set_title(get_string('courses', 'local_providerapi'));
 $PAGE->set_pagelayout('base');
-$PAGE->set_heading(get_string('institutions', 'local_providerapi'));
+$PAGE->set_heading(get_string('courses', 'local_providerapi'));
 
 // Nav.
 $node = $PAGE->navigation->find('providerroot', navigation_node::TYPE_SITE_ADMIN);
