@@ -78,4 +78,5 @@ $string['courses'] = 'Courses';
 $string['selectinstitution'] = 'Select Institution:';
 $string['successswitchinstitution'] = 'Institution changed successfully';
 $string['somethingwrong'] = 'something went wrong';
+$string['havetoselectinstitution'] = 'You have to select institution';
 

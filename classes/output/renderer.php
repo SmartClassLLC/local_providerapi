@@ -82,9 +82,22 @@ class renderer extends \plugin_renderer_base {
         $options = institution::get_menu();
         $select = new \single_select($url, 'institutionid', $options, $selected);
         $select->label = get_string('selectinstitution', 'local_providerapi');
+        $select->class = 'pull-right';
 
         echo $this->render($select);
         echo $this->box('', 'clearfix');
+    }
+
+    /**
+     * @throws \coding_exception
+     */
+    public function checkinstitution() {
+        global $OUTPUT, $SESSION;
+        if (!isset($SESSION->institution) || empty($SESSION->institution)) {
+            echo $OUTPUT->notification(get_string('havetoselectinstitution', 'local_providerapi'), 'error');
+            echo $OUTPUT->footer();
+            die();
+        }
     }
 
 }

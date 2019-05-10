@@ -30,7 +30,7 @@ use local_providerapi\output\institution\table_institutions;
 require('../../../../config.php');
 require_once($CFG->dirroot . '/local/providerapi/locallib.php');
 
-global $CFG, $PAGE, $OUTPUT;
+global $CFG, $PAGE;
 require_login();
 
 // System context.
@@ -64,8 +64,10 @@ if (!$table->is_downloading()) {
     }
     $output->institutionmenu();
 
+    // Check Institution.
+    $output->checkinstitution();
+
 }
-echo $output->render_table($table);
 
 if (!$table->is_downloading()) {
     echo $output->footer();
