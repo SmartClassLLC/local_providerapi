@@ -62,10 +62,8 @@ if (!$table->is_downloading()) {
     if ($node) {
         call_user_func_array('print_tabs', $node->get_tabs_array());
     }
-    if (has_capability('local/providerapi:createinstitution', $context)) {
-        $output->addbutton(new moodle_url('/local/providerapi/modules/institution/editinstitution.php', array('id' => -1)),
-                get_string('addinstitution', 'local_providerapi'));
-    }
+    $output->institutionmenu();
+
 }
 echo $output->render_table($table);
 

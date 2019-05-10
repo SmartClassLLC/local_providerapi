@@ -75,4 +75,7 @@ $string['areyousuredel'] = 'Are you sure delete {$a} ?';
 $string['notcorrect'] = 'Not correct';
 $string['createdbyplugin'] = 'Created by Providerapi';
 $string['courses'] = 'Courses';
+$string['selectinstitution'] = 'Select Institution:';
+$string['successswitchinstitution'] = 'Institution changed successfully';
+$string['somethingwrong'] = 'something went wrong';
 

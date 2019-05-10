@@ -64,13 +64,27 @@ class renderer extends \plugin_renderer_base {
         echo $this->box('', 'clearfix');
     }
 
+    /**
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
     public function institutionmenu() {
-        globaL $SESSION;
+        globaL $SESSION, $PAGE;
 
-        $url = new \moodle_url('/local/providerapi/switch.php');
+        $selected = null;
+        if (isset($SESSION->institution) && !empty($SESSION->institution)) {
+            $selected = $SESSION->institution;
+        }
+
+        $url = new \moodle_url('/local/providerapi/switch.php',
+                array('returnurl' => $PAGE->url->out_as_local_url(), 'sesskey' => sesskey()));
         $options = institution::get_menu();
-        $select = new \single_select($url, 'institutionid', $options, $SESSION->institution);
+        $select = new \single_select($url, 'institutionid', $options, $selected);
+        $select->label = get_string('selectinstitution', 'local_providerapi');
 
+        echo $this->render($select);
+        echo $this->box('', 'clearfix');
     }
 
 }
