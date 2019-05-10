@@ -47,7 +47,7 @@ class course extends core_course_list_element {
 
     /**
      * @param stdClass $data
-     * @throws \coding_exception
+     * @throws |coding_exception
      * @throws \dml_exception
      * @throws moodle_exception
      */
