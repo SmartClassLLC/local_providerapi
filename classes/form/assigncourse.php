@@ -26,7 +26,7 @@
 
 namespace local_providerapi\form;
 
-use coding_exception;
+use local_providerapi\local\course\course;
 use moodleform;
 
 defined('MOODLE_INTERNAL') || die();
@@ -42,27 +42,24 @@ class assigncourse extends moodleform {
      * Form definition. Abstract method - always override!
      */
     protected function definition() {
+        global $DB;
         $mform = $this->_form;
 
-        if (!is_array($this->_customdata)) {
-            throw new coding_exception('invalid custom data');
-        }
-
-        $data = $this->_customdata['data'];
+        $institutionid = $this->_customdata['institutionid'];
 
         // Add some extra hidden fields.
-
-        $mform->addElement('hidden', 'id');
-        $mform->setType('id', PARAM_INT);
+        $mform->addElement('hidden', 'institutionid', $institutionid);
+        $mform->setType('institutionid', PARAM_INT);
 
         $mform->addElement('header', 'assigncourse', get_string('general'));
 
-        $mform->addElement('course', 'courseids', get_string('courses'), ['multiple' => true]);
+        $existcoursesids = $DB->get_fieldset_select(course::$dbname, 'courseid', 'institutionid = ? ', array($institutionid));
+
+        $mform->addElement('course', 'courseids', get_string('courses'), ['multiple' => true, 'exclude' => $existcoursesids]);
         $mform->setType('courseids', PARAM_INT);
         $mform->addRule('courseids', get_string('required'), 'required', null, 'client');
 
         $this->add_action_buttons();
-        $this->set_data($data);
 
     }
 

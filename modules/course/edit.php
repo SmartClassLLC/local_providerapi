@@ -26,6 +26,7 @@
 
 use core\notification;
 use local_providerapi\form\assigncourse;
+use local_providerapi\local\course\course;
 use local_providerapi\local\institution\institution;
 
 require('../../../../config.php');
@@ -36,18 +37,30 @@ require_login();
 // System context.
 $context = context_system::instance();
 
+// Cap.
+require_capability('local/providerapi:sharedcourse', $context);
+
 // Params.
 $id = optional_param('id', -1, PARAM_INT);
 $delid = optional_param('delid', null, PARAM_INT);
 // Baseurl.
 $baseurl = new moodle_url('/local/providerapi/modules/course/edit.php');
-$institutionurl = new moodle_url('/local/providerapi/modules/course/index.php');
+$courseurl = new moodle_url('/local/providerapi/modules/course/index.php');
 $returnurl = optional_param('returnurl', null, PARAM_LOCALURL);
 
 if ($returnurl) {
     $returnurl = new moodle_url($returnurl);
 } else {
-    $returnurl = $institutionurl;
+    $returnurl = $courseurl;
+}
+
+$institutionid = null;
+if (isset($SESSION->institution) && !empty($SESSION->institution)) {
+    $institutionid = $SESSION->institution;
+}
+
+if (empty($institutionid)) {
+    redirect($returnurl);
 }
 
 // Page settings.
@@ -77,39 +90,20 @@ if ($node) {
 }
 
 if ($id == -1) {
-    $institution = new stdClass();
-    $institution->id = -1;
-} else {
-    $institution = institution::get($id)->get_db_record();
-
+    $data = new stdClass();
+    $data->id = -1;
 }
 
-$form = new assigncourse(new moodle_url($PAGE->url, array('returnurl' => $returnurl)),
-        array(
-                'data' => $institution
-        ));
+$form = new assigncourse(new moodle_url($PAGE->url, array('returnurl' => $returnurl)), array(
+        'institutionid' => $institutionid
+));
 
 if ($form->is_cancelled()) {
-    redirect($institutionurl);
+    redirect($courseurl);
 } else if ($new = $form->get_data()) {
-    if ($new->id == -1) {
-        unset($new->id);
-
-        if ($new->id = institution::get($new)->create()) {
-
-            notification::success(get_string('success'));
-            redirect($institutionurl);
-        } else {
-            notification::error(get_string('error', 'local_providerapi'));
-            redirect($institutionurl);
-        }
-
-    } else {
-
-        notification::success(get_string('success'));
-        redirect($institutionurl);
-
-    }
+    course::create($new);
+    notification::success(get_string('success'));
+    redirect($courseurl);
 }
 
 $output = $PAGE->get_renderer('local_providerapi');

@@ -91,7 +91,7 @@ class institution extends modelbase {
      * @return bool
      * @throws \dml_exception
      */
-    public static function exist(int $id) :bool {
+    public static function exist(int $id): bool {
         global $DB;
         return $DB->record_exists(self::$dbname, array('id' => $id));
     }

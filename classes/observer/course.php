@@ -22,8 +22,20 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\event\course_deleted;
+use local_providerapi\local\course\course;
+
 defined('MOODLE_INTERNAL') || die();
 
-
+function coursedeleted(course_deleted $event) {
+    global $DB;
+    // Exist Sahared Courses?
+    $sharedcourses = $DB->get_records(course::$dbname, array('courseid' => $event->objectid));
+    if ($sharedcourses) {
+        foreach ($sharedcourses as $sharedcourse) {
+            course::delete($sharedcourse->id);
+        }
+    }
+}
 
 
