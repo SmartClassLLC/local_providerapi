@@ -86,4 +86,5 @@ $string['successswitchinstitution'] = 'Institution changed successfully';
 $string['somethingwrong'] = 'something went wrong';
 $string['havetoselectinstitution'] = 'You have to select institution';
 $string['assigncourse'] = 'Assign Courses';
+$string['istitutionsharedcourse'] = '<strong>{$a} \'s</strong> &nbsp; Shared Courses';
 

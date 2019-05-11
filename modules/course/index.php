@@ -24,8 +24,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_providerapi\local\institution\institution;
-use local_providerapi\output\institution\table_institutions;
+use local_providerapi\local\course\course;
+use local_providerapi\output\course\table_sharedcourses;
 
 require('../../../../config.php');
 require_once($CFG->dirroot . '/local/providerapi/locallib.php');
@@ -51,11 +51,9 @@ $PAGE->set_heading(get_string('courses', 'local_providerapi'));
 // Nav.
 $node = $PAGE->navigation->find('providerroot', navigation_node::TYPE_SITE_ADMIN);
 
-$output = $PAGE->get_renderer('local_providerapi', 'institution');
+$output = $PAGE->get_renderer('local_providerapi');
 
-$table = new table_institutions($baseurl, 50);
-list($select, $from, $where, $params) = institution::get_sql();
-$table->set_sql($select, $from, $where, $params);
+$table = new table_sharedcourses($baseurl, 100);
 
 if (!$table->is_downloading()) {
     echo $output->header();
@@ -71,6 +69,11 @@ if (!$table->is_downloading()) {
             get_string('assigncourse', 'local_providerapi'));
 
 }
+$institution = \local_providerapi\local\institution\institution::get($SESSION->institution);
+list($select, $from, $where, $params) = course::get_sql($SESSION->institution);
+$table->set_sql($select, $from, $where, $params);
+$table->set_istitutionname($institution->name);
+echo $output->render_table($table);
 
 if (!$table->is_downloading()) {
     echo $output->footer();

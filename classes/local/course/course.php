@@ -26,6 +26,7 @@
 
 namespace local_providerapi\local\course;
 
+use context_helper;
 use core_course_list_element;
 use local_providerapi\event\sharedcourse_created;
 use local_providerapi\event\sharedcourse_deleted;
@@ -119,6 +120,41 @@ class course extends core_course_list_element {
         if ($DB->delete_records(self::$dbname, array('id' => $id))) {
             sharedcourse_deleted::create_from_objectid($record)->trigger();
         }
+    }
+
+    /**
+     * @param int $institutionid
+     * @param string $additionalwhere
+     * @param array $additionalparams
+     * @return array
+     */
+    public static function get_sql(int $institutionid, $additionalwhere = '', $additionalparams = array()): array {
+
+        $wheres = array();
+        $params = array();
+        $select = "DISTINCT sc.id,sc.createrid, c.fullname AS coursefullname,c.shortname AS courseshortname," .
+                context_helper::get_preload_record_columns_sql('ctx');
+        $joins = array('{local_providerapi_courses} sc');
+        $joins[] = 'JOIN {course} c ON c.id = sc.courseid';
+        $joins[] = 'LEFT JOIN {context} ctx ON (ctx.instanceid = c.id AND ctx.contextlevel = :contextlevel)';
+        $params['contextlevel'] = CONTEXT_COURSE;
+
+        $wheres[] = ' sc.institutionid = :institutionid';
+        $params['institutionid'] = $institutionid;
+
+        if (!empty($additionalwhere)) {
+            $wheres[] = $additionalwhere;
+            $params = array_merge($params, $additionalparams);
+        }
+
+        $from = implode("\n", $joins);
+        if ($wheres) {
+            $wheres = implode(' AND ', $wheres);
+        } else {
+            $wheres = '';
+        }
+
+        return array($select, $from, $wheres, $params);
     }
 
 }
