@@ -70,8 +70,8 @@ $PAGE->set_title(get_string('courses', 'local_providerapi'));
 $PAGE->set_pagelayout('base');
 $PAGE->set_heading(get_string('courses', 'local_providerapi'));
 
-if ($delid and has_capability('local/providerapi:deleteinstitution', $context) and confirm_sesskey()) {
-    if (institution::get($delid)->delete()) {
+if ($delid and has_capability('local/providerapi:deletesharedcourse', $context) and confirm_sesskey()) {
+    if (course::delete($delid)) {
         notification::success(get_string('success'));
     }
     redirect($returnurl);

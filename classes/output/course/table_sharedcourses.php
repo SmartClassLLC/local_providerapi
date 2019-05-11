@@ -48,6 +48,9 @@ class table_sharedcourses extends table_sql implements \renderable {
      */
     private $context;
 
+    /**
+     * @var string
+     */
     private $institutionname;
 
     /**
@@ -99,10 +102,16 @@ class table_sharedcourses extends table_sql implements \renderable {
 
     }
 
+    /**
+     * @param $name
+     */
     public function set_istitutionname($name) {
         $this->institutionname = $name;
     }
 
+    /**
+     * @throws \coding_exception
+     */
     public function wrap_html_start() {
         $o = '';
         $o .= \html_writer::tag('h3', get_string('istitutionsharedcourse', 'local_providerapi', $this->institutionname),
@@ -137,9 +146,8 @@ class table_sharedcourses extends table_sql implements \renderable {
 
         $buttons = array();
 
-        if (has_capability('local/providerapi:deleteinstitution', $this->context)) {
-
-            $deleteurl = new moodle_url('/local/providerapi/modules/institution/editinstitution.php',
+        if (has_capability('local/providerapi:deletesharedcourse', $this->context)) {
+            $deleteurl = new moodle_url('/local/providerapi/modules/course/edit.php',
                     array('delid' => $row->id, 'returnurl' => $this->baseurl->out_as_local_url(), 'sesskey' => sesskey()));
             $visibleimg = new pix_icon('t/delete', get_string('delete'));
             $buttons[] = $OUTPUT->action_icon($deleteurl, $visibleimg,

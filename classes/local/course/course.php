@@ -111,15 +111,19 @@ class course extends core_course_list_element {
     }
 
     /**
-     * @param $id
+     * @param int $id
+     * @return bool
+     * @throws \coding_exception
      * @throws \dml_exception
      */
-    public static function delete($id): void {
+    public static function delete(int $id): bool {
         global $DB;
         $record = $DB->get_record(self::$dbname, array('id' => $id));
         if ($DB->delete_records(self::$dbname, array('id' => $id))) {
             sharedcourse_deleted::create_from_objectid($record)->trigger();
+            return true;
         }
+        return false;
     }
 
     /**

@@ -62,9 +62,9 @@ $string['updatedinstitution'] = 'Institution Updated';
 $string['deletedinstitution'] = 'Institution Deleted';
 $string['createdsharedcourse'] = 'Course Shared';
 $string['deletedsharedcourse'] = 'Shared course Deleted';
-$string['eventcreated'] = 'The {$a->objname} with id {$a->objid} has created by {$a->by}';
-$string['eventupdated'] = 'The {$a->objname} with id {$a->objid} has updated by {$a->by}';
-$string['eventdeleted'] = 'The {$a->objname} with id {$a->objid} has deleted by {$a->by}';
+$string['eventcreated'] = 'The {$a->objname} with id \'{$a->objid}\' has created by {$a->by}';
+$string['eventupdated'] = 'The {$a->objname} with id \'{$a->objid}\' has updated by {$a->by}';
+$string['eventdeleted'] = 'The {$a->objname} with id \'{$a->objid}\' has deleted by {$a->by}';
 
 // Exceptions.
 $string['notexistinstitution'] = 'Institution is not exist';
