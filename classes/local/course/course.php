@@ -25,7 +25,6 @@
  */
 
 namespace local_providerapi\local\course;
-
 use core_course_list_element;
 use local_providerapi\local\institution\institution;
 use moodle_exception;
