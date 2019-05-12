@@ -23,17 +23,9 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+use local_providerapi\local\institution\institution;
 
-// For installation and usage of PHPUnit within Moodle please read:
-// https://docs.moodle.org/dev/PHPUnit
-//
-// Documentation for writing PHPUnit tests for Moodle can be found here:
-// https://docs.moodle.org/dev/PHPUnit_integration
-// https://docs.moodle.org/dev/Writing_PHPUnit_tests
-//
-// The official PHPUnit homepage is at:
-// https://phpunit.de.
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * The client test class.
@@ -45,28 +37,21 @@ defined('MOODLE_INTERNAL') || die();
 class local_providerapi_institution_testcase extends advanced_testcase {
 
     // Write the tests here as public funcions.
+    /**
+     * @throws dml_exception
+     */
     public function test_institution_created() {
         global $DB;
 
         $this->resetAfterTest();
         $this->setAdminUser();
-        $institution = new stdClass();
-        $institution->name = 'test institution';
-        $institution->shortname = 'TES';
-        $institution->secretkey = '123456';
-        $institution->description = 'test description';
-        $institution->descriptionformat = FORMAT_HTML;
+        $generator = $this->getDataGenerator();
+        $providergenerator = $generator->get_plugin_generator('local_providerapi');
+        $institution = $providergenerator->create_institution();
 
-        // Catch Events.
-        $sink = $this->redirectEvents();
-        $id = \local_providerapi\local\institution\institution::get($institution)->create();
-        // Capture the event.
-        $events = $sink->get_events();
-        $sink->close();
+        $this->assertNotEmpty($institution);
 
-        $this->assertNotEmpty($id);
-
-        $new = $DB->get_record('local_providerapi_companies', array('id' => $id));
+        $new = $DB->get_record('local_providerapi_companies', array('id' => $institution->id));
         $this->assertSame($institution->name, $new->name);
         $this->assertSame($institution->shortname, $new->shortname);
         $this->assertSame($institution->secretkey, $new->secretkey);
@@ -77,20 +62,138 @@ class local_providerapi_institution_testcase extends advanced_testcase {
         $this->assertNotEmpty($new->timecreated);
         $this->assertNotEmpty($new->timemodified);
 
+        // Validate create cohort.
+        $cohort = $DB->record_exists('cohort', array('id' => $institution->cohortid));
+        $this->assertTrue($cohort);
+
+    }
+
+    /**
+     * @throws coding_exception
+     */
+    public function test_institution_eventcreated() {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $generator = $this->getDataGenerator();
+        $providergenerator = $generator->get_plugin_generator('local_providerapi');
+        // Catch Events.
+        $sink = $this->redirectEvents();
+        $institution = $providergenerator->create_institution();
+        $events = $sink->get_events();
+        $sink->close();
         // Validate the event.
         $this->assertCount(1, $events);
         $event = $events[0];
         $this->assertInstanceOf('\local_providerapi\event\institution_created', $event);
-        $this->assertEquals(\local_providerapi\local\institution\institution::$dbname, $event->objecttable);
-        $this->assertEquals($id, $event->objectid);
+        $this->assertEquals(institution::$dbname, $event->objecttable);
+        $this->assertEquals($institution->id, $event->objectid);
 
-        // validate create cohort.
-        $cohort = $DB->get_record('cohort', array(
-                'name' => $institution->name,
-                'contextid' => context_system::instance()->id,
-                'component' => 'local_providerapi'
-        ));
+    }
 
+    /**
+     * @throws coding_exception
+     * @throws dml_exception
+     */
+    public function test_institution_edit() {
+        global $DB;
+
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $generator = $this->getDataGenerator();
+        $providergenerator = $generator->get_plugin_generator('local_providerapi');
+        $institution = $providergenerator->create_institution();
+
+        $this->assertNotEmpty($institution);
+        $data = $institution->get_db_record();
+        $data->name = 'test2';
+        $data->shortname = 'CDB';
+        $data->secretkey = '789456';
+        institution::get($data)->update();
+
+        $new = $DB->get_record('local_providerapi_companies', array('id' => $institution->id));
+        $this->assertSame($data->name, $new->name);
+        $this->assertSame($data->shortname, $new->shortname);
+        $this->assertSame($data->secretkey, $new->secretkey);
+        $this->assertSame($data->description, $new->description);
+        $this->assertEquals($data->descriptionformat, $new->descriptionformat);
+        $this->assertNotEmpty($data->createrid);
+        $this->assertNotEmpty($data->modifiedby);
+        $this->assertNotEmpty($data->timecreated);
+        $this->assertNotEmpty($data->timemodified);
+
+        // Validate create cohort.
+        $cohort = $DB->record_exists('cohort', array('id' => $institution->cohortid, 'name' => format_string($data->name)));
+        $this->assertTrue($cohort);
+
+    }
+
+    /**
+     * @throws coding_exception
+     * @throws dml_exception
+     */
+    public function test_institution_eventupdated() {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $generator = $this->getDataGenerator();
+        $providergenerator = $generator->get_plugin_generator('local_providerapi');
+        $institution = $providergenerator->create_institution();
+        $data = $institution->get_db_record();
+        $data->name = 'test2';
+        $data->shortname = 'CDB';
+        $data->secretkey = '789456';
+        // Catch Events.
+        $sink = $this->redirectEvents();
+        institution::get($data)->update();
+        $events = $sink->get_events();
+        $sink->close();
+        // Validate the event.
+        $this->assertCount(1, $events);
+        $event = $events[0];
+        $this->assertInstanceOf('\local_providerapi\event\institution_updated', $event);
+        $this->assertEquals(institution::$dbname, $event->objecttable);
+        $this->assertEquals($institution->id, $event->objectid);
+    }
+
+    /**
+     * @throws coding_exception
+     */
+    public function test_institution_eventdeleted() {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $generator = $this->getDataGenerator();
+        $providergenerator = $generator->get_plugin_generator('local_providerapi');
+        $institution = $providergenerator->create_institution();
+        // Catch Events.
+        $sink = $this->redirectEvents();
+        $institution->delete();
+        $events = $sink->get_events();
+        $sink->close();
+        // Validate the event.
+        $this->assertCount(1, $events);
+        $event = $events[0];
+        $this->assertInstanceOf('\local_providerapi\event\institution_deleted', $event);
+        $this->assertEquals(institution::$dbname, $event->objecttable);
+        $this->assertEquals($institution->id, $event->objectid);
+    }
+
+    /**
+     * @throws coding_exception
+     * @throws dml_exception
+     */
+    public function test_institution_deleted() {
+        global $DB;
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $providergenerator = $generator->get_plugin_generator('local_providerapi');
+        $institution = $providergenerator->create_institution();
+        $this->assertTrue(institution::exist($institution->id));
+        $result = $institution->delete();
+        // Are u sure deleted ?
+        $this->assertTrue($result);
+        $this->assertFalse(institution::exist($institution->id));
+        // Validate delete cohort.
+        $cohort = $DB->record_exists('cohort', array('id' => $institution->cohortid));
+        $this->assertFalse($cohort);
     }
 
 }
