@@ -26,6 +26,7 @@
 use local_providerapi\local\batch\batch;
 
 defined('MOODLE_INTERNAL') || die();
+global $CFG;
 require_once($CFG->dirroot . '/local/providerapi/locallib.php');
 
 /**
