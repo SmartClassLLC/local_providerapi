@@ -40,15 +40,22 @@ class local_providerapi_generator extends component_generator_base {
      */
     public function create_institution($record = array()) {
 
-        if (empty($record)) {
-            $record = array(
-                    'name' => 'test',
-                    'shortname' => 'ABC',
-                    'secretkey' => '123456',
-                    'description' => 'test description',
-                    'descriptionformat' => FORMAT_HTML
-            );
+        if (!array_key_exists('name', $record)) {
+            $record['name'] = 'testinstitution';
         }
+        if (!array_key_exists('shortname', $record)) {
+            $record['shortname'] = 'ABC';
+        }
+        if (!array_key_exists('secretkey', $record)) {
+            $record['secretkey'] = '123456';
+        }
+        if (!array_key_exists('description', $record)) {
+            $record['description'] = 'test description';
+        }
+        if (!array_key_exists('descriptionformat', $record)) {
+            $record['descriptionformat'] = FORMAT_HTML;
+        }
+
         $data = (object) $record;
         $id = institution::get($data)->create();
         return institution::get($id);

@@ -72,7 +72,7 @@ class course extends core_course_list_element {
      * @throws \dml_exception
      * @throws moodle_exception
      */
-    public static function create(stdClass $data): void {
+    public static function create(stdClass $data) {
         global $DB, $USER;
         if (empty($data->courseids) || !property_exists($data, 'institutionid')) {
             throw new moodle_exception('missingproperty', 'local_providerapi');
@@ -100,7 +100,7 @@ class course extends core_course_list_element {
      * @param $institutionid
      * @throws \dml_exception
      */
-    public static function deletebyinstitutionid(int $institutionid): void {
+    public static function deletebyinstitutionid(int $institutionid) {
         global $DB;
         $courses = $DB->get_fieldset_select(self::$dbname, 'id', 'institutionid = ?', array($institutionid));
         if ($courses) {

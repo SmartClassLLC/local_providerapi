@@ -44,7 +44,9 @@ defined('MOODLE_INTERNAL') || die();
  * @property-read int createrid
  * @property-read int modifiedby
  * @property-read int cohortid
+ * @property-read int descriptionformat
  * @property-read  string name
+ * @property-read  string description
  * @property-read  string shortname
  * @property-read  string secretkey
  *
