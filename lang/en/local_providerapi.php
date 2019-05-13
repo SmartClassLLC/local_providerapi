@@ -60,9 +60,15 @@ $string['shortname_help'] = 'Institution shortname must contain 3 characters';
 $string['createdinstitution'] = 'Institution Created';
 $string['updatedinstitution'] = 'Institution Updated';
 $string['deletedinstitution'] = 'Institution Deleted';
-$string['eventcreated'] = 'The {$a->objname} with id {$a->objid} has created by {$a->by}';
-$string['eventupdated'] = 'The {$a->objname} with id {$a->objid} has updated by {$a->by}';
-$string['eventdeleted'] = 'The {$a->objname} with id {$a->objid} has deleted by {$a->by}';
+$string['createdsharedcourse'] = 'Course Shared';
+$string['deletedsharedcourse'] = 'Shared course Deleted';
+$string['eventcreated'] = 'The {$a->objname} with id \'{$a->objid}\' has created by {$a->by}';
+$string['eventupdated'] = 'The {$a->objname} with id \'{$a->objid}\' has updated by {$a->by}';
+$string['eventdeleted'] = 'The {$a->objname} with id \'{$a->objid}\' has deleted by {$a->by}';
+
+// Exceptions.
+$string['notexistinstitution'] = 'Institution is not exist';
+$string['missingproperty'] = 'required property missing';
 
 // Strings.
 $string['institutions'] = 'Institutions';
@@ -74,4 +80,11 @@ $string['manage'] = 'Manage';
 $string['areyousuredel'] = 'Are you sure delete {$a} ?';
 $string['notcorrect'] = 'Not correct';
 $string['createdbyplugin'] = 'Created by Providerapi';
+$string['courses'] = 'Courses';
+$string['selectinstitution'] = 'Select Institution:';
+$string['successswitchinstitution'] = 'Institution changed successfully';
+$string['somethingwrong'] = 'something went wrong';
+$string['havetoselectinstitution'] = 'You have to select institution';
+$string['assigncourse'] = 'Assign Courses';
+$string['istitutionsharedcourse'] = '<strong>{$a} \'s</strong> &nbsp; Shared Courses';
 

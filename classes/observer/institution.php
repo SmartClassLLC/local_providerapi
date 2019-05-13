@@ -26,6 +26,7 @@ use local_providerapi\event\institution_created;
 use local_providerapi\event\institution_deleted;
 use local_providerapi\event\institution_updated;
 use local_providerapi\local\cohortHelper;
+use local_providerapi\local\course\course;
 use local_providerapi\local\institution\institution;
 
 defined('MOODLE_INTERNAL') || die();
@@ -65,6 +66,9 @@ function institutiondeleted(institution_deleted $event) {
     if (!empty($cohortid)) {
         cohortHelper::delete($cohortid);
     }
+
+    // Shared Course Deleted.
+    course::deletebyinstitutionid($event->objectid);
 
 }
 

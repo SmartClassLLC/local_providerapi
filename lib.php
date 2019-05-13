@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 defined('MOODLE_INTERNAL') || die();
-use local_providerapi\local\institution\institution;
+
 /**
  * navigation
  *
@@ -29,7 +29,7 @@ function local_providerapi_extend_navigation(global_navigation $nav) {
         $systemcontext = context_system::instance();
         $url = new moodle_url($CFG->wwwroot . '/local/providerapi/modules/institution/index.php');
         $root = $nav->add(get_string('pluginname', 'local_providerapi'), $url, navigation_node::TYPE_SITE_ADMIN, null,
-         'providerroot', new pix_icon('database', '', 'local_providerapi'));
+                'providerroot', new pix_icon('database', '', 'local_providerapi'));
         if (has_capability('local/providerapi:viewrootnav', $systemcontext)) {
             $root->showinflatnavigation = true;
         }
@@ -37,10 +37,16 @@ function local_providerapi_extend_navigation(global_navigation $nav) {
         // Institutions.
 
         $institutions = $root->add(get_string('institutions', 'local_providerapi'),
-        new moodle_url('/local/providerapi/modules/institution/index.php'),
-        navigation_node::TYPE_SETTING, null, 'institutionmodule', null);
+                new moodle_url('/local/providerapi/modules/institution/index.php'),
+                navigation_node::TYPE_SETTING, null, 'institutionmodule', null);
         $institutions->nodetype = navigation_node::NODETYPE_BRANCH;
-        institution::generate_nodes($institutions);
+        // institution::generate_nodes($institutions);
+        if (has_capability('local/providerapi:sharedcourse', $systemcontext)) {
+            $courses = $root->add(get_string('courses', 'local_providerapi'),
+                    new moodle_url('/local/providerapi/modules/course/index.php'), navigation_node::TYPE_SETTING, null,
+                    'coursemodule');
+            $courses->nodetype = navigation_node::NODETYPE_BRANCH;
+        }
 
     }
 

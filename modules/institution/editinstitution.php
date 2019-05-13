@@ -64,8 +64,10 @@ if ($delid and has_capability('local/providerapi:deleteinstitution', $context) a
     redirect($returnurl);
 }
 
-
-
+// Cap edit?
+if ($id != -1) {
+    require_capability('local/providerapi:editinstitution', $context);
+}
 
 // Nav.
 $node = $PAGE->navigation->find('institutionmodule', navigation_node::TYPE_SETTING);

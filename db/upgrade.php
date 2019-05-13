@@ -105,5 +105,33 @@ function xmldb_local_providerapi_upgrade($oldversion) {
         // Providerapi savepoint reached.
         upgrade_plugin_savepoint(true, 2019050210, 'local', 'providerapi');
     }
+
+    if ($oldversion < 2019050211) {
+
+        // Define table local_providerapi_courses to be created.
+        $table = new xmldb_table('local_providerapi_courses');
+
+        // Adding fields to table local_providerapi_courses.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('institutionid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('createrid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+
+        // Adding keys to table local_providerapi_courses.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('institutionid', XMLDB_KEY_FOREIGN, ['institutionid'], 'local_providerapi_companies', ['id']);
+        $table->add_key('courseid', XMLDB_KEY_FOREIGN, ['courseid'], 'course', ['id']);
+        $table->add_key('createrid', XMLDB_KEY_FOREIGN, ['createrid'], 'user', ['id']);
+
+        // Conditionally launch create table for local_providerapi_courses.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Providerapi savepoint reached.
+        upgrade_plugin_savepoint(true, 2019050211, 'local', 'providerapi');
+    }
+
     return true;
 }

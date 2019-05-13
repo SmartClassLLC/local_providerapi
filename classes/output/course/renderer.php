@@ -15,27 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin internal classes, functions and constants are defined here.
+ * Renderer
  *
- * @package     local_providerapi
- * @copyright   2019 Çağlar MERSİNLİ <ceremy@gmail.com>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * long_description
+ *
+ * @package    local_providerapi
+ * @copyright  2019 çağlar MERSİNLİ <ceremy@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use core\event\course_deleted;
-use local_providerapi\local\course\course;
+namespace local_providerapi\output\course;
 
 defined('MOODLE_INTERNAL') || die();
 
-function coursedeleted(course_deleted $event) {
-    global $DB;
-    // Exist Sahared Courses?
-    $sharedcourses = $DB->get_records(course::$dbname, array('courseid' => $event->objectid));
-    if ($sharedcourses) {
-        foreach ($sharedcourses as $sharedcourse) {
-            course::delete($sharedcourse->id);
-        }
-    }
+/**
+ * Class renderer
+ *
+ * @package local_providerapi\output\institution
+ */
+class renderer extends \local_providerapi\output\renderer {
+
 }
-
-

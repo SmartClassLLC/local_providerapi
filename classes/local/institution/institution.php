@@ -44,7 +44,9 @@ defined('MOODLE_INTERNAL') || die();
  * @property-read int createrid
  * @property-read int modifiedby
  * @property-read int cohortid
+ * @property-read int descriptionformat
  * @property-read  string name
+ * @property-read  string description
  * @property-read  string shortname
  * @property-read  string secretkey
  *
@@ -63,13 +65,13 @@ class institution extends modelbase {
     /**
      * @var array
      */
-    protected static $pages = array(/* 'main' => array(
-                    'url' => '/local/providerapi/modules/institution/index.php',
-                    'text' => 'institutions',
-                    'icon' => '',
-            ),*/
-
-    );
+    /* protected static $pages = array(
+             'course' => array(
+                     'url' => '/local/providerapi/modules/institution/courses.php',
+                     'text' => 'courses',
+                     'icon' => '',
+             ),
+     );*/
 
     /**
      * @param int|\stdClass $id
@@ -84,6 +86,16 @@ class institution extends modelbase {
             $data = $id;
         }
         return new self($data);
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     * @throws \dml_exception
+     */
+    public static function exist(int $id): bool {
+        global $DB;
+        return $DB->record_exists(self::$dbname, array('id' => $id));
     }
 
     /**
@@ -137,6 +149,22 @@ class institution extends modelbase {
         $data->name = format_string($this->name);
         $data->idnumber = uniqid($this->shortname . '_');
         return cohortHelper::update($data);
+    }
+
+    /**
+     * @return array
+     * @throws \dml_exception
+     */
+    public static function get_menu() {
+        global $DB;
+        $menu = array();
+        $institutions = $DB->get_records('local_providerapi_companies');
+        if ($institutions) {
+            foreach ($institutions as $institution) {
+                $menu[$institution->id] = $institution->name . ' (' . $institution->shortname . ')';
+            }
+        }
+        return $menu;
     }
 
     /**
