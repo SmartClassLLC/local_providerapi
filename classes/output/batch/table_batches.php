@@ -35,6 +35,7 @@ use table_sql;
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->libdir . '/tablelib.php');
+require_once($CFG->dirroot . '/local/providerapi/locallib.php');
 
 /**
  * Class table_institutions
@@ -87,6 +88,9 @@ class table_batches extends table_sql implements \renderable {
         $headers[] = 'Creater';
         $columns[] = 'createrid';
 
+        $headers[] = get_string('source', 'local_providerapi');
+        $columns[] = 'source';
+
         if (!$this->is_downloading()) {
             $headers[] = get_string('manage', 'local_providerapi');
             $columns[] = 'manage';
@@ -114,7 +118,7 @@ class table_batches extends table_sql implements \renderable {
      */
     public function wrap_html_start() {
         $o = '';
-        $o .= \html_writer::tag('h3', get_string('istitutionsharedcourse', 'local_providerapi', $this->institutionname),
+        $o .= \html_writer::tag('h3', get_string('istitutionbatches', 'local_providerapi', $this->institutionname),
                 ['class' => 'text-center alert alert-success']);
         $o .= \html_writer::end_tag('h3');
         echo $o;
@@ -145,13 +149,24 @@ class table_batches extends table_sql implements \renderable {
         global $OUTPUT;
 
         $buttons = array();
+        if ($row->source === PROVIDERAPI_SOURCEWEB) {
+            if (has_capability('local/providerapi:editbatch', $this->context)) {
+                $urlparams = array('id' => $row->id, 'institutionid' => $row->institutionid,
+                        'returnurl' => $this->baseurl->out_as_local_url());
+                $editurl = new moodle_url('/local/providerapi/modules/batch/edit.php',
+                        $urlparams + array('sesskey' => sesskey()));
+                $visibleimg = $OUTPUT->pix_icon('t/edit', get_string('edit'));
+                $buttons[] = \html_writer::link($editurl, $visibleimg, array('title' => get_string('edit')));
 
-        if (has_capability('local/providerapi:deletesharedcourse', $this->context)) {
-            $deleteurl = new moodle_url('/local/providerapi/modules/course/edit.php',
-                    array('delid' => $row->id, 'returnurl' => $this->baseurl->out_as_local_url(), 'sesskey' => sesskey()));
-            $visibleimg = new pix_icon('t/delete', get_string('delete'));
-            $buttons[] = $OUTPUT->action_icon($deleteurl, $visibleimg,
-                    new confirm_action(get_string('areyousuredel', 'local_providerapi', $row->name)));
+            }
+            if (has_capability('local/providerapi:deletebatch', $this->context)) {
+                $deleteurl = new moodle_url('/local/providerapi/modules/batch/edit.php',
+                        array('delid' => $row->id, 'institutionid' => $row->institutionid,
+                                'returnurl' => $this->baseurl->out_as_local_url(), 'sesskey' => sesskey()));
+                $visibleimg = new pix_icon('t/delete', get_string('delete'));
+                $buttons[] = $OUTPUT->action_icon($deleteurl, $visibleimg,
+                        new confirm_action(get_string('areyousuredel', 'local_providerapi', $row->name)));
+            }
         }
 
         return \html_writer::div(implode(' ', $buttons), 'text-nowrap');

@@ -23,3 +23,6 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
+
+define('PROVIDERAPI_SOURCEWS', 'ws');
+define('PROVIDERAPI_SOURCEWEB', 'web');

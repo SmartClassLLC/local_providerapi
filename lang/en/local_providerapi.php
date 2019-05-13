@@ -79,6 +79,7 @@ $string['eventdeleted'] = 'The {$a->objname} with id \'{$a->objid}\' has deleted
 $string['notexistinstitution'] = 'Institution is not exist';
 $string['missingproperty'] = 'required property missing';
 $string['requiredproperty'] = 'required property name \'{$a}\' missing';
+$string['hackattempt'] = 'Unauthorized transaction';
 
 // Strings.
 $string['institutions'] = 'Institutions';
@@ -97,8 +98,11 @@ $string['somethingwrong'] = 'something went wrong';
 $string['havetoselectinstitution'] = 'You have to select institution';
 $string['assigncourse'] = 'Assign Courses';
 $string['istitutionsharedcourse'] = '<strong>{$a} \'s</strong> &nbsp; Shared Courses';
+$string['istitutionbatches'] = '<strong>{$a} \'s</strong> &nbsp; Batches';
 $string['batches'] = 'Batches';
 $string['addbatch'] = 'Add batch';
 $string['capacity'] = 'Capacity';
+$string['source'] = 'Source';
+
 
 

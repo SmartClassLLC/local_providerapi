@@ -48,6 +48,7 @@ defined('MOODLE_INTERNAL') || die();
  * @property-read int timecreated
  * @property-read int timemodified
  * @property-read string name
+ * @property-read string source
  * @package local_providerapi\local\batch
  */
 class batch extends modelbase {

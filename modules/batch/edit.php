@@ -27,7 +27,6 @@
 use core\notification;
 use local_providerapi\form\addbatch;
 use local_providerapi\local\batch\batch;
-use local_providerapi\local\institution\institution;
 
 require('../../../../config.php');
 require_once($CFG->dirroot . '/local/providerapi/locallib.php');
@@ -60,7 +59,11 @@ $PAGE->set_pagelayout('base');
 $PAGE->set_heading(get_string('batches', 'local_providerapi'));
 
 if ($delid and has_capability('local/providerapi:deletebatch', $context) and confirm_sesskey()) {
-    if (institution::get($delid)->delete()) {
+    $batch = batch::get($delid);
+    if ($batch->source === PROVIDERAPI_SOURCEWS) {
+        throw new moodle_exception('hackattempt', 'local_providerapi');
+    }
+    if (batch::get($delid)->delete()) {
         notification::success(get_string('success'));
     }
     redirect($returnurl);
@@ -69,6 +72,10 @@ if ($delid and has_capability('local/providerapi:deletebatch', $context) and con
 // Cap edit?
 if ($id != -1) {
     require_capability('local/providerapi:editbatch', $context);
+    $batch = batch::get($id);
+    if ($batch->source === PROVIDERAPI_SOURCEWS) {
+        throw new moodle_exception('hackattempt', 'local_providerapi');
+    }
 }
 
 // Nav.

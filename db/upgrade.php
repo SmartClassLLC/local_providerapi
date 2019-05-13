@@ -161,6 +161,21 @@ function xmldb_local_providerapi_upgrade($oldversion) {
         // Providerapi savepoint reached.
         upgrade_plugin_savepoint(true, 2019050214, 'local', 'providerapi');
     }
+    if ($oldversion < 2019050217) {
+
+        // Define field source to be added to local_providerapi_batches.
+        $table = new xmldb_table('local_providerapi_batches');
+        $field = new xmldb_field('source', XMLDB_TYPE_CHAR, '3', null, null, null, 'web', 'capacity');
+
+        // Conditionally launch add field source.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Providerapi savepoint reached.
+        upgrade_plugin_savepoint(true, 2019050217, 'local', 'providerapi');
+    }
+
 
     return true;
 }

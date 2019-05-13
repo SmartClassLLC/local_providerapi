@@ -77,9 +77,48 @@ class local_providerapi_batches_testcase extends advanced_testcase {
 
     /**
      * @throws coding_exception
+     * @throws dml_exception
+     */
+    public function test_batch_update() {
+        global $DB;
+
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $generator = $this->getDataGenerator();
+        $providergenerator = $generator->get_plugin_generator('local_providerapi');
+        $institution = $providergenerator->create_institution();
+
+        $this->assertNotEmpty($institution);
+
+        $batch1 = $providergenerator->create_batch(array(
+                'institutionid' => $institution->id,
+                'testbatch1'
+        ));
+        $data = $batch1->get_db_record();
+        $data->name = 'testbatch211';
+        $data->capacity = 33;
+
+        $result = batch::get($data)->update();
+        $updatedbatch = batch::get($data->id);
+
+        $this->assertTrue($result);
+        $this->assertSame($updatedbatch->name, $data->name);
+        $this->assertSame((int) $updatedbatch->capacity, $data->capacity);
+
+        $this->assertEquals($updatedbatch->createrid, 2);
+        $this->assertEquals($updatedbatch->modifiedby, 2);
+        $this->assertNotEmpty($updatedbatch->timecreated);
+        $this->assertNotEmpty($updatedbatch->timemodified);
+
+        $updatedcohort = $DB->get_record('cohort', array('id' => $data->cohortid));
+        $this->assertSame($updatedbatch->formattedcohortname(), $updatedcohort->name);
+
+    }
+
+    /**
+     * @throws coding_exception
      */
     public function test_batch_eventcreated() {
-        global $DB;
         $this->resetAfterTest();
         $this->setAdminUser();
         $generator = $this->getDataGenerator();
@@ -97,6 +136,35 @@ class local_providerapi_batches_testcase extends advanced_testcase {
         $this->assertCount(1, $events);
         $event = $events[0];
         $this->assertInstanceOf('\local_providerapi\event\batch_created', $event);
+        $this->assertEquals(batch::$dbname, $event->objecttable);
+        $this->assertEquals($batch1->id, $event->objectid);
+
+    }
+
+    /**
+     * @throws coding_exception
+     * @throws dml_exception
+     */
+    public function test_batch_eventupdated() {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $generator = $this->getDataGenerator();
+        $providergenerator = $generator->get_plugin_generator('local_providerapi');
+        $institution = $providergenerator->create_institution();
+        $batch1 = $providergenerator->create_batch(array(
+                'institutionid' => $institution->id
+        ));
+        $data = $batch1->get_db_record();
+        // Catch Events.
+        $sink = $this->redirectEvents();
+        batch::get($data)->update();
+        $events = $sink->get_events();
+        $sink->close();
+        // Validate the event.
+        $this->assertCount(1, $events);
+        $event = $events[0];
+        $this->assertInstanceOf('\local_providerapi\event\batch_updated', $event);
         $this->assertEquals(batch::$dbname, $event->objecttable);
         $this->assertEquals($batch1->id, $event->objectid);
 
