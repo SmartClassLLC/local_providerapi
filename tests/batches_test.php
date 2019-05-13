@@ -26,6 +26,7 @@
 use local_providerapi\local\batch\batch;
 
 defined('MOODLE_INTERNAL') || die();
+require_once($CFG->dirroot . '/local/providerapi/locallib.php');
 
 /**
  * The client test class.
@@ -57,7 +58,8 @@ class local_providerapi_batches_testcase extends advanced_testcase {
         ));
         $batch2 = $providergenerator->create_batch(array(
                 'institutionid' => $institution->id,
-                'name' => 'testbatch2'
+                'name' => 'testbatch2',
+                'source' => PROVIDERAPI_SOURCEWS
         ));
         $this->assertTrue(batch::validate_exist($batch1->id));
         $this->assertTrue(batch::validate_exist($batch2->id));
@@ -65,6 +67,12 @@ class local_providerapi_batches_testcase extends advanced_testcase {
         $this->assertEquals($batch2->createrid, 2);
         $this->assertNotEmpty($batch1->timecreated);
         $this->assertNotEmpty($batch2->timecreated);
+        $this->assertNotEmpty($batch1->cohortid);
+        $this->assertNotEmpty($batch2->cohortid);
+        $this->assertNotEmpty($batch1->source);
+        $this->assertNotEmpty($batch2->source);
+        $this->assertSame($batch1->source, PROVIDERAPI_SOURCEWEB);
+        $this->assertSame($batch2->source, PROVIDERAPI_SOURCEWS);
 
         $cohort1 = $DB->get_record('cohort', array('id' => $batch1->cohortid));
         $cohort2 = $DB->get_record('cohort', array('id' => $batch2->cohortid));
