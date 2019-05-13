@@ -46,6 +46,10 @@ $string['local/providerapi:editinstitution'] = 'Edit Institution';
 $string['local/providerapi:deleteinstitution'] = 'Delete Institution';
 $string['local/providerapi:sharedcourse'] = 'Share Course';
 $string['local/providerapi:deletesharedcourse'] = 'Delete Shared Course';
+$string['local/providerapi:viewbatch'] = 'View Classroom of Institution';
+$string['local/providerapi:addbatch'] = 'Add batch to Institution';
+$string['local/providerapi:editbatch'] = 'Edit batch of Institution';
+$string['local/providerapi:deletebatch'] = 'Delete batch of Institution';
 
 // Helpbuttons.
 $string['fullname'] = 'Institution fullname explain';
@@ -55,6 +59,8 @@ $string['secretkeyhelp_help'] = 'secretkey for webservice auth.Min 6 , max 10 ch
 
 $string['shortname'] = 'Institution shortname explain';
 $string['shortname_help'] = 'Institution shortname must contain 3 characters';
+$string['helpcapacity'] = 'Help';
+$string['helpcapacity_help'] = 'Capacity of batch must contain 3 digit';
 
 // Events.
 $string['createdinstitution'] = 'Institution Created';
@@ -62,6 +68,9 @@ $string['updatedinstitution'] = 'Institution Updated';
 $string['deletedinstitution'] = 'Institution Deleted';
 $string['createdsharedcourse'] = 'Course Shared';
 $string['deletedsharedcourse'] = 'Shared course Deleted';
+$string['createdbatch'] = 'Batch Created';
+$string['updatedbatch'] = 'Batch updated';
+$string['deletebatch'] = 'Batch Deleted';
 $string['eventcreated'] = 'The {$a->objname} with id \'{$a->objid}\' has created by {$a->by}';
 $string['eventupdated'] = 'The {$a->objname} with id \'{$a->objid}\' has updated by {$a->by}';
 $string['eventdeleted'] = 'The {$a->objname} with id \'{$a->objid}\' has deleted by {$a->by}';
@@ -87,4 +96,8 @@ $string['somethingwrong'] = 'something went wrong';
 $string['havetoselectinstitution'] = 'You have to select institution';
 $string['assigncourse'] = 'Assign Courses';
 $string['istitutionsharedcourse'] = '<strong>{$a} \'s</strong> &nbsp; Shared Courses';
+$string['batches'] = 'Batches';
+$string['addbatch'] = 'Add batch';
+$string['capacity'] = 'Capacity';
+
 

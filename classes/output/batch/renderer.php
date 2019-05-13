@@ -15,17 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * Renderer
  *
- * @package     local_providerapi
- * @copyright   2019 Çağlar MERSİNLİ <ceremy@gmail.com>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * long_description
+ *
+ * @package    local_providerapi
+ * @copyright  2019 çağlar MERSİNLİ <ceremy@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace local_providerapi\output\batch;
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'local_providerapi';
-$plugin->release = '0.1.0';
-$plugin->version = 2019050216;
-$plugin->requires = 2018120300;
-$plugin->maturity = MATURITY_ALPHA;
+/**
+ * Class renderer
+ *
+ * @package local_providerapi\output\institution
+ */
+class renderer extends \local_providerapi\output\renderer {
+
+}

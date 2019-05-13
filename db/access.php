@@ -80,6 +80,30 @@ $capabilities = [
                 'archetypes' => [
                 ],
         ],
+        'local/providerapi:viewbatch' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                ],
+        ],
+        'local/providerapi:addbatch' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                ],
+        ],
+        'local/providerapi:editbatch' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                ],
+        ],
+        'local/providerapi:deletebatch' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                ],
+        ],
         'local/providerapi:deletesharedcourse' => [
                 'captype' => 'write',
                 'contextlevel' => 10,

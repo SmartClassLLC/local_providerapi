@@ -49,5 +49,20 @@ $observers = array(
                 'eventname' => '\local_providerapi\event\institution_deleted',
                 'callback' => 'institutiondeleted',
                 'includefile' => '/local/providerapi/classes/observer/institution.php',
+        ),
+        array(
+                'eventname' => '\local_providerapi\event\batch_created',
+                'callback' => 'batchcreated',
+                'includefile' => '/local/providerapi/classes/observer/batch.php',
+        ),
+        array(
+                'eventname' => '\local_providerapi\event\batch_updated',
+                'callback' => 'batchupdated',
+                'includefile' => '/local/providerapi/classes/observer/batch.php',
+        ),
+        array(
+                'eventname' => '\local_providerapi\event\batch_deleted',
+                'callback' => 'batchdeleted',
+                'includefile' => '/local/providerapi/classes/observer/batch.php',
         )
 );
