@@ -24,6 +24,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_providerapi\local\batch\batch;
 use local_providerapi\local\institution\institution;
 
 defined('MOODLE_INTERNAL') || die();
@@ -59,6 +60,28 @@ class local_providerapi_generator extends component_generator_base {
         $data = (object) $record;
         $id = institution::get($data)->create();
         return institution::get($id);
+    }
+
+    /**
+     * @param array $record
+     * @return batch
+     * @throws dml_exception
+     */
+    public function create_batch($record = array()) {
+
+        if (!array_key_exists('institutionid', $record)) {
+            throw new \moodle_exception('requiredproperty', 'local_providerapi', null, 'institutionid');
+        }
+        if (!array_key_exists('name', $record)) {
+            $record['name'] = 'testbatch';
+        }
+        if (!array_key_exists('capacity', $record)) {
+            $record['capacity'] = 23;
+        }
+
+        $data = (object) $record;
+        $id = batch::get($data)->create();
+        return batch::get($id);
     }
 
     /**

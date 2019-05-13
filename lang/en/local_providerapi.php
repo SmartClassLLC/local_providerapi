@@ -78,6 +78,7 @@ $string['eventdeleted'] = 'The {$a->objname} with id \'{$a->objid}\' has deleted
 // Exceptions.
 $string['notexistinstitution'] = 'Institution is not exist';
 $string['missingproperty'] = 'required property missing';
+$string['requiredproperty'] = 'required property name \'{$a}\' missing';
 
 // Strings.
 $string['institutions'] = 'Institutions';

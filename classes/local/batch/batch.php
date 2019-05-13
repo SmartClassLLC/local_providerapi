@@ -73,14 +73,28 @@ class batch extends modelbase {
     }
 
     /**
+     * @param int $institutionid
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public static function deletebyinstitutionid(int $institutionid) {
+        global $DB;
+        $batches = $DB->get_fieldset_select(self::$dbname, 'id', 'institutionid = ?', array($institutionid));
+        if ($batches) {
+            foreach ($batches as $id) {
+                self::get($id)->delete();
+            }
+        }
+    }
+
+    /**
      * @return int
      * @throws \coding_exception
      * @throws \dml_exception
      */
     public function createcohort() {
-        $institution = institution::get($this->institutionid);
         $data = new stdClass();
-        $data->name = format_string($institution->name . ' (' . $this->name.')');
+        $data->name = $this->formattedcohortname();
         $data->idnumber = uniqid($data->name . '_');
         return cohortHelper::create($data);
     }
@@ -90,12 +104,21 @@ class batch extends modelbase {
      * @throws \dml_exception
      */
     public function updatecohort() {
-        $institution = institution::get($this->institutionid);
         $data = new stdClass();
         $data->id = $this->cohortid;
-        $data->name = format_string($institution->name . ' (' . $this->name.')');
+        $data->name = $this->formattedcohortname();
         $data->idnumber = uniqid($data->name . '_');
         return cohortHelper::update($data);
+    }
+
+    /**
+     * @return string
+     * @throws \dml_exception
+     */
+    public function formattedcohortname() {
+        $institution = institution::get($this->institutionid);
+        $string = $institution->name . ' (' . $this->name.')';
+        return format_string($string);
     }
 
     /**

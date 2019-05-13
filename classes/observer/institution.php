@@ -25,6 +25,7 @@
 use local_providerapi\event\institution_created;
 use local_providerapi\event\institution_deleted;
 use local_providerapi\event\institution_updated;
+use local_providerapi\local\batch\batch;
 use local_providerapi\local\cohortHelper;
 use local_providerapi\local\course\course;
 use local_providerapi\local\institution\institution;
@@ -69,6 +70,9 @@ function institutiondeleted(institution_deleted $event) {
 
     // Shared Course Deleted.
     course::deletebyinstitutionid($event->objectid);
+
+    // Delete batches.
+    batch::deletebyinstitutionid($event->objectid);
 
 }
 
