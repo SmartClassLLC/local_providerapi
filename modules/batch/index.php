@@ -65,15 +65,18 @@ if (!$table->is_downloading()) {
     $output->institutionmenu();
 
     // Check Institution.
-    $output->checkinstitution();
+    if (!$institutionid = local_providerapi_getinstitution()) {
+        $output->notifyselectinstitution();
+        die();
+    }
 
     $output->addbutton(new moodle_url('/local/providerapi/modules/batch/edit.php',
-            array('id' => -1, 'institutionid' => $SESSION->institution)),
+            array('id' => -1, 'institutionid' => $institutionid)),
             get_string('addbatch', 'local_providerapi'));
 
 }
 $institution = institution::get($SESSION->institution);
-list($select, $from, $where, $params) = batch::get_sql($SESSION->institution);
+list($select, $from, $where, $params) = batch::get_sql($institutionid);
 $table->set_sql($select, $from, $where, $params);
 $table->set_istitutionname($institution->name);
 echo $output->render_table($table);

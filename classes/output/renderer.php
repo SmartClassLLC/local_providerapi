@@ -91,13 +91,10 @@ class renderer extends \plugin_renderer_base {
     /**
      * @throws \coding_exception
      */
-    public function checkinstitution() {
-        global $OUTPUT, $SESSION;
-        if (!isset($SESSION->institution) || empty($SESSION->institution)) {
-            echo $OUTPUT->notification(get_string('havetoselectinstitution', 'local_providerapi'), 'error');
-            echo $OUTPUT->footer();
-            die();
-        }
+    public function notifyselectinstitution() {
+        global $OUTPUT;
+        echo $OUTPUT->notification(get_string('havetoselectinstitution', 'local_providerapi'), 'error');
+        echo $OUTPUT->footer();
     }
 
 }

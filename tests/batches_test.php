@@ -155,7 +155,6 @@ class local_providerapi_batches_testcase extends advanced_testcase {
      * @throws dml_exception
      */
     public function test_batch_eventupdated() {
-        global $DB;
         $this->resetAfterTest();
         $this->setAdminUser();
         $generator = $this->getDataGenerator();

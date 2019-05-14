@@ -176,6 +176,5 @@ function xmldb_local_providerapi_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2019050217, 'local', 'providerapi');
     }
 
-
     return true;
 }

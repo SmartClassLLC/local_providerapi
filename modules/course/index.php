@@ -64,14 +64,17 @@ if (!$table->is_downloading()) {
     $output->institutionmenu();
 
     // Check Institution.
-    $output->checkinstitution();
+    if (!$institutionid = local_providerapi_getinstitution()) {
+        $output->notifyselectinstitution();
+        die();
+    }
 
     $output->addbutton(new moodle_url('/local/providerapi/modules/course/edit.php', array('id' => -1)),
             get_string('assigncourse', 'local_providerapi'));
 
 }
-$institution = \local_providerapi\local\institution\institution::get($SESSION->institution);
-list($select, $from, $where, $params) = course::get_sql($SESSION->institution);
+$institution = \local_providerapi\local\institution\institution::get($institutionid);
+list($select, $from, $where, $params) = course::get_sql($institutionid);
 $table->set_sql($select, $from, $where, $params);
 $table->set_istitutionname($institution->name);
 echo $output->render_table($table);

@@ -24,5 +24,24 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ *
+ */
 define('PROVIDERAPI_SOURCEWS', 'ws');
+/**
+ *
+ */
 define('PROVIDERAPI_SOURCEWEB', 'web');
+
+/**
+ * Check selected institution
+ *
+ * @return bool|int
+ */
+function local_providerapi_getinstitution() {
+    global $SESSION;
+    if (!isset($SESSION->institution) || empty($SESSION->institution)) {
+        return false;
+    }
+    return $SESSION->institution;
+}
