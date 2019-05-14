@@ -69,7 +69,7 @@ $nodecourse->make_active();
 
 $output = $PAGE->get_renderer('local_providerapi', 'batch');
 
-$table = new \local_providerapi\output\batch\table_batches($baseurl, 100);
+$table = new \local_providerapi\output\batch\table_btcourses($baseurl,100);
 
 if (!$table->is_downloading()) {
     echo $output->header();
@@ -86,9 +86,9 @@ if (!$table->is_downloading()) {
     }
 }
 
-list($select, $from, $where, $params) = batch::get_sql($institutionid);
+list($select, $from, $where, $params) = $batch->get_btcourses_sql();
 $table->set_sql($select, $from, $where, $params);
-$table->set_istitutionname($institution->name);
+$table->set_batch($batch);
 echo $output->render_table($table);
 
 $PAGE->requires->js_amd_inline("

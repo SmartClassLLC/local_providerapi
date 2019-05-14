@@ -105,6 +105,7 @@ $string['havetoselectinstitution'] = 'You have to select institution';
 $string['assigncourse'] = 'Share Course';
 $string['istitutionsharedcourse'] = '<strong>{$a} \'s</strong> &nbsp; Shared Courses';
 $string['istitutionbatches'] = '<strong>{$a} \'s</strong> &nbsp; Batches';
+$string['batchcourses'] = '<strong>{$a} \'s</strong> &nbsp; Courses';
 $string['batches'] = 'Batches';
 $string['addbatch'] = 'Add batch';
 $string['capacity'] = 'Capacity';

@@ -205,6 +205,37 @@ class batch extends modelbase {
     }
 
     /**
+     * @param string $additionalwhere
+     * @param array $additionalparams
+     * @return array
+     */
+    public function get_btcourses_sql($additionalwhere = '', $additionalparams = array()): array {
+
+        $wheres = array();
+        $params = array();
+        $select = "bt.*,c.fullname AS name";
+        $joins = array('{local_providerapi_btcourses} bt');
+        $joins[] = "JOIN {local_providerapi_courses} sc ON bt.sharedcourseid = sc.id";
+        $joins[] = "JOIN {course} c ON sc.courseid = c.id";
+        $wheres[] = 'bt.batchid = :batchid';
+        $params['batchid'] = $this->id;
+
+        if (!empty($additionalwhere)) {
+            $wheres[] = $additionalwhere;
+            $params = array_merge($params, $additionalparams);
+        }
+
+        $from = implode("\n", $joins);
+        if ($wheres) {
+            $wheres = implode(' AND ', $wheres);
+        } else {
+            $wheres = '';
+        }
+
+        return array($select, $from, $wheres, $params);
+    }
+
+    /**
      * yeni kayıt için event olayı yazılacak
      *
      * @param $id
