@@ -26,6 +26,7 @@
 
 use local_providerapi\local\batch\batch;
 use local_providerapi\local\institution\institution;
+use local_providerapi\output\batch\table_btcourses;
 
 require('../../../../config.php');
 require_once($CFG->dirroot . '/local/providerapi/locallib.php');
@@ -69,7 +70,7 @@ $nodecourse->make_active();
 
 $output = $PAGE->get_renderer('local_providerapi', 'batch');
 
-$table = new \local_providerapi\output\batch\table_btcourses($baseurl,100);
+$table = new table_btcourses($baseurl, 100);
 
 if (!$table->is_downloading()) {
     echo $output->header();
