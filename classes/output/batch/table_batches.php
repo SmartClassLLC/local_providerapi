@@ -149,6 +149,15 @@ class table_batches extends table_sql implements \renderable {
         global $OUTPUT;
 
         $buttons = array();
+        if (has_capability('local/providerapi:viewassigncourse', $this->context)) {
+            $urlparams = array('batchid' => $row->id, 'institutionid' => $row->institutionid,
+                    'returnurl' => $this->baseurl->out_as_local_url());
+            $assignurl = new moodle_url('/local/providerapi/modules/batch/assigncourse.php', $urlparams);
+            $visibleimg = $OUTPUT->pix_icon('i/course', get_string('assigncourse', 'local_providerapi'));
+            $buttons[] =
+                    \html_writer::link($assignurl, $visibleimg, array('title' => get_string('assigncourse', 'local_providerapi')));
+
+        }
         if ($row->source === PROVIDERAPI_SOURCEWEB) {
             if (has_capability('local/providerapi:editbatch', $this->context)) {
                 $urlparams = array('id' => $row->id, 'institutionid' => $row->institutionid,

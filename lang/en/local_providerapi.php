@@ -50,6 +50,9 @@ $string['local/providerapi:viewbatch'] = 'View Classroom of Institution';
 $string['local/providerapi:addbatch'] = 'Add batch to Institution';
 $string['local/providerapi:editbatch'] = 'Edit batch of Institution';
 $string['local/providerapi:deletebatch'] = 'Delete batch of Institution';
+$string['local/providerapi:assigncourse'] = 'Assign shared course to batch';
+$string['local/providerapi:deleteassigncourse'] = 'Delete assign shared course';
+$string['local/providerapi:viewassigncourse'] = 'View assign shared course';
 
 // Privacy.
 $string['privacy:metadata'] = 'The Providerapi plugin does not store any personal data.';
@@ -106,6 +109,8 @@ $string['batches'] = 'Batches';
 $string['addbatch'] = 'Add batch';
 $string['capacity'] = 'Capacity';
 $string['source'] = 'Source';
+$string['assigncourse'] = 'Assign Course';
+$string['assigncoursetobatch'] = '{$a} \'s Courses';
 
 
 

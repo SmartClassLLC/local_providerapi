@@ -32,6 +32,7 @@ use local_providerapi\event\batch_updated;
 use local_providerapi\local\cohortHelper;
 use local_providerapi\local\institution\institution;
 use local_providerapi\local\modelbase;
+use moodle_exception;
 use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
@@ -57,6 +58,11 @@ class batch extends modelbase {
      * @var string
      */
     public static $dbname = "local_providerapi_batches";
+
+    /**
+     * @var string
+     */
+    public $btcoursedbname = "local_providerapi_btcourses";
 
     /**
      * @param int|stdClass $id
@@ -89,6 +95,52 @@ class batch extends modelbase {
     }
 
     /**
+     * @return array
+     * @throws \dml_exception
+     */
+    public function get_btcourseids() {
+        global $DB;
+        return $DB->get_fieldset_select($this->btcoursedbname, 'sharedcourseid', 'batchid = ?', array($this->id));
+    }
+
+    /**
+     * @param array $sharedcourseids
+     * @return bool
+     * @throws \dml_exception
+     * @throws \dml_transaction_exception
+     * @throws moodle_exception
+     */
+    public function assigncourse(array $sharedcourseids) {
+        global $DB;
+        if (empty($sharedcourseids)) {
+            throw new moodle_exception('requiredproperty', 'local_providerapi', 'sharedcourseids');
+        }
+        $trans = $DB->start_delegated_transaction();
+        $record = $this->get_default_btcourse_properties();
+        foreach ($sharedcourseids as $sharedcourseid) {
+            $record->sharedcourseid = $sharedcourseid;
+            $DB->insert_record($this->btcoursedbname, $record);
+        }
+        $trans->allow_commit();
+        return true;
+    }
+
+    /**
+     * @return stdClass
+     */
+    public function get_default_btcourse_properties() {
+        global $USER;
+        $now = time();
+        $data = new stdClass();
+        $data->batchid = $this->id;
+        $data->createrid = $USER->id;
+        $data->modifiedby = $USER->id;
+        $data->timecreated = $now;
+        $data->timemodified = $now;
+        return $data;
+    }
+
+    /**
      * @return int
      * @throws \coding_exception
      * @throws \dml_exception
@@ -118,7 +170,7 @@ class batch extends modelbase {
      */
     public function formattedcohortname() {
         $institution = institution::get($this->institutionid);
-        $string = $institution->name . ' (' . $this->name.')';
+        $string = $institution->name . ' (' . $this->name . ')';
         return format_string($string);
     }
 

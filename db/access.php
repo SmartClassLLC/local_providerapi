@@ -78,36 +78,63 @@ $capabilities = [
                 'captype' => 'write',
                 'contextlevel' => 10,
                 'archetypes' => [
+                        'manager' => CAP_ALLOW
+                ],
+        ],
+        'local/providerapi:assigncourse' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                        'manager' => CAP_ALLOW
+                ],
+        ],
+        'local/providerapi:viewassigncourse' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                        'manager' => CAP_ALLOW
+                ],
+        ],
+        'local/providerapi:deleteassigncourse' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                        'manager' => CAP_ALLOW
                 ],
         ],
         'local/providerapi:viewbatch' => [
                 'captype' => 'write',
                 'contextlevel' => 10,
                 'archetypes' => [
+                        'manager' => CAP_ALLOW
                 ],
         ],
         'local/providerapi:addbatch' => [
                 'captype' => 'write',
                 'contextlevel' => 10,
                 'archetypes' => [
+                        'manager' => CAP_ALLOW
                 ],
         ],
         'local/providerapi:editbatch' => [
                 'captype' => 'write',
                 'contextlevel' => 10,
                 'archetypes' => [
+                        'manager' => CAP_ALLOW
                 ],
         ],
         'local/providerapi:deletebatch' => [
                 'captype' => 'write',
                 'contextlevel' => 10,
                 'archetypes' => [
+                        'manager' => CAP_ALLOW
                 ],
         ],
         'local/providerapi:deletesharedcourse' => [
                 'captype' => 'write',
                 'contextlevel' => 10,
                 'archetypes' => [
+                        'manager' => CAP_ALLOW
                 ],
         ],
         'local/providerapi:get_site_info' => [
