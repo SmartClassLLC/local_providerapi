@@ -104,7 +104,6 @@ $PAGE->requires->js_amd_inline("
        });
        });
     });
-
 ");
 
 if (!$table->is_downloading()) {
