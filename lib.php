@@ -42,7 +42,6 @@ function local_providerapi_extend_navigation(global_navigation $nav) {
                 new moodle_url('/local/providerapi/modules/institution/index.php'),
                 navigation_node::TYPE_SETTING, null, 'institutionmodule', null);
         $institutions->nodetype = navigation_node::NODETYPE_BRANCH;
-        // institution::generate_nodes($institutions);
         if (has_capability('local/providerapi:viewbatch', $systemcontext)) {
             $batches = $root->add(get_string('batches', 'local_providerapi'),
                     new moodle_url('/local/providerapi/modules/batch/index.php'), navigation_node::TYPE_SETTING, null,
