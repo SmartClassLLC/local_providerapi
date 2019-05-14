@@ -51,6 +51,9 @@ $string['local/providerapi:addbatch'] = 'Add batch to Institution';
 $string['local/providerapi:editbatch'] = 'Edit batch of Institution';
 $string['local/providerapi:deletebatch'] = 'Delete batch of Institution';
 
+// Privacy.
+$string['privacy:metadata'] = 'The Providerapi plugin does not store any personal data.';
+
 // Helpbuttons.
 $string['fullname'] = 'Institution fullname explain';
 $string['fullname_help'] = 'Institution fullname';
@@ -96,7 +99,7 @@ $string['selectinstitution'] = 'Select Institution:';
 $string['successswitchinstitution'] = 'Institution changed successfully';
 $string['somethingwrong'] = 'something went wrong';
 $string['havetoselectinstitution'] = 'You have to select institution';
-$string['assigncourse'] = 'Assign Courses';
+$string['assigncourse'] = 'Share Course';
 $string['istitutionsharedcourse'] = '<strong>{$a} \'s</strong> &nbsp; Shared Courses';
 $string['istitutionbatches'] = '<strong>{$a} \'s</strong> &nbsp; Batches';
 $string['batches'] = 'Batches';
