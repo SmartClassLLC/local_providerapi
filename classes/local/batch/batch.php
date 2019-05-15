@@ -96,15 +96,6 @@ class batch extends modelbase {
     }
 
     /**
-     * @return array
-     * @throws \dml_exception
-     */
-    public function get_btcourseids() {
-        global $DB;
-        return $DB->get_fieldset_select($this->btcoursedbname, 'sharedcourseid', 'batchid = ?', array($this->id));
-    }
-
-    /**
      * @param array $sharedcourseids
      * @return bool
      * @throws \dml_exception
@@ -142,6 +133,24 @@ class batch extends modelbase {
     }
 
     /**
+     * @return array
+     * @throws \dml_exception
+     */
+    public function get_btsharecourseids() {
+        global $DB;
+        return $DB->get_fieldset_select($this->btcoursedbname, 'sharedcourseid', 'batchid = ?', array($this->id));
+    }
+
+    /**
+     * @return array
+     * @throws \dml_exception
+     */
+    public function get_btcourseids() {
+        global $DB;
+        return $DB->get_fieldset_select($this->btcoursedbname, 'id', 'batchid = ?', array($this->id));
+    }
+
+    /**
      * @param $id
      * @return mixed
      * @throws \dml_exception
@@ -161,6 +170,23 @@ class batch extends modelbase {
         $record = $this->get_btcourse_reoord($id);
         if ($DB->delete_records($this->btcoursedbname, array('id' => $record->id))) {
             btcourse_deleted::create_from_objectid($record)->trigger();
+        }
+    }
+
+    /**
+     * @param int $batchid
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public static function delete_all_btcourse(int $batchid) {
+        global $DB;
+        $allbtcourserecords = $DB->get_records('local_providerapi_btcourses', array('batchid' => $batchid));
+        if ($allbtcourserecords) {
+            foreach ($allbtcourserecords as $btcourserecord) {
+                if ($DB->delete_records('local_providerapi_btcourses', array('id' => $btcourserecord->id))) {
+                    btcourse_deleted::create_from_objectid($btcourserecord)->trigger();
+                }
+            }
         }
     }
 

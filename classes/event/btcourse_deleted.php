@@ -27,8 +27,7 @@
 namespace local_providerapi\event;
 
 use core_user;
-use local_providerapi\local\course\course;
-use moodle_url;
+use local_providerapi\local\batch\batch;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -66,13 +65,15 @@ class btcourse_deleted extends \core\event\base {
      */
     public static function create_from_objectid($record) {
         global $USER;
+        $batch = batch::get($record->batchid);
         $data = array(
                 'objectid' => $record->id,
                 'context' => \context_system::instance(),
                 'userid' => $USER->id,
                 'other' => [
                         'batchid' => $record->batchid,
-                        'sharedcourseid' => $record->sharedcourseid
+                        'sharedcourseid' => $record->sharedcourseid,
+                        'institutionid' => $batch->institutionid
                 ]
         );
 
@@ -102,14 +103,6 @@ class btcourse_deleted extends \core\event\base {
         return get_string('eventdeleted', 'local_providerapi', $a);
     }
 
-    /**
-     * @return moodle_url
-     * @throws \\moodle_exception
-     */
-    public function get_url() {
-        return new moodle_url('/local/providerapi/modules/batch/assigncourse.php');
-
-    }
 }
 
 

@@ -67,7 +67,7 @@ class table_btcourses extends table_sql implements \renderable {
         parent::__construct('table_btcourses');
         $this->define_baseurl($baseurl);
         $this->collapsible(true);
-        $this->sortable(true);
+        $this->sortable(true, 'name');
         $this->pageable(true);
         $this->is_downloadable(true);
         $this->is_downloading(optional_param('download', 0, PARAM_ALPHA),

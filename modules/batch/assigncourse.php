@@ -39,7 +39,7 @@ $context = context_system::instance();
 // Caps.
 require_capability('local/providerapi:viewassigncourse', $context);
 
-// params
+// Params.
 $batchid = required_param('batchid', PARAM_INT);
 $institutionid = required_param('institutionid', PARAM_INT);
 // Baseurl.

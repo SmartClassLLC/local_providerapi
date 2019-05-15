@@ -68,6 +68,9 @@ function batchdeleted(batch_deleted $event) {
         cohortHelper::delete($cohortid);
     }
 
+    // Delete allbtcourse.
+    batch::delete_all_btcourse($event->objectid);
+
 }
 
 
