@@ -64,5 +64,10 @@ $observers = array(
                 'eventname' => '\local_providerapi\event\batch_deleted',
                 'callback' => 'batchdeleted',
                 'includefile' => '/local/providerapi/classes/observer/batch.php',
+        ),
+        array(
+                'eventname' => '\local_providerapi\event\sharedcourse_deleted',
+                'callback' => 'sharedcoursedeleted',
+                'includefile' => '/local/providerapi/classes/observer/course.php',
         )
 );

@@ -27,6 +27,11 @@ use local_providerapi\local\course\course;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * @param course_deleted $event
+ * @throws coding_exception
+ * @throws dml_exception
+ */
 function coursedeleted(course_deleted $event) {
     global $DB;
     // Exist Sahared Courses?
@@ -34,6 +39,23 @@ function coursedeleted(course_deleted $event) {
     if ($sharedcourses) {
         foreach ($sharedcourses as $sharedcourse) {
             course::delete($sharedcourse->id);
+        }
+    }
+}
+
+/**
+ * @param \local_providerapi\event\sharedcourse_deleted $event
+ * @throws coding_exception
+ * @throws dml_exception
+ */
+function sharedcoursedeleted(\local_providerapi\event\sharedcourse_deleted $event) {
+    global $DB;
+    $sharedcourseid = $event->objectid;
+    $btcourses = $DB->get_records_select('local_providerapi_btcourses', 'sharedcourseid = ?', array($sharedcourseid));
+    if ($btcourses) {
+        foreach ($btcourses as $btcourse) {
+            $batch = \local_providerapi\local\batch\batch::get($btcourse->batchid);
+            $batch->delete_btcourse($btcourse->id);
         }
     }
 }

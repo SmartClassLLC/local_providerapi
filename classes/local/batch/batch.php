@@ -29,6 +29,7 @@ namespace local_providerapi\local\batch;
 use local_providerapi\event\batch_created;
 use local_providerapi\event\batch_deleted;
 use local_providerapi\event\batch_updated;
+use local_providerapi\event\btcourse_deleted;
 use local_providerapi\local\cohortHelper;
 use local_providerapi\local\institution\institution;
 use local_providerapi\local\modelbase;
@@ -138,6 +139,29 @@ class batch extends modelbase {
         $data->timecreated = $now;
         $data->timemodified = $now;
         return $data;
+    }
+
+    /**
+     * @param $id
+     * @return mixed
+     * @throws \dml_exception
+     */
+    public function get_btcourse_reoord($id) {
+        global $DB;
+        return $DB->get_record($this->btcoursedbname, array('id' => $id), '*', MUST_EXIST);
+    }
+
+    /**
+     * @param int $id
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function delete_btcourse(int $id) {
+        global $DB;
+        $record = $this->get_btcourse_reoord($id);
+        if ($DB->delete_records($this->btcoursedbname, array('id' => $record->id))) {
+            btcourse_deleted::create_from_objectid($record)->trigger();
+        }
     }
 
     /**

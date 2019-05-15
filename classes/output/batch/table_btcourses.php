@@ -150,7 +150,8 @@ class table_btcourses extends table_sql implements \renderable {
         if ($row->source === PROVIDERAPI_SOURCEWEB) {
             if (has_capability('local/providerapi:deleteassigncourse', $this->context)) {
                 $deleteurl = new moodle_url('/local/providerapi/modules/batch/assignedit.php',
-                        array('delid' => $row->id, 'returnurl' => $this->baseurl->out_as_local_url(), 'sesskey' => sesskey()));
+                        array('delid' => $row->id, 'batchid' => $row->batchid, 'returnurl' => $this->baseurl->out_as_local_url(),
+                                'sesskey' => sesskey()));
                 $visibleimg = new pix_icon('t/delete', get_string('delete'));
                 $buttons[] = $OUTPUT->action_icon($deleteurl, $visibleimg,
                         new confirm_action(get_string('areyousuredel', 'local_providerapi', $row->name)));

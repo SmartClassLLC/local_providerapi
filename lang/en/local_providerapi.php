@@ -74,6 +74,7 @@ $string['updatedinstitution'] = 'Institution Updated';
 $string['deletedinstitution'] = 'Institution Deleted';
 $string['createdsharedcourse'] = 'Course Shared';
 $string['deletedsharedcourse'] = 'Shared course Deleted';
+$string['deletedbtcourse'] = 'Batch \'s course Deleted';
 $string['createdbatch'] = 'Batch Created';
 $string['updatedbatch'] = 'Batch updated';
 $string['deletebatch'] = 'Batch Deleted';
