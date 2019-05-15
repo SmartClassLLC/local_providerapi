@@ -23,6 +23,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_providerapi\local\course\course;
 use local_providerapi\local\institution\institution;
 
 defined('MOODLE_INTERNAL') || die();
@@ -194,6 +195,42 @@ class local_providerapi_institution_testcase extends advanced_testcase {
         // Validate delete cohort.
         $cohort = $DB->record_exists('cohort', array('id' => $institution->cohortid));
         $this->assertFalse($cohort);
+    }
+
+    /**
+     * @throws coding_exception
+     * @throws dml_exception
+     */
+    public function test_relationship_deleteinstitution() {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $generator = $this->getDataGenerator();
+        $providergenerator = $generator->get_plugin_generator('local_providerapi');
+        $institution = $providergenerator->create_institution();
+        $course1 = $generator->create_course();
+        $providergenerator->create_sharedcourse(array(
+                'institutionid' => $institution->id,
+                'courseids' => array($course1->id)
+        ));
+        $sharedcourse1 = $DB->get_record('local_providerapi_courses',
+                array('institutionid' => $institution->id, 'courseid' => $course1->id));
+        $batch1 = $providergenerator->create_batch(array(
+                'institutionid' => $institution->id,
+                'testbach2'
+        ));
+
+        $providergenerator->assign_btcourses($batch1->id, array($sharedcourse1->id));
+        $institution->delete();
+
+        $this->assertFalse($DB->record_exists(institution::$dbname, array('id' => $institution->id)));
+        $this->assertFalse($DB->record_exists($batch1::$dbname, array('id' => $batch1->id)));
+        $this->assertFalse($DB->record_exists('cohort', array('id' => $institution->cohortid)));
+        $this->assertFalse($DB->record_exists('cohort', array('id' => $batch1->cohortid)));
+        $this->assertFalse($DB->record_exists($batch1->btcoursedbname, array('batchid' => $batch1->id)));
+        $this->assertFalse($DB->record_exists($batch1->btcoursedbname, array('sharedcourseid' => $sharedcourse1->id)));
+        $this->assertFalse($DB->record_exists(course::$dbname, array('institutionid' => $institution->id)));
+
     }
 
 }

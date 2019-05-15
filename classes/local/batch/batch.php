@@ -155,7 +155,7 @@ class batch extends modelbase {
      * @return mixed
      * @throws \dml_exception
      */
-    public function get_btcourse_reoord($id) {
+    public function get_btcourse_record($id) {
         global $DB;
         return $DB->get_record($this->btcoursedbname, array('id' => $id), '*', MUST_EXIST);
     }
@@ -167,7 +167,7 @@ class batch extends modelbase {
      */
     public function delete_btcourse(int $id) {
         global $DB;
-        $record = $this->get_btcourse_reoord($id);
+        $record = $this->get_btcourse_record($id);
         if ($DB->delete_records($this->btcoursedbname, array('id' => $record->id))) {
             btcourse_deleted::create_from_objectid($record)->trigger();
         }

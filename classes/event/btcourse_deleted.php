@@ -65,15 +65,13 @@ class btcourse_deleted extends \core\event\base {
      */
     public static function create_from_objectid($record) {
         global $USER;
-        $batch = batch::get($record->batchid);
         $data = array(
                 'objectid' => $record->id,
                 'context' => \context_system::instance(),
                 'userid' => $USER->id,
                 'other' => [
                         'batchid' => $record->batchid,
-                        'sharedcourseid' => $record->sharedcourseid,
-                        'institutionid' => $batch->institutionid
+                        'sharedcourseid' => $record->sharedcourseid
                 ]
         );
 

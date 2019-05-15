@@ -97,4 +97,24 @@ class local_providerapi_generator extends component_generator_base {
         \local_providerapi\local\course\course::create($data);
     }
 
+    /**
+     * @param int $batchid
+     * @param array $sharedcourseids
+     * @throws dml_exception
+     * @throws dml_transaction_exception
+     * @throws moodle_exception
+     */
+    public function assign_btcourses(int $batchid, array $sharedcourseids) {
+        $batch = batch::get($batchid);
+        global $DB;
+        if (empty($sharedcourseids)) {
+            throw new moodle_exception('requiredproperty', 'local_providerapi', 'sharedcourseids');
+        }
+        $record = $batch->get_default_btcourse_properties();
+        foreach ($sharedcourseids as $sharedcourseid) {
+            $record->sharedcourseid = $sharedcourseid;
+            $DB->insert_record($batch->btcoursedbname, $record);
+        }
+    }
+
 }

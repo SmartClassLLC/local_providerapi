@@ -23,6 +23,8 @@
  */
 
 use core\event\course_deleted;
+use local_providerapi\event\btcourse_deleted;
+use local_providerapi\event\sharedcourse_deleted;
 use local_providerapi\local\course\course;
 
 defined('MOODLE_INTERNAL') || die();
@@ -44,18 +46,19 @@ function coursedeleted(course_deleted $event) {
 }
 
 /**
- * @param \local_providerapi\event\sharedcourse_deleted $event
+ * @param sharedcourse_deleted $event
  * @throws coding_exception
  * @throws dml_exception
  */
-function sharedcoursedeleted(\local_providerapi\event\sharedcourse_deleted $event) {
+function sharedcoursedeleted(sharedcourse_deleted $event) {
     global $DB;
     $sharedcourseid = $event->objectid;
     $btcourses = $DB->get_records_select('local_providerapi_btcourses', 'sharedcourseid = ?', array($sharedcourseid));
     if ($btcourses) {
         foreach ($btcourses as $btcourse) {
-            $batch = \local_providerapi\local\batch\batch::get($btcourse->batchid);
-            $batch->delete_btcourse($btcourse->id);
+            if ($DB->delete_records('local_providerapi_btcourses', array('id' => $btcourse->id))) {
+                btcourse_deleted::create_from_objectid($btcourse)->trigger();
+            }
         }
     }
 }
