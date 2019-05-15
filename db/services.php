@@ -35,6 +35,14 @@ $functions = array(
         'type' => 'read',
         'capabilities' => 'local/providerapi:check_institution',
         'services' => array('providerapi')
+    ),
+        'local_providerapi_assigncourseweb' => array(
+        'classname' => 'local_providerapi\webservice\batch\external',
+        'methodname' => 'assigncourseweb',
+        'description' => 'Assign course via web',
+        'type' => 'write',
+        'capabilities' => 'local/providerapi:assigncourse',
+        'ajax' => true
     )
 
 );

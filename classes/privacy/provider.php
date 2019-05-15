@@ -15,17 +15,31 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * short_description
  *
- * @package     local_providerapi
- * @copyright   2019 Çağlar MERSİNLİ <ceremy@gmail.com>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * long_description
+ *
+ * @package    local_providerapi
+ * @copyright  2019 çağlar MERSİNLİ <ceremy@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
+namespace local_providerapi\privacy;
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'local_providerapi';
-$plugin->release = '0.1.0';
-$plugin->version = 2019050222;
-$plugin->requires = 2018120300;
-$plugin->maturity = MATURITY_ALPHA;
+/**
+ * Class provider
+ *
+ * @package local_providerapi\privacy
+ */
+class provider implements \core_privacy\local\metadata\null_provider{
+
+    /**
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return  string
+     */
+    public static function get_reason(): string {
+        return 'privacy:metadata';
+    }
+}

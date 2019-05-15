@@ -128,6 +128,17 @@ class course extends core_course_list_element {
 
     /**
      * @param int $institutionid
+     * @return array
+     * @throws \dml_exception
+     */
+    public static function get_course_menu(int $institutionid) {
+        global $DB;
+        list($select, $from, $wheres, $params) = self::get_sql($institutionid);
+        return $DB->get_records_sql_menu("SELECT sc.id,c.fullname FROM {$from} WHERE {$wheres}", $params);
+    }
+
+    /**
+     * @param int $institutionid
      * @param string $additionalwhere
      * @param array $additionalparams
      * @return array

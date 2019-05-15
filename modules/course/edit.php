@@ -25,9 +25,8 @@
  */
 
 use core\notification;
-use local_providerapi\form\assigncourse;
+use local_providerapi\form\sharedcourse;
 use local_providerapi\local\course\course;
-use local_providerapi\local\institution\institution;
 
 require('../../../../config.php');
 require_once($CFG->dirroot . '/local/providerapi/locallib.php');
@@ -94,7 +93,7 @@ if ($id == -1) {
     $data->id = -1;
 }
 
-$form = new assigncourse(new moodle_url($PAGE->url, array('returnurl' => $returnurl)), array(
+$form = new sharedcourse(new moodle_url($PAGE->url, array('returnurl' => $returnurl)), array(
         'institutionid' => $institutionid
 ));
 

@@ -132,6 +132,77 @@ function xmldb_local_providerapi_upgrade($oldversion) {
         // Providerapi savepoint reached.
         upgrade_plugin_savepoint(true, 2019050211, 'local', 'providerapi');
     }
+    if ($oldversion < 2019050214) {
+
+        // Define table local_providerapi_batches to be created.
+        $table = new xmldb_table('local_providerapi_batches');
+
+        // Adding fields to table local_providerapi_batches.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('institutionid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('cohortid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('name', XMLDB_TYPE_CHAR, '254', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('capacity', XMLDB_TYPE_INTEGER, '3', null, null, null, null);
+        $table->add_field('createrid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('modifiedby', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+
+        // Adding keys to table local_providerapi_batches.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('institutionid', XMLDB_KEY_FOREIGN, ['institutionid'], 'local_providerapi_companies', ['id']);
+        $table->add_key('cohortid', XMLDB_KEY_FOREIGN, ['cohortid'], 'cohort', ['id']);
+
+        // Conditionally launch create table for local_providerapi_batches.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Providerapi savepoint reached.
+        upgrade_plugin_savepoint(true, 2019050214, 'local', 'providerapi');
+    }
+    if ($oldversion < 2019050217) {
+
+        // Define field source to be added to local_providerapi_batches.
+        $table = new xmldb_table('local_providerapi_batches');
+        $field = new xmldb_field('source', XMLDB_TYPE_CHAR, '3', null, null, null, 'web', 'capacity');
+
+        // Conditionally launch add field source.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Providerapi savepoint reached.
+        upgrade_plugin_savepoint(true, 2019050217, 'local', 'providerapi');
+    }
+    if ($oldversion < 2019050219) {
+
+        // Define table local_providerapi_btcourses to be created.
+        $table = new xmldb_table('local_providerapi_btcourses');
+
+        // Adding fields to table local_providerapi_btcourses.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('batchid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('sharedcourseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('source', XMLDB_TYPE_CHAR, '3', null, null, null, 'web');
+        $table->add_field('createrid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('modifiedby', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+
+        // Adding keys to table local_providerapi_btcourses.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('batchid', XMLDB_KEY_FOREIGN, ['batchid'], 'local_providerapi_batches', ['id']);
+        $table->add_key('sharedcourseid', XMLDB_KEY_FOREIGN, ['sharedcourseid'], 'local_providerapi_courses', ['id']);
+
+        // Conditionally launch create table for local_providerapi_btcourses.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Providerapi savepoint reached.
+        upgrade_plugin_savepoint(true, 2019050219, 'local', 'providerapi');
+    }
 
     return true;
 }

@@ -24,9 +24,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_providerapi\local\batch\batch;
 use local_providerapi\local\course\course;
-use local_providerapi\output\course\table_batches;
-use local_providerapi\output\course\table_sharedcourses;
+use local_providerapi\local\institution\institution;
+use local_providerapi\output\batch\table_batches;
 
 require('../../../../config.php');
 require_once($CFG->dirroot . '/local/providerapi/locallib.php');
@@ -38,23 +39,23 @@ require_login();
 $context = context_system::instance();
 
 // Caps.
-require_capability('local/providerapi:sharedcourse', $context);
+require_capability('local/providerapi:viewbatch', $context);
 // Baseurl.
-$baseurl = new moodle_url('/local/providerapi/modules/course/index.php');
+$baseurl = new moodle_url('/local/providerapi/modules/batch/index.php');
 
 // Page settings.
 $PAGE->set_url($baseurl);
 $PAGE->set_context($context);
-$PAGE->set_title(get_string('courses', 'local_providerapi'));
+$PAGE->set_title(get_string('batches', 'local_providerapi'));
 $PAGE->set_pagelayout('base');
-$PAGE->set_heading(get_string('courses', 'local_providerapi'));
+$PAGE->set_heading(get_string('batches', 'local_providerapi'));
 
 // Nav.
 $node = $PAGE->navigation->find('providerroot', navigation_node::TYPE_SITE_ADMIN);
 
 $output = $PAGE->get_renderer('local_providerapi');
 
-$table = new table_sharedcourses($baseurl, 100);
+$table = new table_batches($baseurl, 100);
 
 if (!$table->is_downloading()) {
     echo $output->header();
@@ -69,12 +70,13 @@ if (!$table->is_downloading()) {
         die();
     }
 
-    $output->addbutton(new moodle_url('/local/providerapi/modules/course/edit.php', array('id' => -1)),
-            get_string('assigncourse', 'local_providerapi'));
+    $output->addbutton(new moodle_url('/local/providerapi/modules/batch/edit.php',
+            array('id' => -1, 'institutionid' => $institutionid)),
+            get_string('addbatch', 'local_providerapi'));
 
 }
-$institution = \local_providerapi\local\institution\institution::get($institutionid);
-list($select, $from, $where, $params) = course::get_sql($institutionid);
+$institution = institution::get($SESSION->institution);
+list($select, $from, $where, $params) = batch::get_sql($institutionid);
 $table->set_sql($select, $from, $where, $params);
 $table->set_istitutionname($institution->name);
 echo $output->render_table($table);

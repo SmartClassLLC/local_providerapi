@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+use local_providerapi\form\assigncourse_form;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -40,7 +42,12 @@ function local_providerapi_extend_navigation(global_navigation $nav) {
                 new moodle_url('/local/providerapi/modules/institution/index.php'),
                 navigation_node::TYPE_SETTING, null, 'institutionmodule', null);
         $institutions->nodetype = navigation_node::NODETYPE_BRANCH;
-        // institution::generate_nodes($institutions);
+        if (has_capability('local/providerapi:viewbatch', $systemcontext)) {
+            $batches = $root->add(get_string('batches', 'local_providerapi'),
+                    new moodle_url('/local/providerapi/modules/batch/index.php'), navigation_node::TYPE_SETTING, null,
+                    'batchmmodule');
+            $batches->nodetype = navigation_node::NODETYPE_BRANCH;
+        }
         if (has_capability('local/providerapi:sharedcourse', $systemcontext)) {
             $courses = $root->add(get_string('courses', 'local_providerapi'),
                     new moodle_url('/local/providerapi/modules/course/index.php'), navigation_node::TYPE_SETTING, null,
@@ -50,6 +57,33 @@ function local_providerapi_extend_navigation(global_navigation $nav) {
 
     }
 
+}
+
+/**
+ * @param $args
+ * @return mixed
+ * @throws required_capability_exception
+ */
+function local_providerapi_output_fragment_batchassigncourse_form($args) {
+    $args = (object) $args;
+    $context = $args->context;
+    $batchid = $args->batchid;
+    $formdata = [];
+    if (!empty($args->jsonformdata)) {
+        $serialiseddata = json_decode($args->jsonformdata);
+        parse_str($serialiseddata, $formdata);
+    }
+
+    require_capability('local/providerapi:assigncourse', $context);
+
+    $mform = new assigncourse_form(null, array('batchid' => $batchid), 'post', '', null, true,
+            $formdata);
+
+    if (!empty($args->jsonformdata)) {
+        // If we were passed non-empty form data we want the mform to call validation functions and show errors.
+        $mform->is_validated();
+    }
+    return $mform->render();
 }
 
 /**

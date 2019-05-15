@@ -30,13 +30,14 @@ use local_providerapi\local\course\course;
 use moodleform;
 
 defined('MOODLE_INTERNAL') || die();
-
+global $CFG;
+require_once($CFG->libdir . '/formslib.php');
 /**
  * Class addinstitution
  *
  * @package local_providerapi\form
  */
-class assigncourse extends moodleform {
+class sharedcourse extends moodleform {
 
     /**
      * Form definition. Abstract method - always override!
