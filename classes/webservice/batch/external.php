@@ -31,7 +31,7 @@ use external_api;
 use external_function_parameters;
 use external_value;
 use local_providerapi\form\assigncourse_form;
-use local_providerapi\local\batch\batch;
+use local_providerapi\local\batch\btcourse;
 
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
@@ -65,7 +65,6 @@ class external extends external_api {
      * @return bool
      * @throws \coding_exception
      * @throws \dml_exception
-     * @throws \dml_transaction_exception
      * @throws \invalid_parameter_exception
      * @throws \moodle_exception
      * @throws \required_capability_exception
@@ -87,9 +86,8 @@ class external extends external_api {
         $validateddata = $mform->get_data();
 
         if ($validateddata) {
-            $batch = batch::get($params['batchid']);
-            return $batch->assigncourse($validateddata->sharedcourseids);
-
+            unset($validateddata->id);
+            btcourse::get($validateddata)->create();
         }
         return false;
     }

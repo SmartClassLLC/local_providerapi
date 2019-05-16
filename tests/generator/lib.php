@@ -25,6 +25,7 @@
  */
 
 use local_providerapi\local\batch\batch;
+use local_providerapi\local\btcourse;
 use local_providerapi\local\institution\institution;
 
 defined('MOODLE_INTERNAL') || die();
@@ -100,20 +101,28 @@ class local_providerapi_generator extends component_generator_base {
     /**
      * @param int $batchid
      * @param array $sharedcourseids
+     * @param string $source
      * @throws dml_exception
-     * @throws dml_transaction_exception
      * @throws moodle_exception
      */
-    public function assign_btcourses(int $batchid, array $sharedcourseids) {
-        $batch = batch::get($batchid);
-        global $DB;
+    public function assign_btcourses(int $batchid, array $sharedcourseids, $source = PROVIDERAPI_SOURCEWEB) {
+        global $DB, $USER;
+
         if (empty($sharedcourseids)) {
             throw new moodle_exception('requiredproperty', 'local_providerapi', 'sharedcourseids');
         }
-        $record = $batch->get_default_btcourse_properties();
+        $now = time();
+        $data = new stdClass();
+        $data->batchid = $batchid;
+        $data->source = $source;
+        $data->createrid = $USER->id;
+        $data->modifiedby = $USER->id;
+        $data->timecreated = $now;
+        $data->timemodified = $now;
         foreach ($sharedcourseids as $sharedcourseid) {
+            $record = fullclone($data);
             $record->sharedcourseid = $sharedcourseid;
-            $DB->insert_record($batch->btcoursedbname, $record);
+            btcourse::get($record)->create();
         }
     }
 

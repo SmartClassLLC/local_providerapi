@@ -92,7 +92,7 @@ abstract class modelbase {
      */
     public function get_db_record() {
         if (empty($this->_data)) {
-            throw new coding_exception(' nesne bulunamadı');
+            throw new coding_exception('object does not exist');
         }
         return fullclone($this->_data);
     }
@@ -106,7 +106,7 @@ abstract class modelbase {
         if (property_exists($this->_data, $prop)) {
             return $this->_data->$prop;
         }
-        throw new coding_exception('Property "' . $prop . '" Bulunamadı');
+        throw new coding_exception('Property "' . $prop . '" does not exist');
     }
 
     /**
@@ -163,7 +163,7 @@ abstract class modelbase {
                 return true;
             }
         }
-        throw new coding_exception('obje idsi bulunamadı');
+        throw new coding_exception('object\'s id does not exist');
     }
 
     /**

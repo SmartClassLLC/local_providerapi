@@ -23,6 +23,9 @@
  * @copyright  2019 çağlar MERSİNLİ <ceremy@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+use local_providerapi\local\batch\btcourse;
+
 require('../../../../config.php');
 require_once($CFG->dirroot . '/local/providerapi/locallib.php');
 require_login();
@@ -31,7 +34,6 @@ require_login();
 $context = context_system::instance();
 
 $delid = optional_param('delid', null, PARAM_INT);
-$batchid = optional_param('batchid', null, PARAM_INT);
 // Baseurl.
 $baseurl = new moodle_url('/local/providerapi/modules/batch/assignedit.php');
 $btcourseurl = new moodle_url('/local/providerapi/modules/batch/assigncourse.php');
@@ -43,12 +45,10 @@ if ($returnurl) {
     $returnurl = $btcourseurl;
 }
 
-if ($delid and $batchid and has_capability('local/providerapi:deleteassigncourse', $context) and confirm_sesskey()) {
-    $batch = \local_providerapi\local\batch\batch::get($batchid);
+if ($delid and has_capability('local/providerapi:deleteassigncourse', $context) and confirm_sesskey()) {
     if ($batch->source === PROVIDERAPI_SOURCEWS) {
         throw new moodle_exception('hackattempt', 'local_providerapi');
     }
-    $batch->delete_btcourse($delid);
-
+    btcourse::get($delid)->delete();
     redirect($returnurl);
 }

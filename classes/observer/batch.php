@@ -26,6 +26,7 @@ use local_providerapi\event\batch_created;
 use local_providerapi\event\batch_deleted;
 use local_providerapi\event\batch_updated;
 use local_providerapi\local\batch\batch;
+use local_providerapi\local\batch\btcourse;
 use local_providerapi\local\cohortHelper;
 
 defined('MOODLE_INTERNAL') || die();
@@ -69,7 +70,7 @@ function batchdeleted(batch_deleted $event) {
     }
 
     // Delete allbtcourse.
-    batch::delete_all_btcourse($event->objectid);
+    btcourse::delete_from_batchid($event->objectid);
 
 }
 

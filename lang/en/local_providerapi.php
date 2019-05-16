@@ -83,7 +83,8 @@ $string['eventupdated'] = 'The {$a->objname} with id \'{$a->objid}\' has updated
 $string['eventdeleted'] = 'The {$a->objname} with id \'{$a->objid}\' has deleted by {$a->by}';
 
 // Exceptions.
-$string['notexistinstitution'] = 'Institution is not exist';
+$string['notexistinstitution'] = 'The Institution is not exist';
+$string['notexistbatch'] = 'The Batch is not exist';
 $string['missingproperty'] = 'required property missing';
 $string['requiredproperty'] = 'required property name \'{$a}\' missing';
 $string['hackattempt'] = 'Unauthorized transaction';

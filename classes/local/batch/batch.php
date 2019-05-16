@@ -33,7 +33,6 @@ use local_providerapi\event\btcourse_deleted;
 use local_providerapi\local\cohortHelper;
 use local_providerapi\local\institution\institution;
 use local_providerapi\local\modelbase;
-use moodle_exception;
 use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
@@ -95,100 +94,6 @@ class batch extends modelbase {
         }
     }
 
-    /**
-     * @param array $sharedcourseids
-     * @return bool
-     * @throws \dml_exception
-     * @throws \dml_transaction_exception
-     * @throws moodle_exception
-     */
-    public function assigncourse(array $sharedcourseids) {
-        global $DB;
-        if (empty($sharedcourseids)) {
-            throw new moodle_exception('requiredproperty', 'local_providerapi', 'sharedcourseids');
-        }
-        $trans = $DB->start_delegated_transaction();
-        $record = $this->get_default_btcourse_properties();
-        foreach ($sharedcourseids as $sharedcourseid) {
-            $record->sharedcourseid = $sharedcourseid;
-            $DB->insert_record($this->btcoursedbname, $record);
-        }
-        $trans->allow_commit();
-        return true;
-    }
-
-    /**
-     * @return stdClass
-     */
-    public function get_default_btcourse_properties() {
-        global $USER;
-        $now = time();
-        $data = new stdClass();
-        $data->batchid = $this->id;
-        $data->createrid = $USER->id;
-        $data->modifiedby = $USER->id;
-        $data->timecreated = $now;
-        $data->timemodified = $now;
-        return $data;
-    }
-
-    /**
-     * @return array
-     * @throws \dml_exception
-     */
-    public function get_btsharecourseids() {
-        global $DB;
-        return $DB->get_fieldset_select($this->btcoursedbname, 'sharedcourseid', 'batchid = ?', array($this->id));
-    }
-
-    /**
-     * @return array
-     * @throws \dml_exception
-     */
-    public function get_btcourseids() {
-        global $DB;
-        return $DB->get_fieldset_select($this->btcoursedbname, 'id', 'batchid = ?', array($this->id));
-    }
-
-    /**
-     * @param $id
-     * @return mixed
-     * @throws \dml_exception
-     */
-    public function get_btcourse_record($id) {
-        global $DB;
-        return $DB->get_record($this->btcoursedbname, array('id' => $id), '*', MUST_EXIST);
-    }
-
-    /**
-     * @param int $id
-     * @throws \coding_exception
-     * @throws \dml_exception
-     */
-    public function delete_btcourse(int $id) {
-        global $DB;
-        $record = $this->get_btcourse_record($id);
-        if ($DB->delete_records($this->btcoursedbname, array('id' => $record->id))) {
-            btcourse_deleted::create_from_objectid($record)->trigger();
-        }
-    }
-
-    /**
-     * @param int $batchid
-     * @throws \coding_exception
-     * @throws \dml_exception
-     */
-    public static function delete_all_btcourse(int $batchid) {
-        global $DB;
-        $allbtcourserecords = $DB->get_records('local_providerapi_btcourses', array('batchid' => $batchid));
-        if ($allbtcourserecords) {
-            foreach ($allbtcourserecords as $btcourserecord) {
-                if ($DB->delete_records('local_providerapi_btcourses', array('id' => $btcourserecord->id))) {
-                    btcourse_deleted::create_from_objectid($btcourserecord)->trigger();
-                }
-            }
-        }
-    }
 
     /**
      * @return int
