@@ -92,7 +92,7 @@ class local_providerapi_btcourse_testcase extends advanced_testcase {
         $event = $events[0];
         $this->assertInstanceOf('\local_providerapi\event\btcourse_deleted', $event);
         $this->assertEquals($btcourserecord->id, $event->objectid);
-        $this->assertEquals($btcourserecord->id, $event->other['batchid']);
+        $this->assertEquals($btcourserecord->batchid, $event->other['batchid']);
         $this->assertEquals($btcourserecord->sharedcourseid, $event->other['sharedcourseid']);
     }
 
