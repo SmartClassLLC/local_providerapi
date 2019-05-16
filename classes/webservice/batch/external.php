@@ -88,6 +88,7 @@ class external extends external_api {
         if ($validateddata) {
             unset($validateddata->id);
             btcourse::get($validateddata)->create();
+            return true;
         }
         return false;
     }

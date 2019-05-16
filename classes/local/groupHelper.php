@@ -25,10 +25,12 @@
  */
 
 namespace local_providerapi\local;
+use stdClass;
+
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->libdir . '/grouplib.php');
-require_once($CFG->dirrot . '/group/lib.php');
+require_once($CFG->dirroot . '/group/lib.php');
 
 /**
  * Class groupHelper
@@ -38,22 +40,22 @@ require_once($CFG->dirrot . '/group/lib.php');
 class groupHelper {
 
     /**
-     * @param \stdClass $data
+     * @param stdClass $data
      * @return int
      * @throws \moodle_exception
      */
-    public static function create_group(\stdClass $data) {
+    public static function create_group(stdClass $data) {
         $data->description = 'Created by Providerapi Local Plugin.DO NOT DELETE via Web Interface ';
         $data->descriptionformat = FORMAT_HTML;
         return groups_create_group($data);
     }
 
     /**
-     * @param \stdClass $data
+     * @param stdClass $data
      * @return bool
      * @throws \moodle_exception
      */
-    public static function update_group(\stdClass $data) {
+    public static function update_group(stdClass $data) {
         return groups_update_group($data);
     }
 

@@ -28,6 +28,9 @@ namespace local_providerapi\local\batch;
 
 use coding_exception;
 use local_providerapi\event\btcourse_deleted;
+use local_providerapi\local\course\course;
+use local_providerapi\local\groupHelper;
+use local_providerapi\local\institution\institution;
 use moodle_exception;
 use stdClass;
 
@@ -141,6 +144,8 @@ class btcourse {
             $records[] = $record;
         }
         $DB->insert_records(static::$dbname, $records);
+        // Check group instances.
+        self::check_group_instances();
     }
 
     /**
@@ -197,6 +202,38 @@ class btcourse {
         if ($allbtcourserecords) {
             foreach ($allbtcourserecords as $btcourserecord) {
                 self::get($btcourserecord)->delete();
+            }
+        }
+    }
+
+    /**
+     * @throws \dml_exception
+     * @throws moodle_exception
+     */
+    public function group_create() {
+        $batch = batch::get($this->batchid);
+        $sharedcourse = course::get($this->sharedcourseid);
+        $institution = institution::get($sharedcourse->institutionid);
+        $formattedname = $institution->name . ' (' . $batch->name . ')';
+        $data = new stdClass();
+        $data->name = $formattedname;
+        $data->courseid = $sharedcourse->id;
+        $groupid = groupHelper::create_group($data);
+        $this->_data->groupid = $groupid;
+        $this->update();
+
+    }
+
+    /**
+     * @throws \dml_exception
+     * @throws moodle_exception
+     */
+    public static function check_group_instances() {
+        global $DB;
+        $btcourses = $DB->get_records_select(self::$dbname, 'groupid IS NULL');
+        if ($btcourses) {
+            foreach ($btcourses as $btcourse) {
+                self::get($btcourse)->group_create();
             }
         }
     }
