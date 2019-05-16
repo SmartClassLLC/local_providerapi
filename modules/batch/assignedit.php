@@ -46,9 +46,10 @@ if ($returnurl) {
 }
 
 if ($delid and has_capability('local/providerapi:deleteassigncourse', $context) and confirm_sesskey()) {
-    if ($batch->source === PROVIDERAPI_SOURCEWS) {
+    $btcourse = btcourse::get($delid);
+    if ($btcourse->source === PROVIDERAPI_SOURCEWS) {
         throw new moodle_exception('hackattempt', 'local_providerapi');
     }
-    btcourse::get($delid)->delete();
+    $btcourse->delete();
     redirect($returnurl);
 }

@@ -133,6 +133,9 @@ class btcourse {
         unset($data->sharedcourseids);
         $records = array();
         foreach ($sharedcourseids as $sharedcourseid) {
+            if ($DB->record_exists(self::$dbname, array('batchid' => $data->batchid, 'sharedcourseid' => $sharedcourseid))) {
+                continue;
+            }
             $record = fullclone($data);
             $record->sharedcourseid = $sharedcourseid;
             $records[] = $record;

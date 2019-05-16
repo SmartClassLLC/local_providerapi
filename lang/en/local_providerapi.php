@@ -113,6 +113,7 @@ $string['addbatch'] = 'Add batch';
 $string['capacity'] = 'Capacity';
 $string['source'] = 'Source';
 $string['assigncourse'] = 'Assign Course';
+$string['sharedcourse'] = 'Shared Course';
 $string['assigncoursetobatch'] = '{$a} \'s Courses';
 
 

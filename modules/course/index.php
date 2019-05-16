@@ -70,7 +70,7 @@ if (!$table->is_downloading()) {
     }
 
     $output->addbutton(new moodle_url('/local/providerapi/modules/course/edit.php', array('id' => -1)),
-            get_string('assigncourse', 'local_providerapi'));
+            get_string('sharedcourse', 'local_providerapi'));
 
 }
 $institution = \local_providerapi\local\institution\institution::get($institutionid);

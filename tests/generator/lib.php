@@ -25,10 +25,11 @@
  */
 
 use local_providerapi\local\batch\batch;
-use local_providerapi\local\btcourse;
+use local_providerapi\local\batch\btcourse;
 use local_providerapi\local\institution\institution;
 
 defined('MOODLE_INTERNAL') || die();
+require_once($CFG->dirroot . '/local/providerapi/locallib.php');
 
 /**
  * Class local_providerapi
@@ -99,41 +100,16 @@ class local_providerapi_generator extends component_generator_base {
     }
 
     /**
-     * @param int $batchid
-     * @param array $sharedcourseids
      * @param string $source
+     * @return mixed
      * @throws dml_exception
      * @throws moodle_exception
      */
-    public function assign_btcourses(int $batchid, array $sharedcourseids, $source = PROVIDERAPI_SOURCEWEB) {
-        global $DB, $USER;
-
+    public function generate_btcourse($source = PROVIDERAPI_SOURCEWEB) {
+        global $DB;
         if (empty($sharedcourseids)) {
             throw new moodle_exception('requiredproperty', 'local_providerapi', 'sharedcourseids');
         }
-        $now = time();
-        $data = new stdClass();
-        $data->batchid = $batchid;
-        $data->source = $source;
-        $data->createrid = $USER->id;
-        $data->modifiedby = $USER->id;
-        $data->timecreated = $now;
-        $data->timemodified = $now;
-        foreach ($sharedcourseids as $sharedcourseid) {
-            $record = fullclone($data);
-            $record->sharedcourseid = $sharedcourseid;
-            btcourse::get($record)->create();
-        }
-    }
-
-    /**
-     * @throws dml_exception
-     * @throws dml_transaction_exception
-     * @throws moodle_exception
-     * @return stdClass
-     */
-    public function generate_btcourse() {
-        global $DB;
         $institution = $this->create_institution();
         $generator = $this->datagenerator;
         $course1 = $generator->create_course();
@@ -147,8 +123,12 @@ class local_providerapi_generator extends component_generator_base {
                 'institutionid' => $institution->id,
                 'testbach2'
         ));
-        $this->assign_btcourses($batch1->id, array($sharedcourse1->id));
-        return $DB->get_record($batch1->btcoursedbname, array('batchid' => $batch1->id, 'sharedcourseid' => $sharedcourse1->id));
+        $data = new stdClass();
+        $data->batchid = $batch1->id;
+        $data->source = $source;
+        $data->sharedcourseids = array($sharedcourse1->id);
+        btcourse::get($data)->create();
+        return $DB->get_record(btcourse::$dbname, array('batchid' => $batch1->id, 'sharedcourseid' => $sharedcourse1->id));
     }
 
 }
