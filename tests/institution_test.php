@@ -209,7 +209,7 @@ class local_providerapi_institution_testcase extends advanced_testcase {
         $generator = $this->getDataGenerator();
         $providergenerator = $generator->get_plugin_generator('local_providerapi');
         $institution = $providergenerator->create_institution();
-        $course1 = $providergenerator->create_course();
+        $course1 = $generator->create_course();
         $providergenerator->create_sharedcourse(array(
                 'institutionid' => $institution->id,
                 'courseids' => array($course1->id)

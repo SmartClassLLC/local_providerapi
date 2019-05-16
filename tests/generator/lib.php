@@ -108,9 +108,6 @@ class local_providerapi_generator extends component_generator_base {
      */
     public function generate_btcourse($source = PROVIDERAPI_SOURCEWEB) {
         global $DB;
-        if (empty($sharedcourseids)) {
-            throw new moodle_exception('requiredproperty', 'local_providerapi', '', 'sharedcourseids');
-        }
         $institution = $this->create_institution();
         $generator = $this->datagenerator;
         $course1 = $generator->create_course();
