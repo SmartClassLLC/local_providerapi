@@ -117,4 +117,29 @@ class local_providerapi_generator extends component_generator_base {
         }
     }
 
+    /**
+     * @throws dml_exception
+     * @throws dml_transaction_exception
+     * @throws moodle_exception
+     * @return stdClass
+     */
+    public function generate_btcourse() {
+        global $DB;
+        $institution = $this->create_institution();
+        $generator = $this->datagenerator;
+        $course1 = $generator->create_course();
+        $this->create_sharedcourse(array(
+                'institutionid' => $institution->id,
+                'courseids' => array($course1->id)
+        ));
+        $sharedcourse1 = $DB->get_record('local_providerapi_courses',
+                array('institutionid' => $institution->id, 'courseid' => $course1->id));
+        $batch1 = $this->create_batch(array(
+                'institutionid' => $institution->id,
+                'testbach2'
+        ));
+        $this->assign_btcourses($batch1->id, array($sharedcourse1->id));
+        return $DB->get_record($batch1->btcoursedbname, array('batchid' => $batch1->id, 'sharedcourseid' => $sharedcourse1->id));
+    }
+
 }
