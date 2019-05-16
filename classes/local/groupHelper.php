@@ -32,13 +32,10 @@ require_once($CFG->dirrot . '/group/lib.php');
 
 class groupHelper {
 
-    public static function create_group(int $btcourseid) {
-        global $DB;
-        $btcourserc = $DB->get_record('local_providerapi_btcourses', array('id' => $btcourseid), '*', MUST_EXIST);
-        $batchrc = $DB->get_record('local_providerapi_batches', array('id' => $btcourserc->batchid), '*', MUST_EXIST);
-        $sharedcourserc = $DB->get_record('local_providerapi_courses', array('id' => $btcourserc->sharedcourseid), '*', MUST_EXIST);
-        $course = get_course($sharedcourserc->courseid);
-
+    public static function create_group(\stdClass $data) {
+        $data->description = 'Created by Providerapi Local Plugin.DO NOT DELETE via Web Interface ';
+        $data->descriptionformat = FORMAT_HTML;
+        return groups_create_group($data);
     }
 
 }

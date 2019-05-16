@@ -203,6 +203,23 @@ function xmldb_local_providerapi_upgrade($oldversion) {
         // Providerapi savepoint reached.
         upgrade_plugin_savepoint(true, 2019050219, 'local', 'providerapi');
     }
+    if ($oldversion < 2019050224) {
+
+        // Define field groupid to be added to local_providerapi_btcourses.
+        $table = new xmldb_table('local_providerapi_btcourses');
+        $field = new xmldb_field('groupid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'timemodified');
+
+        // Conditionally launch add field groupid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $key = new xmldb_key('groupid', XMLDB_KEY_FOREIGN, ['groupid'], 'groups', ['id']);
+
+        // Launch add key groupid.
+        $dbman->add_key($table, $key);
+        // Providerapi savepoint reached.
+        upgrade_plugin_savepoint(true, 2019050224, 'local', 'providerapi');
+    }
 
     return true;
 }

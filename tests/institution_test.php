@@ -23,6 +23,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_providerapi\local\batch\btcourse;
 use local_providerapi\local\course\course;
 use local_providerapi\local\institution\institution;
 
@@ -208,7 +209,7 @@ class local_providerapi_institution_testcase extends advanced_testcase {
         $generator = $this->getDataGenerator();
         $providergenerator = $generator->get_plugin_generator('local_providerapi');
         $institution = $providergenerator->create_institution();
-        $course1 = $generator->create_course();
+        $course1 = $providergenerator->create_course();
         $providergenerator->create_sharedcourse(array(
                 'institutionid' => $institution->id,
                 'courseids' => array($course1->id)
@@ -219,16 +220,19 @@ class local_providerapi_institution_testcase extends advanced_testcase {
                 'institutionid' => $institution->id,
                 'testbach2'
         ));
-
-        $providergenerator->assign_btcourses($batch1->id, array($sharedcourse1->id));
+        $data = new stdClass();
+        $data->batchid = $batch1->id;
+        $data->source = 'web';
+        $data->sharedcourseids = array($sharedcourse1->id);
+        btcourse::get($data)->create();
         $institution->delete();
 
         $this->assertFalse($DB->record_exists(institution::$dbname, array('id' => $institution->id)));
         $this->assertFalse($DB->record_exists($batch1::$dbname, array('id' => $batch1->id)));
         $this->assertFalse($DB->record_exists('cohort', array('id' => $institution->cohortid)));
         $this->assertFalse($DB->record_exists('cohort', array('id' => $batch1->cohortid)));
-        $this->assertFalse($DB->record_exists($batch1->btcoursedbname, array('batchid' => $batch1->id)));
-        $this->assertFalse($DB->record_exists($batch1->btcoursedbname, array('sharedcourseid' => $sharedcourse1->id)));
+        $this->assertFalse($DB->record_exists(btcourse::$dbname, array('batchid' => $batch1->id)));
+        $this->assertFalse($DB->record_exists(btcourse::$dbname, array('sharedcourseid' => $sharedcourse1->id)));
         $this->assertFalse($DB->record_exists(course::$dbname, array('institutionid' => $institution->id)));
 
     }
