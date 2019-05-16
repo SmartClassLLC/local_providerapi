@@ -30,12 +30,39 @@ global $CFG;
 require_once($CFG->libdir . '/grouplib.php');
 require_once($CFG->dirrot . '/group/lib.php');
 
+/**
+ * Class groupHelper
+ *
+ * @package local_providerapi\local
+ */
 class groupHelper {
 
+    /**
+     * @param \stdClass $data
+     * @return int
+     * @throws \moodle_exception
+     */
     public static function create_group(\stdClass $data) {
         $data->description = 'Created by Providerapi Local Plugin.DO NOT DELETE via Web Interface ';
         $data->descriptionformat = FORMAT_HTML;
         return groups_create_group($data);
+    }
+
+    /**
+     * @param \stdClass $data
+     * @return bool
+     * @throws \moodle_exception
+     */
+    public static function update_group(\stdClass $data) {
+        return groups_update_group($data);
+    }
+
+    /**
+     * @param int $groupid
+     * @return bool
+     */
+    public static function delete_group(int $groupid) {
+        return groups_delete_group($groupid);
     }
 
 }
