@@ -27,7 +27,6 @@
 namespace local_providerapi\event;
 
 use core_user;
-use local_providerapi\local\batch\batch;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -71,7 +70,8 @@ class btcourse_deleted extends \core\event\base {
                 'userid' => $USER->id,
                 'other' => [
                         'batchid' => $record->batchid,
-                        'sharedcourseid' => $record->sharedcourseid
+                        'sharedcourseid' => $record->sharedcourseid,
+                        'groupid' => $record->groupid
                 ]
         );
 

@@ -22,12 +22,15 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\event\group_deleted;
 use local_providerapi\event\batch_created;
 use local_providerapi\event\batch_deleted;
 use local_providerapi\event\batch_updated;
+use local_providerapi\event\btcourse_deleted;
 use local_providerapi\local\batch\batch;
 use local_providerapi\local\batch\btcourse;
 use local_providerapi\local\cohortHelper;
+use local_providerapi\local\groupHelper;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -72,6 +75,29 @@ function batchdeleted(batch_deleted $event) {
     // Delete allbtcourse.
     btcourse::delete_from_batchid($event->objectid);
 
+}
+
+/**
+ * @param btcourse_deleted $event
+ */
+function btcoursedeleted(btcourse_deleted $event) {
+    $groupid = $event->other['groupid'];
+    if ($groupid) {
+        groupHelper::delete_group($groupid);
+    }
+}
+
+/**
+ * @param group_deleted $event
+ * @throws dml_exception
+ */
+function groupdeleted(group_deleted $event) {
+    global $DB;
+    $groupid = $event->objectid;
+    $btcourserecord = $DB->get_record(btcourse::$dbname, array('groupid' => $groupid), 'id');
+    if ($btcourserecord) {
+        $DB->set_field(btcourse::$dbname, 'groupid', null, array('id' => $btcourserecord->id));
+    }
 }
 
 

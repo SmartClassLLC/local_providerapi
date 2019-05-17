@@ -15,17 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * short_description
  *
- * @package     local_providerapi
- * @copyright   2019 Çağlar MERSİNLİ <ceremy@gmail.com>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * long_description
+ *
+ * @package    local_providerapi
+ * @copyright  2019 çağlar MERSİNLİ <ceremy@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'local_providerapi';
-$plugin->release = '0.1.0';
-$plugin->version = 2019050225;
-$plugin->requires = 2018120300;
-$plugin->maturity = MATURITY_ALPHA;
+$tasks = [
+        [
+                'classname' => 'local_providerapi\task\group_healt_check',
+                'blocking' => 0,
+                'minute' => '*/10',
+                'hour' => '*',
+                'day' => '*',
+                'month' => '*',
+                'dayofweek' => '*',
+        ],
+];

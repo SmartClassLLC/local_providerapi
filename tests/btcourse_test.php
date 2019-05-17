@@ -94,6 +94,7 @@ class local_providerapi_btcourse_testcase extends advanced_testcase {
         $this->assertEquals($btcourserecord->id, $event->objectid);
         $this->assertEquals($btcourserecord->batchid, $event->other['batchid']);
         $this->assertEquals($btcourserecord->sharedcourseid, $event->other['sharedcourseid']);
+        $this->assertEquals($btcourserecord->groupid, $event->other['groupid']);
     }
 
 }

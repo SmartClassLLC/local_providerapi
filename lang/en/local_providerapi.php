@@ -57,6 +57,11 @@ $string['local/providerapi:viewassigncourse'] = 'View assign shared course';
 // Privacy.
 $string['privacy:metadata'] = 'The Providerapi plugin does not store any personal data.';
 
+// Tasks.
+$string['grouphealtcheck'] = 'Check batch\'s course groups';
+
+
+
 // Helpbuttons.
 $string['fullname'] = 'Institution fullname explain';
 $string['fullname_help'] = 'Institution fullname';
