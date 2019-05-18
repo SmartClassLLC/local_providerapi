@@ -45,3 +45,4 @@ function local_providerapi_getinstitution() {
     }
     return $SESSION->institution;
 }
+
