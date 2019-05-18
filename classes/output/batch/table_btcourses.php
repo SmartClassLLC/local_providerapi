@@ -80,8 +80,8 @@ class table_btcourses extends table_sql implements \renderable {
         $headers = [];
         $columns = [];
 
-        $headers[] = get_string('name');
-        $columns[] = 'name';
+        $headers[] = get_string('coursename', 'local_providerapi');
+        $columns[] = 'coursename';
 
         $headers[] = 'Creater';
         $columns[] = 'createrid';
@@ -125,6 +125,21 @@ class table_btcourses extends table_sql implements \renderable {
     /**
      * @param $row
      * @return string
+     * @throws \moodle_exception
+     */
+    public function col_coursename($row) {
+        $name = $row->coursename;
+        if ($this->is_downloading()) {
+            return format_string($name);
+        } else {
+            $url = new moodle_url('/course/view.php', array('id' => $row->courseid));
+            return \html_writer::link($url, $name);
+        }
+    }
+
+    /**
+     * @param $row
+     * @return string
      * @throws \dml_exception
      * @throws \moodle_exception
      */
@@ -154,7 +169,7 @@ class table_btcourses extends table_sql implements \renderable {
                                 'sesskey' => sesskey()));
                 $visibleimg = new pix_icon('t/delete', get_string('delete'));
                 $buttons[] = $OUTPUT->action_icon($deleteurl, $visibleimg,
-                        new confirm_action(get_string('areyousuredel', 'local_providerapi', $row->name)));
+                        new confirm_action(get_string('areyousuredel', 'local_providerapi', $row->coursename)));
             }
         }
 

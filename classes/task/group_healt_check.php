@@ -25,7 +25,8 @@
  */
 
 namespace local_providerapi\task;
-use local_providerapi\local\batch\btcourse;
+
+use local_providerapi\local\groupHelper;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -45,6 +46,6 @@ class group_healt_check extends \core\task\scheduled_task {
      * Throw exceptions on errors (the job will be retried).
      */
     public function execute() {
-        btcourse::check_group_instances();
+        groupHelper::check_group_instances();
     }
 }

@@ -28,9 +28,8 @@ namespace local_providerapi\local\batch;
 
 use coding_exception;
 use local_providerapi\event\btcourse_deleted;
-use local_providerapi\local\course\course;
+use local_providerapi\local\enrolHelper;
 use local_providerapi\local\groupHelper;
-use local_providerapi\local\institution\institution;
 use moodle_exception;
 use stdClass;
 
@@ -42,6 +41,8 @@ defined('MOODLE_INTERNAL') || die();
  * @property-read int id
  * @property-read int batchid
  * @property-read int sharedcourseid
+ * @property-read int groupid
+ * @property-read int enrolinstanceid
  * @property-read int createrid
  * @property-read int timecreated
  * @property-read int timemodified
@@ -145,7 +146,9 @@ class btcourse {
         }
         $DB->insert_records(static::$dbname, $records);
         // Check group instances.
-        self::check_group_instances();
+        groupHelper::check_group_instances();
+        // Check enrol instances.
+        enrolHelper::instance('cohort')->check_enrol_instances();
     }
 
     /**
@@ -182,6 +185,38 @@ class btcourse {
     }
 
     /**
+     *
+     * @param string $additionalwhere
+     * @param array $additionalparams
+     * @return array
+     */
+    public static function get_sql($additionalwhere = '', $additionalparams = array()): array {
+
+        $wheres = array();
+        $params = array();
+        $select = "bt.*,c.fullname AS coursename,c.id AS courseid";
+        $joins = array('{local_providerapi_btcourses} bt');
+        $joins[] = "JOIN {local_providerapi_courses} sc ON bt.sharedcourseid = sc.id";
+        $joins[] = "JOIN {course} c ON sc.courseid = c.id";
+        $joins[] = "JOIN {local_providerapi_batches} b ON b.id = bt.batchid";
+        $joins[] = "JOIN {local_providerapi_companies} com  ON com.id = b.institutionid";
+
+        if (!empty($additionalwhere)) {
+            $wheres[] = $additionalwhere;
+            $params = array_merge($params, $additionalparams);
+        }
+
+        $from = implode("\n", $joins);
+        if ($wheres) {
+            $wheres = implode(' AND ', $wheres);
+        } else {
+            $wheres = '';
+        }
+
+        return array($select, $from, $wheres, $params);
+    }
+
+    /**
      * @param int $batchid
      * @return array
      * @throws \dml_exception
@@ -202,38 +237,6 @@ class btcourse {
         if ($allbtcourserecords) {
             foreach ($allbtcourserecords as $btcourserecord) {
                 self::get($btcourserecord)->delete();
-            }
-        }
-    }
-
-    /**
-     * @throws \dml_exception
-     * @throws moodle_exception
-     */
-    public function group_create() {
-        $batch = batch::get($this->batchid);
-        $sharedcourse = course::get($this->sharedcourseid);
-        $institution = institution::get($sharedcourse->institutionid);
-        $formattedname = $institution->name . ' (' . $batch->name . ')';
-        $data = new stdClass();
-        $data->name = $formattedname;
-        $data->courseid = $sharedcourse->id;
-        $groupid = groupHelper::create_group($data);
-        $this->_data->groupid = $groupid;
-        $this->update();
-
-    }
-
-    /**
-     * @throws \dml_exception
-     * @throws moodle_exception
-     */
-    public static function check_group_instances() {
-        global $DB;
-        $btcourses = $DB->get_records_select(self::$dbname, 'groupid IS NULL');
-        if ($btcourses) {
-            foreach ($btcourses as $btcourse) {
-                self::get($btcourse)->group_create();
             }
         }
     }

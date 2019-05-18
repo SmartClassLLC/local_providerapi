@@ -220,6 +220,48 @@ function xmldb_local_providerapi_upgrade($oldversion) {
         // Providerapi savepoint reached.
         upgrade_plugin_savepoint(true, 2019050224, 'local', 'providerapi');
     }
+    if ($oldversion < 2019050226) {
+
+        // Define field enrolinstanceid to be added to local_providerapi_btcourses.
+        $table = new xmldb_table('local_providerapi_btcourses');
+        $field = new xmldb_field('enrolinstanceid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'groupid');
+
+        // Conditionally launch add field enrolinstanceid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $key = new xmldb_key('enrolinstanceid', XMLDB_KEY_FOREIGN, ['enrolinstanceid'], 'enrol', ['id']);
+
+        // Launch add key enrolinstanceid.
+        $dbman->add_key($table, $key);
+
+        // Providerapi savepoint reached.
+        upgrade_plugin_savepoint(true, 2019050226, 'local', 'providerapi');
+    }
+    if ($oldversion < 2019050229) {
+
+        // Define key groupid (foreign-unique) to be dropped form local_providerapi_btcourses.
+        $table = new xmldb_table('local_providerapi_btcourses');
+        $key = new xmldb_key('groupid', XMLDB_KEY_FOREIGN, ['groupid'], 'groups', ['id']);
+
+        // Launch drop key groupid.
+        $dbman->drop_key($table, $key);
+        $key = new xmldb_key('groupid', XMLDB_KEY_FOREIGN_UNIQUE, ['groupid'], 'groups', ['id']);
+
+        // Launch add key groupid.
+        $dbman->add_key($table, $key);
+        $key = new xmldb_key('enrolinstanceid', XMLDB_KEY_FOREIGN, ['enrolinstanceid'], 'enrol', ['id']);
+
+        // Launch drop key enrolinstanceid.
+        $dbman->drop_key($table, $key);
+        $key = new xmldb_key('enrolinstanceid', XMLDB_KEY_FOREIGN_UNIQUE, ['enrolinstanceid'], 'enrol', ['id']);
+
+        // Launch add key enrolinstanceid.
+        $dbman->add_key($table, $key);
+
+        // Providerapi savepoint reached.
+        upgrade_plugin_savepoint(true, 2019050229, 'local', 'providerapi');
+    }
 
     return true;
 }

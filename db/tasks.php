@@ -35,4 +35,13 @@ $tasks = [
                 'month' => '*',
                 'dayofweek' => '*',
         ],
+        [
+                'classname' => 'local_providerapi\task\enrol_healt_check',
+                'blocking' => 0,
+                'minute' => '*/10',
+                'hour' => '*',
+                'day' => '*',
+                'month' => '*',
+                'dayofweek' => '*',
+        ],
 ];

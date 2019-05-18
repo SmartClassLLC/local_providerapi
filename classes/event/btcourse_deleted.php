@@ -71,7 +71,8 @@ class btcourse_deleted extends \core\event\base {
                 'other' => [
                         'batchid' => $record->batchid,
                         'sharedcourseid' => $record->sharedcourseid,
-                        'groupid' => $record->groupid
+                        'groupid' => $record->groupid,
+                        'enrolinstanceid' => $record->enrolinstanceid
                 ]
         );
 

@@ -79,5 +79,10 @@ $observers = array(
                 'eventname' => '\core\event\group_deleted',
                 'callback' => 'groupdeleted',
                 'includefile' => '/local/providerapi/classes/observer/batch.php',
+        ),
+        array(
+                'eventname' => '\core\event\enrol_instance_deleted',
+                'callback' => 'enrolinstancedeleted',
+                'includefile' => '/local/providerapi/classes/observer/batch.php',
         )
 );

@@ -37,7 +37,7 @@ defined('MOODLE_INTERNAL') || die();
 function coursedeleted(course_deleted $event) {
     global $DB;
     // Exist Sahared Courses?
-    $sharedcourses = $DB->get_records(course::$dbname, array('courseid' => $event->objectid));
+    $sharedcourses = $DB->get_records(course::$dbname, array('courseid' => $event->objectid), '', 'id');
     if ($sharedcourses) {
         foreach ($sharedcourses as $sharedcourse) {
             course::delete($sharedcourse->id);

@@ -42,6 +42,7 @@ class local_providerapi_btcourse_testcase extends advanced_testcase {
      * @throws coding_exception
      */
     public function test_btcourse_assign() {
+        global $DB;
         $this->resetAfterTest();
         $this->setAdminUser();
         $generator = $this->getDataGenerator();
@@ -53,6 +54,8 @@ class local_providerapi_btcourse_testcase extends advanced_testcase {
         $this->assertSame('2', $btcourserecord->modifiedby);
         $this->assertNotEmpty($btcourserecord->timecreated);
         $this->assertNotEmpty($btcourserecord->timemodified);
+        $this->assertTrue($DB->record_exists('groups', array('id' => $btcourserecord->groupid)));
+        $this->assertTrue($DB->record_exists('enrol', array('id' => $btcourserecord->enrolinstanceid)));
 
     }
 
@@ -69,6 +72,8 @@ class local_providerapi_btcourse_testcase extends advanced_testcase {
         $btcourserecord = $providergenerator->generate_btcourse();
         btcourse::get($btcourserecord)->delete();
         $this->assertFalse($DB->record_exists(btcourse::$dbname, array('id' => $btcourserecord->id)));
+        $this->assertFalse($DB->record_exists('groups', array('id' => $btcourserecord->groupid)));
+        $this->assertFalse($DB->record_exists('enrol', array('id' => $btcourserecord->enrolinstanceid)));
     }
 
     /**
@@ -95,6 +100,7 @@ class local_providerapi_btcourse_testcase extends advanced_testcase {
         $this->assertEquals($btcourserecord->batchid, $event->other['batchid']);
         $this->assertEquals($btcourserecord->sharedcourseid, $event->other['sharedcourseid']);
         $this->assertEquals($btcourserecord->groupid, $event->other['groupid']);
+        $this->assertEquals($btcourserecord->enrolinstanceid, $event->other['enrolinstanceid']);
     }
 
 }

@@ -59,6 +59,7 @@ $string['privacy:metadata'] = 'The Providerapi plugin does not store any persona
 
 // Tasks.
 $string['grouphealtcheck'] = 'Check batch\'s course groups';
+$string['enrolhealtcheck'] = 'Check batch\'s course enrol';
 
 
 
@@ -120,6 +121,7 @@ $string['source'] = 'Source';
 $string['assigncourse'] = 'Assign Course';
 $string['sharedcourse'] = 'Shared Course';
 $string['assigncoursetobatch'] = '{$a} \'s Courses';
+$string['coursename'] = 'Course Name';
 
 
 

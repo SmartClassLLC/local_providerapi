@@ -25,6 +25,8 @@
  */
 
 namespace local_providerapi\local;
+
+use local_providerapi\local\batch\btcourse;
 use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
@@ -65,6 +67,57 @@ class groupHelper {
      */
     public static function delete_group(int $groupid) {
         return groups_delete_group($groupid);
+    }
+
+    /**
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public static function check_group_instances() {
+        global $DB;
+        list($select, $from, $where, $params) = btcourse::get_sql('bt.groupid IS NULL');
+        $select = "bt.id,b.name AS batchname,com.name AS istitutionname,c.id AS courseid";
+
+        $btcourses = $DB->get_records_sql("SELECT {$select} FROM {$from} WHERE {$where}", $params);
+        if ($btcourses) {
+            foreach ($btcourses as $btcourse) {
+                $formattedname = $btcourse->istitutionname . ' (' . $btcourse->batchname . ')';
+                $data = new stdClass();
+                $data->name = $formattedname;
+                $data->courseid = $btcourse->courseid;
+                $groupid = self::create_group($data);
+                if ($groupid) {
+                    $DB->set_field(btcourse::$dbname, 'groupid', $groupid, array('id' => $btcourse->id));
+                }
+
+            }
+        }
+
+    }
+
+    /**
+     * @param $batchid
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public static function update_group_instance_names($batchid) {
+        global $DB;
+        list($select, $from, $where, $params) =
+                btcourse::get_sql('bt.groupid IS NOT NULL AND b.id = :batchid', array('batchid' => $batchid));
+        $select = "bt.id,bt.groupid AS groupid,b.name AS batchname,com.name AS istitutionname,c.id AS courseid";
+
+        $btcourses = $DB->get_records_sql("SELECT {$select} FROM {$from} WHERE {$where}", $params);
+        if ($btcourses) {
+            foreach ($btcourses as $btcourse) {
+                $group = $DB->get_record('groups', array('id' => $btcourse->groupid));
+                if ($group) {
+                    $formattedname = $btcourse->istitutionname . ' (' . $btcourse->batchname . ')';
+                    $group->name = $formattedname;
+                    self::update_group($group);
+                }
+
+            }
+        }
     }
 
 }

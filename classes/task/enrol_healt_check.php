@@ -24,18 +24,28 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace local_providerapi\local;
+namespace local_providerapi\task;
+
+use local_providerapi\local\enrolHelper;
+
 defined('MOODLE_INTERNAL') || die();
-global $CFG;
-require_once($CFG->libdir . '/enrollib.php');
 
-class enrolHelper {
+class enrol_healt_check extends \core\task\scheduled_task {
 
-    public function __construct() {
+    /**
+     * Get a descriptive name for this task (shown to admins).
+     *
+     * @return string
+     */
+    public function get_name() {
+        return get_string('enrolhealtcheck', 'local_providerapi');
     }
 
-    public static function instance() {
-        return new self();
+    /**
+     * Do the job.
+     * Throw exceptions on errors (the job will be retried).
+     */
+    public function execute() {
+        enrolHelper::instance('cohort')->check_enrol_instances();
     }
-
 }

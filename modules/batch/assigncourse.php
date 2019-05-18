@@ -25,6 +25,7 @@
  */
 
 use local_providerapi\local\batch\batch;
+use local_providerapi\local\batch\btcourse;
 use local_providerapi\local\institution\institution;
 use local_providerapi\output\batch\table_btcourses;
 
@@ -87,7 +88,7 @@ if (!$table->is_downloading()) {
     }
 }
 
-list($select, $from, $where, $params) = $batch->get_btcourses_sql();
+list($select, $from, $where, $params) = btcourse::get_sql('b.id = :batchid', array('batchid' => $batchid));
 $table->set_sql($select, $from, $where, $params);
 $table->set_batch($batch);
 echo $output->render_table($table);
