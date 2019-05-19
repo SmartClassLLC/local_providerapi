@@ -69,6 +69,10 @@ class local_providerapi_sharedcourse_testcase extends advanced_testcase {
         $this->assertEquals($sharedcourse2->createrid, 2);
         $this->assertNotEmpty($sharedcourse1->timecreated);
         $this->assertNotEmpty($sharedcourse2->timecreated);
+        $this->assertEquals(SEPARATEGROUPS, $course1->groupmode);
+        $this->assertEquals(SEPARATEGROUPS, $course2->groupmode);
+        $this->assertEquals(1, $course1->groupmodeforce);
+        $this->assertEquals(1, $course2->groupmodeforce);
 
     }
 

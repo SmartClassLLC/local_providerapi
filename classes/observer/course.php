@@ -24,6 +24,7 @@
 
 use core\event\course_deleted;
 use local_providerapi\event\btcourse_deleted;
+use local_providerapi\event\sharedcourse_created;
 use local_providerapi\event\sharedcourse_deleted;
 use local_providerapi\local\course\course;
 
@@ -61,6 +62,22 @@ function sharedcoursedeleted(sharedcourse_deleted $event) {
             }
         }
     }
+}
+
+/**
+ * @param sharedcourse_created $event
+ * @throws dml_exception
+ * @throws moodle_exception
+ */
+function sharedcoursecreated(sharedcourse_created $event) {
+    $sharedcourseid = $event->objectid;
+    $sharedcourse = course::get($sharedcourseid);
+    $courserecord = $sharedcourse->get_record();
+
+    // Force Course GROUPMODE.
+    $courserecord->groupmode = SEPARATEGROUPS;
+    $courserecord->groupmodeforce = 1;
+    update_course($courserecord);
 }
 
 

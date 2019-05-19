@@ -14,15 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/*
-* short_description
-*
-* long_description
-*
-* @package    local_providerapi
-* @copyright  2019 çağlar MERSİNLİ <ceremy@gmail.com>
-* @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
-*/
+/**
+ * external class
+ *
+ * long_description
+ *
+ * @package    local_providerapi
+ * @copyright  2019 çağlar MERSİNLİ <ceremy@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace local_providerapi\webservice\institution;
 
@@ -43,8 +43,6 @@ require_once($CFG->libdir . "/externallib.php");
 
 class external extends external_api {
     /**
-     *
-     *
      * @return external_function_parameters
      */
     public static function checkinstitution_parameters() {
@@ -56,8 +54,6 @@ class external extends external_api {
     }
 
     /**
-     *
-     *
      * @param [type] $institutionkey
      * @return bool
      */
@@ -69,8 +65,10 @@ class external extends external_api {
         $systemcontext = context_system::instance();
         self::validate_context($systemcontext);
         require_capability('local/providerapi:check_institution', $systemcontext);
-
-        return true;
+        if ($institution = institution::get_by_secretkey($params['institutionkey'])) {
+            return true;
+        }
+        return false;
     }
 
     /**

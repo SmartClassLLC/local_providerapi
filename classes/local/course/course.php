@@ -67,6 +67,13 @@ class course extends core_course_list_element {
     }
 
     /**
+     * @return stdClass
+     */
+    public function get_record() {
+        return $this->record;
+    }
+
+    /**
      * @param stdClass $data
      * @throws |coding_exception
      * @throws \dml_exception

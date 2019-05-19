@@ -66,6 +66,11 @@ $observers = array(
                 'includefile' => '/local/providerapi/classes/observer/batch.php',
         ),
         array(
+                'eventname' => '\local_providerapi\event\sharedcourse_created',
+                'callback' => 'sharedcoursecreated',
+                'includefile' => '/local/providerapi/classes/observer/course.php',
+        ),
+        array(
                 'eventname' => '\local_providerapi\event\sharedcourse_deleted',
                 'callback' => 'sharedcoursedeleted',
                 'includefile' => '/local/providerapi/classes/observer/course.php',
