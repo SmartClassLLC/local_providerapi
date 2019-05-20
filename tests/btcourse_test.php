@@ -42,12 +42,14 @@ class local_providerapi_btcourse_testcase extends advanced_testcase {
      * @throws coding_exception
      */
     public function test_btcourse_assign() {
-        global $DB;
+        global $DB, $CFG;
+        require_once($CFG->libdir . '/grouplib.php');
         $this->resetAfterTest();
         $this->setAdminUser();
         $generator = $this->getDataGenerator();
         $providergenerator = $generator->get_plugin_generator('local_providerapi');
         $btcourserecord = $providergenerator->generate_btcourse();
+        $course1 = get_course($btcourserecord->courseid);
         $this->assertNotEmpty($btcourserecord);
         $this->assertSame('web', $btcourserecord->source);
         $this->assertSame('2', $btcourserecord->createrid);
@@ -56,6 +58,8 @@ class local_providerapi_btcourse_testcase extends advanced_testcase {
         $this->assertNotEmpty($btcourserecord->timemodified);
         $this->assertTrue($DB->record_exists('groups', array('id' => $btcourserecord->groupid)));
         $this->assertTrue($DB->record_exists('enrol', array('id' => $btcourserecord->enrolinstanceid)));
+        $this->assertEquals(1, $course1->groupmodeforce);
+        $this->assertEquals(SEPARATEGROUPS, $course1->groupmode);
 
     }
 
