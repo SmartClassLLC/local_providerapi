@@ -147,7 +147,6 @@ class external extends external_api {
                         'Theme name such as "standard", must exist on server', VALUE_OPTIONAL),
                 'mailformat' => new external_value(core_user::get_property_type('mailformat'),
                         'Mail format code is 0 for plain text, 1 for HTML etc', VALUE_OPTIONAL),
-            // Custom user profile fields.
                 'customfields' => new external_multiple_structure(
                         new external_single_structure(
                                 [
@@ -155,7 +154,6 @@ class external extends external_api {
                                         'value' => new external_value(PARAM_RAW, 'The value of the custom field')
                                 ]
                         ), 'User custom fields (also known as user profil fields)', VALUE_OPTIONAL),
-            // User preferences.
                 'preferences' => new external_multiple_structure(
                         new external_single_structure(
                                 [
