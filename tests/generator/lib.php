@@ -126,7 +126,9 @@ class local_providerapi_generator extends component_generator_base {
         $data->source = $source;
         $data->sharedcourseids = array($sharedcourse1->id);
         btcourse::get($data)->create();
-        return $DB->get_record(btcourse::$dbname, array('batchid' => $batch1->id, 'sharedcourseid' => $sharedcourse1->id));
+        $record = $DB->get_record(btcourse::$dbname, array('batchid' => $batch1->id, 'sharedcourseid' => $sharedcourse1->id));
+        $record->courseid = $course1->id;
+        return $record;
     }
 
 }
