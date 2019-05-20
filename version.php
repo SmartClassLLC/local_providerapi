@@ -30,5 +30,6 @@ $plugin->version = 2019051802;
 $plugin->requires = 2018120300;
 $plugin->maturity = MATURITY_ALPHA;
 $plugin->dependencies = array(
-        'enrol_cohort' => ANY_VERSION
+        'enrol_cohort' => ANY_VERSION,
+        'mod_lti' => ANY_VERSION
 );
