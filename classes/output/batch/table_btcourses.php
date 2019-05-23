@@ -67,7 +67,7 @@ class table_btcourses extends table_sql implements \renderable {
         parent::__construct('table_btcourses');
         $this->define_baseurl($baseurl);
         $this->collapsible(true);
-        $this->sortable(true);
+        $this->sortable(true, 'name');
         $this->pageable(true);
         $this->is_downloadable(true);
         $this->is_downloading(optional_param('download', 0, PARAM_ALPHA),
@@ -80,8 +80,8 @@ class table_btcourses extends table_sql implements \renderable {
         $headers = [];
         $columns = [];
 
-        $headers[] = get_string('name');
-        $columns[] = 'name';
+        $headers[] = get_string('coursename', 'local_providerapi');
+        $columns[] = 'coursename';
 
         $headers[] = 'Creater';
         $columns[] = 'createrid';
@@ -125,6 +125,21 @@ class table_btcourses extends table_sql implements \renderable {
     /**
      * @param $row
      * @return string
+     * @throws \moodle_exception
+     */
+    public function col_coursename($row) {
+        $name = $row->coursename;
+        if ($this->is_downloading()) {
+            return format_string($name);
+        } else {
+            $url = new moodle_url('/course/view.php', array('id' => $row->courseid));
+            return \html_writer::link($url, $name);
+        }
+    }
+
+    /**
+     * @param $row
+     * @return string
      * @throws \dml_exception
      * @throws \moodle_exception
      */
@@ -147,6 +162,16 @@ class table_btcourses extends table_sql implements \renderable {
         global $OUTPUT;
 
         $buttons = array();
+        if ($row->source === PROVIDERAPI_SOURCEWEB) {
+            if (has_capability('local/providerapi:deleteassigncourse', $this->context)) {
+                $deleteurl = new moodle_url('/local/providerapi/modules/batch/assignedit.php',
+                        array('delid' => $row->id, 'batchid' => $row->batchid, 'returnurl' => $this->baseurl->out_as_local_url(),
+                                'sesskey' => sesskey()));
+                $visibleimg = new pix_icon('t/delete', get_string('delete'));
+                $buttons[] = $OUTPUT->action_icon($deleteurl, $visibleimg,
+                        new confirm_action(get_string('areyousuredel', 'local_providerapi', $row->coursename)));
+            }
+        }
 
         return \html_writer::div(implode(' ', $buttons), 'text-nowrap');
     }

@@ -15,34 +15,37 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin internal classes, functions and constants are defined here.
+ * short_description
  *
- * @package     local_providerapi
- * @copyright   2019 Çağlar MERSİNLİ <ceremy@gmail.com>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * long_description
+ *
+ * @package    local_providerapi
+ * @copyright  2019 çağlar MERSİNLİ <ceremy@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace local_providerapi\task;
+
+use local_providerapi\local\groupHelper;
 
 defined('MOODLE_INTERNAL') || die();
 
-/**
- *
- */
-define('PROVIDERAPI_SOURCEWS', 'ws');
-/**
- *
- */
-define('PROVIDERAPI_SOURCEWEB', 'web');
+class group_healt_check extends \core\task\scheduled_task {
 
-/**
- * Check selected institution
- *
- * @return bool|int
- */
-function local_providerapi_getinstitution() {
-    global $SESSION;
-    if (!isset($SESSION->institution) || empty($SESSION->institution)) {
-        return false;
+    /**
+     * Get a descriptive name for this task (shown to admins).
+     *
+     * @return string
+     */
+    public function get_name() {
+        return get_string('grouphealtcheck', 'local_providerapi');
     }
-    return $SESSION->institution;
-}
 
+    /**
+     * Do the job.
+     * Throw exceptions on errors (the job will be retried).
+     */
+    public function execute() {
+        groupHelper::check_group_instances();
+    }
+}

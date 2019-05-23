@@ -28,32 +28,40 @@ defined('MOODLE_INTERNAL') || die();
 
 $functions = array(
 
-    'local_providerapi_checkinstitution' => array(
-        'classname' => 'local_providerapi\webservice\institution\external',
-        'methodname' => 'checkinstitution',
-        'description' => 'check institution exist moodle',
-        'type' => 'read',
-        'capabilities' => 'local/providerapi:check_institution',
-        'services' => array('providerapi')
-    ),
+        'local_providerapi_checkinstitution' => array(
+                'classname' => 'local_providerapi\webservice\institution\external',
+                'methodname' => 'checkinstitution',
+                'description' => 'check institution exist moodle',
+                'type' => 'read',
+                'capabilities' => 'local/providerapi:check_institution',
+                'services' => array('providerapi')
+        ),
         'local_providerapi_assigncourseweb' => array(
-        'classname' => 'local_providerapi\webservice\batch\external',
-        'methodname' => 'assigncourseweb',
-        'description' => 'Assign course via web',
-        'type' => 'write',
-        'capabilities' => 'local/providerapi:assigncourse',
-        'ajax' => true
-    )
+                'classname' => 'local_providerapi\webservice\batch\external',
+                'methodname' => 'assigncourseweb',
+                'description' => 'Assign course via web',
+                'type' => 'write',
+                'capabilities' => 'local/providerapi:assigncourse',
+                'ajax' => true
+        ),
+        'local_providerapi_create_users' => array(
+                'classname' => 'local_providerapi\webservice\institution\external',
+                'methodname' => 'create_users',
+                'description' => 'User Create in moodle and this user add institutiton\'s cohort',
+                'type' => 'write',
+                'capabilities' => 'local/providerapi:create_user',
+                'services' => array('providerapi')
+        )
 
 );
 
 $services = array(
-    'ProviderApi' => array(
-        'functions' => array(
-            'local_providerapi_checkinstitution'
-        ),
-        'restrictedusers' => 1,
-        'enabled' => 1,
-        'shortname' => 'providerapi'
-    )
+        'ProviderApi' => array(
+                'functions' => array(
+                        'local_providerapi_checkinstitution'
+                ),
+                'restrictedusers' => 1,
+                'enabled' => 1,
+                'shortname' => 'providerapi'
+        )
 );

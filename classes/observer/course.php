@@ -23,19 +23,61 @@
  */
 
 use core\event\course_deleted;
+use local_providerapi\event\btcourse_deleted;
+use local_providerapi\event\sharedcourse_created;
+use local_providerapi\event\sharedcourse_deleted;
 use local_providerapi\local\course\course;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * @param course_deleted $event
+ * @throws coding_exception
+ * @throws dml_exception
+ */
 function coursedeleted(course_deleted $event) {
     global $DB;
     // Exist Sahared Courses?
-    $sharedcourses = $DB->get_records(course::$dbname, array('courseid' => $event->objectid));
+    $sharedcourses = $DB->get_records(course::$dbname, array('courseid' => $event->objectid), '', 'id');
     if ($sharedcourses) {
         foreach ($sharedcourses as $sharedcourse) {
             course::delete($sharedcourse->id);
         }
     }
+}
+
+/**
+ * @param sharedcourse_deleted $event
+ * @throws coding_exception
+ * @throws dml_exception
+ */
+function sharedcoursedeleted(sharedcourse_deleted $event) {
+    global $DB;
+    $sharedcourseid = $event->objectid;
+    $btcourses = $DB->get_records_select('local_providerapi_btcourses', 'sharedcourseid = ?', array($sharedcourseid));
+    if ($btcourses) {
+        foreach ($btcourses as $btcourse) {
+            if ($DB->delete_records('local_providerapi_btcourses', array('id' => $btcourse->id))) {
+                btcourse_deleted::create_from_objectid($btcourse)->trigger();
+            }
+        }
+    }
+}
+
+/**
+ * @param sharedcourse_created $event
+ * @throws dml_exception
+ * @throws moodle_exception
+ */
+function sharedcoursecreated(sharedcourse_created $event) {
+    $sharedcourseid = $event->objectid;
+    $sharedcourse = course::get($sharedcourseid);
+    $courserecord = $sharedcourse->get_record();
+
+    // Force Course GROUPMODE.
+    $courserecord->groupmode = SEPARATEGROUPS;
+    $courserecord->groupmodeforce = 1;
+    update_course($courserecord);
 }
 
 

@@ -91,4 +91,12 @@ class cohortHelper {
         }
     }
 
+    /**
+     * @param int $cohortid
+     * @param $userid
+     */
+    public static function add_member(int $cohortid, $userid) {
+        cohort_add_member($cohortid, $userid);
+    }
+
 }

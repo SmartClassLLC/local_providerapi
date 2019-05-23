@@ -16,7 +16,6 @@ cache:
     - $HOME/.npm
 
 php:
-  - 7.0
   - 7.1
   - 7.2
   - 7.3
@@ -26,9 +25,9 @@ matrix:
   #- env: DB=pgsql MOODLE_BRANCH=master
   #- env: DB=mysqli MOODLE_BRANCH=master
   exclude:
-    - php: 7.0
+    - php: 7.1
       env: DB=pgsql MOODLE_BRANCH=master
-    - php: 7.0
+    - php: 7.1
       env: DB=mysqli MOODLE_BRANCH=master
   fast_finish: true
 
@@ -38,8 +37,10 @@ env:
     - MUSTACHE_IGNORE_NAMES="email_html_body.mustache, email_html.mustache, email_text.mustache"
   matrix:
     - DB=pgsql MOODLE_BRANCH=MOODLE_36_STABLE
+    - DB=pgsql MOODLE_BRANCH=MOODLE_37_STABLE
     - DB=pgsql MOODLE_BRANCH=master
     - DB=mysqli MOODLE_BRANCH=MOODLE_36_STABLE
+    - DB=mysqli MOODLE_BRANCH=MOODLE_37_STABLE
     - DB=mysqli MOODLE_BRANCH=master
 
 before_install:

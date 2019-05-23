@@ -64,5 +64,30 @@ $observers = array(
                 'eventname' => '\local_providerapi\event\batch_deleted',
                 'callback' => 'batchdeleted',
                 'includefile' => '/local/providerapi/classes/observer/batch.php',
+        ),
+        array(
+                'eventname' => '\local_providerapi\event\sharedcourse_created',
+                'callback' => 'sharedcoursecreated',
+                'includefile' => '/local/providerapi/classes/observer/course.php',
+        ),
+        array(
+                'eventname' => '\local_providerapi\event\sharedcourse_deleted',
+                'callback' => 'sharedcoursedeleted',
+                'includefile' => '/local/providerapi/classes/observer/course.php',
+        ),
+        array(
+                'eventname' => '\local_providerapi\event\btcourse_deleted',
+                'callback' => 'btcoursedeleted',
+                'includefile' => '/local/providerapi/classes/observer/batch.php',
+        ),
+        array(
+                'eventname' => '\core\event\group_deleted',
+                'callback' => 'groupdeleted',
+                'includefile' => '/local/providerapi/classes/observer/batch.php',
+        ),
+        array(
+                'eventname' => '\core\event\enrol_instance_deleted',
+                'callback' => 'enrolinstancedeleted',
+                'includefile' => '/local/providerapi/classes/observer/batch.php',
         )
 );

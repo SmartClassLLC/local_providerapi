@@ -25,9 +25,12 @@
  */
 
 use local_providerapi\local\batch\batch;
+use local_providerapi\local\batch\btcourse;
 use local_providerapi\local\institution\institution;
 
 defined('MOODLE_INTERNAL') || die();
+global $CFG;
+require_once($CFG->dirroot . '/local/providerapi/locallib.php');
 
 /**
  * Class local_providerapi
@@ -95,6 +98,37 @@ class local_providerapi_generator extends component_generator_base {
         }
         $data = (object) $record;
         \local_providerapi\local\course\course::create($data);
+    }
+
+    /**
+     * @param string $source
+     * @return mixed
+     * @throws dml_exception
+     * @throws moodle_exception
+     */
+    public function generate_btcourse($source = PROVIDERAPI_SOURCEWEB) {
+        global $DB;
+        $institution = $this->create_institution();
+        $generator = $this->datagenerator;
+        $course1 = $generator->create_course();
+        $this->create_sharedcourse(array(
+                'institutionid' => $institution->id,
+                'courseids' => array($course1->id)
+        ));
+        $sharedcourse1 = $DB->get_record('local_providerapi_courses',
+                array('institutionid' => $institution->id, 'courseid' => $course1->id));
+        $batch1 = $this->create_batch(array(
+                'institutionid' => $institution->id,
+                'testbach2'
+        ));
+        $data = new stdClass();
+        $data->batchid = $batch1->id;
+        $data->source = $source;
+        $data->sharedcourseids = array($sharedcourse1->id);
+        btcourse::get($data)->create();
+        $record = $DB->get_record(btcourse::$dbname, array('batchid' => $batch1->id, 'sharedcourseid' => $sharedcourse1->id));
+        $record->courseid = $course1->id;
+        return $record;
     }
 
 }

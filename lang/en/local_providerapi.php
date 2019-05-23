@@ -39,23 +39,29 @@ $string['providerapi:enrol_course'] = 'Enrol Course';
 $string['providerapi:get_shared_courses'] = 'Get Shared Course from İnstitution';
 $string['providerapi:get_site_info'] = 'Get Site İnfo';
 $string['providerapi:check_institution'] = 'Check Institution in moodle instilation';
-$string['local/providerapi:viewrootnav'] = 'View root navigation of providerapi plugin';
-$string['local/providerapi:viewinstitutionnav'] = 'View institution tab';
-$string['local/providerapi:createinstitution'] = 'Create Institution';
-$string['local/providerapi:editinstitution'] = 'Edit Institution';
-$string['local/providerapi:deleteinstitution'] = 'Delete Institution';
-$string['local/providerapi:sharedcourse'] = 'Share Course';
-$string['local/providerapi:deletesharedcourse'] = 'Delete Shared Course';
-$string['local/providerapi:viewbatch'] = 'View Classroom of Institution';
-$string['local/providerapi:addbatch'] = 'Add batch to Institution';
-$string['local/providerapi:editbatch'] = 'Edit batch of Institution';
-$string['local/providerapi:deletebatch'] = 'Delete batch of Institution';
-$string['local/providerapi:assigncourse'] = 'Assign shared course to batch';
-$string['local/providerapi:deleteassigncourse'] = 'Delete assign shared course';
-$string['local/providerapi:viewassigncourse'] = 'View assign shared course';
+$string['providerapi:viewrootnav'] = 'View root navigation of providerapi plugin';
+$string['providerapi:viewinstitutionnav'] = 'View institution tab';
+$string['providerapi:createinstitution'] = 'Create Institution';
+$string['providerapi:editinstitution'] = 'Edit Institution';
+$string['providerapi:deleteinstitution'] = 'Delete Institution';
+$string['providerapi:sharedcourse'] = 'Share Course';
+$string['providerapi:deletesharedcourse'] = 'Delete Shared Course';
+$string['providerapi:viewbatch'] = 'View Classroom of Institution';
+$string['providerapi:addbatch'] = 'Add batch to Institution';
+$string['providerapi:editbatch'] = 'Edit batch of Institution';
+$string['providerapi:deletebatch'] = 'Delete batch of Institution';
+$string['providerapi:assigncourse'] = 'Assign shared course to batch';
+$string['providerapi:deleteassigncourse'] = 'Delete assign shared course';
+$string['providerapi:viewassigncourse'] = 'View assign shared course';
 
 // Privacy.
 $string['privacy:metadata'] = 'The Providerapi plugin does not store any personal data.';
+
+// Tasks.
+$string['grouphealtcheck'] = 'Check batch\'s course groups';
+$string['enrolhealtcheck'] = 'Check batch\'s course enrol';
+
+
 
 // Helpbuttons.
 $string['fullname'] = 'Institution fullname explain';
@@ -74,15 +80,18 @@ $string['updatedinstitution'] = 'Institution Updated';
 $string['deletedinstitution'] = 'Institution Deleted';
 $string['createdsharedcourse'] = 'Course Shared';
 $string['deletedsharedcourse'] = 'Shared course Deleted';
+$string['deletedbtcourse'] = 'Batch \'s course Deleted';
+$string['deletedbatch'] = 'Batch Deleted';
 $string['createdbatch'] = 'Batch Created';
 $string['updatedbatch'] = 'Batch updated';
-$string['deletebatch'] = 'Batch Deleted';
 $string['eventcreated'] = 'The {$a->objname} with id \'{$a->objid}\' has created by {$a->by}';
 $string['eventupdated'] = 'The {$a->objname} with id \'{$a->objid}\' has updated by {$a->by}';
 $string['eventdeleted'] = 'The {$a->objname} with id \'{$a->objid}\' has deleted by {$a->by}';
 
 // Exceptions.
-$string['notexistinstitution'] = 'Institution is not exist';
+$string['notexistinstitution'] = 'The Institution is not exist';
+$string['notexistbatch'] = 'The Batch is not exist';
+$string['cohortnotexist'] = 'The Cohort is not exist';
 $string['missingproperty'] = 'required property missing';
 $string['requiredproperty'] = 'required property name \'{$a}\' missing';
 $string['hackattempt'] = 'Unauthorized transaction';
@@ -111,7 +120,9 @@ $string['addbatch'] = 'Add batch';
 $string['capacity'] = 'Capacity';
 $string['source'] = 'Source';
 $string['assigncourse'] = 'Assign Course';
+$string['sharedcourse'] = 'Shared Course';
 $string['assigncoursetobatch'] = '{$a} \'s Courses';
+$string['coursename'] = 'Course Name';
 
 
 

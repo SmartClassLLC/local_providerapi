@@ -26,6 +26,10 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_providerapi';
 $plugin->release = '0.1.0';
-$plugin->version = 2019050222;
+$plugin->version = 2019051803;
 $plugin->requires = 2018120300;
 $plugin->maturity = MATURITY_ALPHA;
+$plugin->dependencies = array(
+        'enrol_cohort' => ANY_VERSION,
+        'mod_lti' => ANY_VERSION
+);

@@ -29,10 +29,10 @@ namespace local_providerapi\local\batch;
 use local_providerapi\event\batch_created;
 use local_providerapi\event\batch_deleted;
 use local_providerapi\event\batch_updated;
+use local_providerapi\event\btcourse_deleted;
 use local_providerapi\local\cohortHelper;
 use local_providerapi\local\institution\institution;
 use local_providerapi\local\modelbase;
-use moodle_exception;
 use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
@@ -94,51 +94,6 @@ class batch extends modelbase {
         }
     }
 
-    /**
-     * @return array
-     * @throws \dml_exception
-     */
-    public function get_btcourseids() {
-        global $DB;
-        return $DB->get_fieldset_select($this->btcoursedbname, 'sharedcourseid', 'batchid = ?', array($this->id));
-    }
-
-    /**
-     * @param array $sharedcourseids
-     * @return bool
-     * @throws \dml_exception
-     * @throws \dml_transaction_exception
-     * @throws moodle_exception
-     */
-    public function assigncourse(array $sharedcourseids) {
-        global $DB;
-        if (empty($sharedcourseids)) {
-            throw new moodle_exception('requiredproperty', 'local_providerapi', 'sharedcourseids');
-        }
-        $trans = $DB->start_delegated_transaction();
-        $record = $this->get_default_btcourse_properties();
-        foreach ($sharedcourseids as $sharedcourseid) {
-            $record->sharedcourseid = $sharedcourseid;
-            $DB->insert_record($this->btcoursedbname, $record);
-        }
-        $trans->allow_commit();
-        return true;
-    }
-
-    /**
-     * @return stdClass
-     */
-    public function get_default_btcourse_properties() {
-        global $USER;
-        $now = time();
-        $data = new stdClass();
-        $data->batchid = $this->id;
-        $data->createrid = $USER->id;
-        $data->modifiedby = $USER->id;
-        $data->timecreated = $now;
-        $data->timemodified = $now;
-        return $data;
-    }
 
     /**
      * @return int
@@ -204,36 +159,6 @@ class batch extends modelbase {
         return array($select, $from, $wheres, $params);
     }
 
-    /**
-     * @param string $additionalwhere
-     * @param array $additionalparams
-     * @return array
-     */
-    public function get_btcourses_sql($additionalwhere = '', $additionalparams = array()): array {
-
-        $wheres = array();
-        $params = array();
-        $select = "bt.*,c.fullname AS name";
-        $joins = array('{local_providerapi_btcourses} bt');
-        $joins[] = "JOIN {local_providerapi_courses} sc ON bt.sharedcourseid = sc.id";
-        $joins[] = "JOIN {course} c ON sc.courseid = c.id";
-        $wheres[] = 'bt.batchid = :batchid';
-        $params['batchid'] = $this->id;
-
-        if (!empty($additionalwhere)) {
-            $wheres[] = $additionalwhere;
-            $params = array_merge($params, $additionalparams);
-        }
-
-        $from = implode("\n", $joins);
-        if ($wheres) {
-            $wheres = implode(' AND ', $wheres);
-        } else {
-            $wheres = '';
-        }
-
-        return array($select, $from, $wheres, $params);
-    }
 
     /**
      * yeni kayıt için event olayı yazılacak

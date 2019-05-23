@@ -23,6 +23,9 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_providerapi\local\batch\batch;
+use local_providerapi\local\batch\btcourse;
+use local_providerapi\local\course\course;
 use local_providerapi\local\institution\institution;
 
 defined('MOODLE_INTERNAL') || die();
@@ -194,6 +197,50 @@ class local_providerapi_institution_testcase extends advanced_testcase {
         // Validate delete cohort.
         $cohort = $DB->record_exists('cohort', array('id' => $institution->cohortid));
         $this->assertFalse($cohort);
+    }
+
+    /**
+     * @throws coding_exception
+     * @throws dml_exception
+     */
+    public function test_relationship_deleteinstitution() {
+        global $DB;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $generator = $this->getDataGenerator();
+        $providergenerator = $generator->get_plugin_generator('local_providerapi');
+        $institution = $providergenerator->create_institution();
+        $course1 = $generator->create_course();
+        $providergenerator->create_sharedcourse(array(
+                'institutionid' => $institution->id,
+                'courseids' => array($course1->id)
+        ));
+        $sharedcourse1 = $DB->get_record('local_providerapi_courses',
+                array('institutionid' => $institution->id, 'courseid' => $course1->id));
+        $batch1 = $providergenerator->create_batch(array(
+                'institutionid' => $institution->id,
+                'testbach2'
+        ));
+        $data = new stdClass();
+        $data->batchid = $batch1->id;
+        $data->source = 'web';
+        $data->sharedcourseids = array($sharedcourse1->id);
+        btcourse::get($data)->create();
+        $btcourserecord =
+                $DB->get_record(btcourse::$dbname, array('batchid' => $batch1->id, 'sharedcourseid' => $sharedcourse1->id));
+        $this->assertNotEmpty($btcourserecord);
+        $institution->delete();
+
+        $this->assertFalse($DB->record_exists(institution::$dbname, array('id' => $institution->id)));
+        $this->assertFalse($DB->record_exists(batch::$dbname, array('id' => $batch1->id)));
+        $this->assertFalse($DB->record_exists('cohort', array('id' => $institution->cohortid)));
+        $this->assertFalse($DB->record_exists('cohort', array('id' => $batch1->cohortid)));
+        $this->assertFalse($DB->record_exists(btcourse::$dbname, array('batchid' => $batch1->id)));
+        $this->assertFalse($DB->record_exists(btcourse::$dbname, array('sharedcourseid' => $sharedcourse1->id)));
+        $this->assertFalse($DB->record_exists(course::$dbname, array('institutionid' => $institution->id)));
+        $this->assertFalse($DB->record_exists('groups', array('id' => $btcourserecord->groupid)));
+        $this->assertFalse($DB->record_exists('enrol', array('id' => $btcourserecord->enrolinstanceid)));
+
     }
 
 }

@@ -89,8 +89,6 @@ define(['jquery', 'core/str', 'core/modal_factory', 'core/modal_events', 'core/f
                 this.modal.getRoot().on(ModalEvents.shown, function() {
                     this.modal.getRoot().append('<style>[data-fieldtype=submit] { display: none ! important; }</style>');
                 }.bind(this));
-
-
                 // We catch the modal save event, and use it to submit the form inside the modal.
                 // Triggering a form submission will give JS validation scripts a chance to check for errors.
                 this.modal.getRoot().on(ModalEvents.save, this.submitForm.bind(this));
@@ -194,7 +192,6 @@ define(['jquery', 'core/str', 'core/modal_factory', 'core/modal_events', 'core/f
         AddAssignCourse.prototype.enableButtons = function() {
             this.modal.getFooter().find(SELECTORS.SAVE_BUTTON).prop('disabled', false);
         };
-
 
         return /** @alias module:local_providerapi/addassigncourse */ {
             init: function(contextid, batchid, institutionid) {

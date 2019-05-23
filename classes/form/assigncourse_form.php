@@ -27,6 +27,7 @@
 namespace local_providerapi\form;
 
 use local_providerapi\local\batch\batch;
+use local_providerapi\local\batch\btcourse;
 use local_providerapi\local\course\course;
 use moodleform;
 
@@ -49,7 +50,7 @@ class assigncourse_form extends moodleform {
         $batch = batch::get($batchid);
         $institutionid = $batch->institutionid;
         $allcoursesmenu = course::get_course_menu($institutionid);
-        $options = array_diff_key($allcoursesmenu, array_flip($batch->get_btcourseids()));
+        $options = array_diff_key($allcoursesmenu, array_flip(btcourse::get_btsharecourseids($batchid)));
 
         // Add some extra hidden fields.
         $mform->addElement('hidden', 'source', 'web');

@@ -31,7 +31,7 @@ use local_providerapi\event\institution_deleted;
 use local_providerapi\event\institution_updated;
 use local_providerapi\local\cohortHelper;
 use local_providerapi\local\modelbase;
-use local_providerapi\local\navigation;
+use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -55,23 +55,11 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class institution extends modelbase {
-    use navigation;
 
     /**
      * @var string
      */
     public static $dbname = "local_providerapi_companies";
-
-    /**
-     * @var array
-     */
-    /* protected static $pages = array(
-             'course' => array(
-                     'url' => '/local/providerapi/modules/institution/courses.php',
-                     'text' => 'courses',
-                     'icon' => '',
-             ),
-     );*/
 
     /**
      * @param int|\stdClass $id
@@ -86,6 +74,32 @@ class institution extends modelbase {
             $data = $id;
         }
         return new self($data);
+    }
+
+    /**
+     * @param $secretkey
+     * @return institution
+     * @throws \dml_exception
+     * @throws moodle_exception
+     */
+    public static function get_by_secretkey($secretkey) {
+        global $DB;
+        $data = $DB->get_record(self::$dbname, array('secretkey' => $secretkey), '*');
+        if ($data) {
+            return new self($data);
+        }
+        throw new moodle_exception('notexistinstitution', 'local_providerapi');
+    }
+
+    /**
+     * @param $userid
+     */
+    public function add_member($userid) {
+        $cohortid = $this->cohortid;
+        if (empty($cohortid)) {
+            throw new moodle_exception('cohortnotexist', 'local_providerapi');
+        }
+        cohortHelper::add_member($this->cohortid, $userid);
     }
 
     /**

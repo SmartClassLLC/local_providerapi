@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/providerapi/db" VERSION="20190514" COMMENT="XMLDB file for Moodle local/providerapi"
+<XMLDB PATH="local/providerapi/db" VERSION="20190518" COMMENT="XMLDB file for Moodle local/providerapi"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -63,6 +63,8 @@
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="batchid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="sharedcourseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="groupid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="enrolinstanceid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="source" TYPE="char" LENGTH="3" NOTNULL="false" DEFAULT="web" SEQUENCE="false"/>
         <FIELD NAME="createrid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
@@ -73,6 +75,8 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="batchid" TYPE="foreign" FIELDS="batchid" REFTABLE="local_providerapi_batches" REFFIELDS="id"/>
         <KEY NAME="sharedcourseid" TYPE="foreign" FIELDS="sharedcourseid" REFTABLE="local_providerapi_courses" REFFIELDS="id"/>
+        <KEY NAME="groupid" TYPE="foreign-unique" FIELDS="groupid" REFTABLE="groups" REFFIELDS="id"/>
+        <KEY NAME="enrolinstanceid" TYPE="foreign-unique" FIELDS="enrolinstanceid" REFTABLE="enrol" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
   </TABLES>
