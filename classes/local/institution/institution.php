@@ -182,7 +182,7 @@ class institution extends modelbase {
     }
 
     /**
-     * yeni kayıt için event olayı yazılacak
+     *
      *
      * @param $id
      *
@@ -192,7 +192,7 @@ class institution extends modelbase {
     }
 
     /**
-     * güncelleme için event olayı yazılacak
+     *
      *
      * @param $id
      *
@@ -202,7 +202,7 @@ class institution extends modelbase {
     }
 
     /**
-     * silme için event olayı yazılacak
+     *
      *
      * @param \stdClass $data
      *

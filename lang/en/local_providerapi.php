@@ -34,7 +34,7 @@ $string['providerapi:create_user'] = 'Create User';
 $string['providerapi:delete_course_group'] = 'Delete course group';
 $string['providerapi:delete_user'] = 'Delete User ';
 $string['providerapi:edit_course_group'] = 'Create course group';
-$string['providerapi:edit_user'] = 'Edit User';
+$string['providerapi:update_user'] = 'Update User';
 $string['providerapi:enrol_course'] = 'Enrol Course';
 $string['providerapi:get_shared_courses'] = 'Get Shared Course from İnstitution';
 $string['providerapi:get_site_info'] = 'Get Site İnfo';
@@ -60,8 +60,6 @@ $string['privacy:metadata'] = 'The Providerapi plugin does not store any persona
 // Tasks.
 $string['grouphealtcheck'] = 'Check batch\'s course groups';
 $string['enrolhealtcheck'] = 'Check batch\'s course enrol';
-
-
 
 // Helpbuttons.
 $string['fullname'] = 'Institution fullname explain';
@@ -95,6 +93,7 @@ $string['cohortnotexist'] = 'The Cohort is not exist';
 $string['missingproperty'] = 'required property missing';
 $string['requiredproperty'] = 'required property name \'{$a}\' missing';
 $string['hackattempt'] = 'Unauthorized transaction';
+$string['nofounduserininstitutuion'] = 'User is not found in this institutuion';
 
 // Strings.
 $string['institutions'] = 'Institutions';

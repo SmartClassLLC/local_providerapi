@@ -167,7 +167,7 @@ $capabilities = [
                 'archetypes' => [
                 ],
         ],
-        'local/providerapi:edit_user' => [
+        'local/providerapi:update_user' => [
                 'captype' => 'write',
                 'contextlevel' => 10,
                 'archetypes' => [

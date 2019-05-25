@@ -35,12 +35,19 @@ use external_multiple_structure;
 use external_single_structure;
 use external_value;
 use invalid_parameter_exception;
+use local_providerapi\local\cohortHelper;
 use local_providerapi\local\institution\institution;
+use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->libdir . "/externallib.php");
 
+/**
+ * Class external
+ *
+ * @package local_providerapi\webservice\institution
+ */
 class external extends external_api {
     /**
      * @return external_function_parameters
@@ -88,7 +95,7 @@ class external extends external_api {
         global $CFG;
         $userfields = [
                 'institutionkey' => new external_value(PARAM_ALPHANUM, 'Institution SecretKey'),
-                'studentno' => new external_value(PARAM_TEXT, 'Studentno must be 6 digits'),
+                'studentno' => new external_value(PARAM_TEXT, 'Studentno must be 6 digits and must be unique each intitution'),
                 'createpassword' => new external_value(PARAM_BOOL, 'True if password should be created and mailed to user.',
                         VALUE_OPTIONAL),
             // General.
@@ -129,9 +136,6 @@ class external extends external_api {
                 'aim' => new external_value(core_user::get_property_type('aim'), 'AIM ID', VALUE_OPTIONAL),
                 'yahoo' => new external_value(core_user::get_property_type('yahoo'), 'Yahoo ID', VALUE_OPTIONAL),
                 'msn' => new external_value(core_user::get_property_type('msn'), 'MSN ID', VALUE_OPTIONAL),
-                'idnumber' => new external_value(core_user::get_property_type('idnumber'),
-                        'An arbitrary ID code number perhaps from the institution', VALUE_DEFAULT, ''),
-                'institution' => new external_value(core_user::get_property_type('institution'), 'institution', VALUE_OPTIONAL),
                 'department' => new external_value(core_user::get_property_type('department'), 'department', VALUE_OPTIONAL),
                 'phone1' => new external_value(core_user::get_property_type('phone1'), 'Phone 1', VALUE_OPTIONAL),
                 'phone2' => new external_value(core_user::get_property_type('phone2'), 'Phone 2', VALUE_OPTIONAL),
@@ -352,6 +356,329 @@ class external extends external_api {
                         )
                 )
         );
+    }
+
+    /**
+     * @return external_function_parameters
+     * @throws \coding_exception
+     */
+    public static function update_users_parameters() {
+        $userfields = [
+                'id' => new external_value(core_user::get_property_type('id'), 'ID of the user'),
+                'institutionkey' => new external_value(PARAM_ALPHANUM, 'Institution SecretKey'),
+                'studentno' => new external_value(PARAM_TEXT, 'Studentno must be 6 digits and must be unique each intitution',
+                        VALUE_OPTIONAL),
+            // General.
+                'username' => new external_value(core_user::get_property_type('username'),
+                        'Username policy is defined in Moodle security config.', VALUE_OPTIONAL, '', NULL_NOT_ALLOWED),
+                'auth' => new external_value(core_user::get_property_type('auth'), 'Auth plugins include manual, ldap, etc',
+                        VALUE_OPTIONAL, '', NULL_NOT_ALLOWED),
+                'suspended' => new external_value(core_user::get_property_type('suspended'),
+                        'Suspend user account, either false to enable user login or true to disable it', VALUE_OPTIONAL),
+                'password' => new external_value(core_user::get_property_type('password'),
+                        'Plain text password consisting of any characters', VALUE_OPTIONAL, '', NULL_NOT_ALLOWED),
+                'firstname' => new external_value(core_user::get_property_type('firstname'), 'The first name(s) of the user',
+                        VALUE_OPTIONAL, '', NULL_NOT_ALLOWED),
+                'lastname' => new external_value(core_user::get_property_type('lastname'), 'The family name of the user',
+                        VALUE_OPTIONAL),
+                'email' => new external_value(core_user::get_property_type('email'), 'A valid and unique email address',
+                        VALUE_OPTIONAL,
+                        '', NULL_NOT_ALLOWED),
+                'maildisplay' => new external_value(core_user::get_property_type('maildisplay'), 'Email display', VALUE_OPTIONAL),
+                'city' => new external_value(core_user::get_property_type('city'), 'Home city of the user', VALUE_OPTIONAL),
+                'country' => new external_value(core_user::get_property_type('country'),
+                        'Home country code of the user, such as AU or CZ', VALUE_OPTIONAL),
+                'timezone' => new external_value(core_user::get_property_type('timezone'),
+                        'Timezone code such as Australia/Perth, or 99 for default', VALUE_OPTIONAL),
+                'description' => new external_value(core_user::get_property_type('description'),
+                        'User profile description, no HTML',
+                        VALUE_OPTIONAL),
+            // User picture.
+                'userpicture' => new external_value(PARAM_INT,
+                        'The itemid where the new user picture has been uploaded to, 0 to delete', VALUE_OPTIONAL),
+            // Additional names.
+                'firstnamephonetic' => new external_value(core_user::get_property_type('firstnamephonetic'),
+                        'The first name(s) phonetically of the user', VALUE_OPTIONAL),
+                'lastnamephonetic' => new external_value(core_user::get_property_type('lastnamephonetic'),
+                        'The family name phonetically of the user', VALUE_OPTIONAL),
+                'middlename' => new external_value(core_user::get_property_type('middlename'), 'The middle name of the user',
+                        VALUE_OPTIONAL),
+                'alternatename' => new external_value(core_user::get_property_type('alternatename'),
+                        'The alternate name of the user',
+                        VALUE_OPTIONAL),
+            // Interests.
+                'interests' => new external_value(PARAM_TEXT, 'User interests (separated by commas)', VALUE_OPTIONAL),
+            // Optional.
+                'url' => new external_value(core_user::get_property_type('url'), 'User web page', VALUE_OPTIONAL),
+                'icq' => new external_value(core_user::get_property_type('icq'), 'ICQ number', VALUE_OPTIONAL),
+                'skype' => new external_value(core_user::get_property_type('skype'), 'Skype ID', VALUE_OPTIONAL),
+                'aim' => new external_value(core_user::get_property_type('aim'), 'AIM ID', VALUE_OPTIONAL),
+                'yahoo' => new external_value(core_user::get_property_type('yahoo'), 'Yahoo ID', VALUE_OPTIONAL),
+                'msn' => new external_value(core_user::get_property_type('msn'), 'MSN ID', VALUE_OPTIONAL),
+                'department' => new external_value(core_user::get_property_type('department'), 'Department', VALUE_OPTIONAL),
+                'phone1' => new external_value(core_user::get_property_type('phone1'), 'Phone', VALUE_OPTIONAL),
+                'phone2' => new external_value(core_user::get_property_type('phone2'), 'Mobile phone', VALUE_OPTIONAL),
+                'address' => new external_value(core_user::get_property_type('address'), 'Postal address', VALUE_OPTIONAL),
+            // Other user preferences stored in the user table.
+                'lang' => new external_value(core_user::get_property_type('lang'),
+                        'Language code such as "en", must exist on server',
+                        VALUE_OPTIONAL, '', NULL_NOT_ALLOWED),
+                'calendartype' => new external_value(core_user::get_property_type('calendartype'),
+                        'Calendar type such as "gregorian", must exist on server', VALUE_OPTIONAL, '', NULL_NOT_ALLOWED),
+                'theme' => new external_value(core_user::get_property_type('theme'),
+                        'Theme name such as "standard", must exist on server', VALUE_OPTIONAL),
+                'mailformat' => new external_value(core_user::get_property_type('mailformat'),
+                        'Mail format code is 0 for plain text, 1 for HTML etc', VALUE_OPTIONAL),
+            // Custom user profile fields.
+                'customfields' => new external_multiple_structure(
+                        new external_single_structure(
+                                [
+                                        'type' => new external_value(PARAM_ALPHANUMEXT, 'The name of the custom field'),
+                                        'value' => new external_value(PARAM_RAW, 'The value of the custom field')
+                                ]
+                        ), 'User custom fields (also known as user profil fields)', VALUE_OPTIONAL),
+            // User preferences.
+                'preferences' => new external_multiple_structure(
+                        new external_single_structure(
+                                [
+                                        'type' => new external_value(PARAM_RAW, 'The name of the preference'),
+                                        'value' => new external_value(PARAM_RAW, 'The value of the preference')
+                                ]
+                        ), 'User preferences', VALUE_OPTIONAL),
+        ];
+        return new external_function_parameters(
+                [
+                        'users' => new external_multiple_structure(
+                                new external_single_structure($userfields)
+                        )
+                ]
+        );
+    }
+
+    /**
+     * Update users
+     *
+     * @param array $users
+     * @return null
+     * @since Moodle 2.2
+     */
+    public static function update_users($users) {
+        global $CFG, $DB, $USER;
+        require_once($CFG->dirroot . "/user/lib.php");
+        require_once($CFG->dirroot . "/user/profile/lib.php"); // Required for customfields related function.
+        require_once($CFG->dirroot . '/user/editlib.php');
+
+        // Ensure the current user is allowed to run this function.
+        $context = context_system::instance();
+        require_capability('local/providerapi:update_user', $context);
+        self::validate_context($context);
+
+        $params = self::validate_parameters(self::update_users_parameters(), array('users' => $users));
+
+        $filemanageroptions = array('maxbytes' => $CFG->maxbytes,
+                'subdirs' => 0,
+                'maxfiles' => 1,
+                'accepted_types' => 'web_image');
+
+        $transaction = $DB->start_delegated_transaction();
+
+        foreach ($params['users'] as $user) {
+
+            // Istitution Check.
+            $institution = institution::get_by_secretkey($user['institutionkey']);
+
+            // Check user in institutuion.
+            if (!cohortHelper::is_member($institution->cohortid, $user['id'])) {
+                throw new moodle_exception('nofounduserininstitutuion', 'local_providerapi');
+            }
+
+            // Override istitutionname.
+            $user['istitution'] = $institution->name;
+
+            if (strlen($user['studentno']) != 6) {
+                throw new invalid_parameter_exception('Invalid studentno type: ' . $user['studentno']);
+            }
+            // Override idnumber.
+            if (!empty($user['idnumber'])) {
+                $user['idnumber'] = $institution->shortname . (string) $user['studentno'];
+            }
+            // First check the user exists.
+            if (!$existinguser = core_user::get_user($user['id'])) {
+                continue;
+            }
+            // Check if we are trying to update an admin.
+            if ($existinguser->id != $USER->id and is_siteadmin($existinguser) and !is_siteadmin($USER)) {
+                continue;
+            }
+            // Other checks (deleted, remote or guest users).
+            if ($existinguser->deleted or is_mnet_remote_user($existinguser) or isguestuser($existinguser->id)) {
+                continue;
+            }
+            // Check duplicated emails.
+            if (isset($user['email']) && $user['email'] !== $existinguser->email) {
+                if (!validate_email($user['email'])) {
+                    continue;
+                } else if (empty($CFG->allowaccountssameemail)) {
+                    // Make a case-insensitive query for the given email address and make sure to exclude the user being updated.
+                    $select = $DB->sql_equal('email', ':email', false) . ' AND mnethostid = :mnethostid AND id <> :userid';
+                    $params = array(
+                            'email' => $user['email'],
+                            'mnethostid' => $CFG->mnet_localhost_id,
+                            'userid' => $user['id']
+                    );
+                    // Skip if there are other user(s) that already have the same email.
+                    if ($DB->record_exists_select('user', $select, $params)) {
+                        continue;
+                    }
+                }
+            }
+
+            user_update_user($user, true, false);
+
+            $userobject = (object) $user;
+
+            // Update user picture if it was specified for this user.
+            if (empty($CFG->disableuserimages) && isset($user['userpicture'])) {
+                $userobject->deletepicture = null;
+
+                if ($user['userpicture'] == 0) {
+                    $userobject->deletepicture = true;
+                } else {
+                    $userobject->imagefile = $user['userpicture'];
+                }
+
+                core_user::update_picture($userobject, $filemanageroptions);
+            }
+
+            // Update user interests.
+            if (!empty($user['interests'])) {
+                $trimmedinterests = array_map('trim', explode(',', $user['interests']));
+                $interests = array_filter($trimmedinterests, function($value) {
+                    return !empty($value);
+                });
+                useredit_update_interests($userobject, $interests);
+            }
+
+            // Update user custom fields.
+            if (!empty($user['customfields'])) {
+
+                foreach ($user['customfields'] as $customfield) {
+                    // Profile_save_data() saves profile file it's expecting a user with the correct id,
+                    // and custom field to be named profile_field_"shortname".
+                    $user["profile_field_" . $customfield['type']] = $customfield['value'];
+                }
+                profile_save_data((object) $user);
+            }
+            // Add Institution Cohort.
+            $institution->add_member($user['id']);
+
+            // Trigger event.
+            \core\event\user_updated::create_from_userid($user['id'])->trigger();
+
+            // Preferences.
+            if (!empty($user['preferences'])) {
+                $userpref = clone($existinguser);
+                foreach ($user['preferences'] as $preference) {
+                    $userpref->{'preference_' . $preference['type']} = $preference['value'];
+                }
+                useredit_update_user_preference($userpref);
+            }
+            if (isset($user['suspended']) and $user['suspended']) {
+                \core\session\manager::kill_user_sessions($user['id']);
+            }
+        }
+
+        $transaction->allow_commit();
+
+        return null;
+    }
+
+    /**
+     * Returns description of method result value
+     *
+     * @return null
+     * @since Moodle 2.2
+     */
+    public static function update_users_returns() {
+        return null;
+    }
+
+    /**
+     * @return external_function_parameters
+     * @throws \coding_exception
+     */
+    public static function delete_users_parameters() {
+        $userfields = [
+                'id' => new external_value(core_user::get_property_type('id'), 'ID of the user'),
+                'institutionkey' => new external_value(PARAM_ALPHANUM, 'Institution SecretKey')
+        ];
+        return new external_function_parameters(
+                [
+                        'users' => new external_multiple_structure(
+                                new external_single_structure($userfields)
+                        )
+                ]
+        );
+    }
+
+    /**
+     * Delete users
+     *
+     * @param array $userids
+     * @return null
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \dml_transaction_exception
+     * @throws \required_capability_exception
+     * @throws \restricted_context_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     * @since Moodle 2.2
+     */
+    public static function delete_users($userids) {
+        global $CFG, $DB, $USER;
+        require_once($CFG->dirroot . "/user/lib.php");
+
+        // Ensure the current user is allowed to run this function.
+        $context = context_system::instance();
+        require_capability('local/providerapi:delete_user', $context);
+        self::validate_context($context);
+
+        $params = self::validate_parameters(self::delete_users_parameters(), array('users' => $userids));
+
+        $transaction = $DB->start_delegated_transaction();
+
+        foreach ($params['users'] as $user) {
+            // Istitution Check.
+            $institution = institution::get_by_secretkey($user['institutionkey']);
+            // Check user in institutuion.
+            if (!cohortHelper::is_member($institution->cohortid, $user['id'])) {
+                throw new moodle_exception('nofounduserininstitutuion', 'local_providerapi');
+            }
+            $userrecord = $DB->get_record('user', array('id' => $user['id'], 'deleted' => 0), '*', MUST_EXIST);
+            // Must not allow deleting of admins or self!!!
+            if (is_siteadmin($userrecord)) {
+                throw new moodle_exception('useradminodelete', 'error');
+            }
+            if ($USER->id == $userrecord->id) {
+                throw new moodle_exception('usernotdeletederror', 'error');
+            }
+            user_delete_user($userrecord);
+        }
+
+        $transaction->allow_commit();
+
+        return null;
+    }
+
+    /**
+     * Returns description of method result value
+     *
+     * @return null
+     * @since Moodle 2.2
+     */
+    public static function delete_users_returns() {
+        return null;
     }
 
 }
