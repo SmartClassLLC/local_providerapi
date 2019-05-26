@@ -283,7 +283,8 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         $contextid = context_system::instance()->id;
         $this->assignUserCapability('local/providerapi:delete_user', $contextid);
         $user1 = $generator->create_user();
-        $this->expectException('moodle_exception');
+        $this->expectExceptionObject(new moodle_exception('nofounduserininstitutuion', 'local_providerapi'));
+        $this->expectExceptionMessage('User is not found in this institutuion');
         external::delete_users(array(
                 array('institutionkey' => $institution->secretkey, 'id' => $user1->id),
         ));

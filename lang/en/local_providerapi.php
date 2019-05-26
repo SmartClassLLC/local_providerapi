@@ -33,6 +33,7 @@ $string['providerapi:add_grouping_to_course'] = 'Add Course Grouping';
 $string['providerapi:create_user'] = 'Create User';
 $string['providerapi:delete_course_group'] = 'Delete course group';
 $string['providerapi:delete_user'] = 'Delete User ';
+$string['providerapi:get_users'] = 'Get User';
 $string['providerapi:edit_course_group'] = 'Create course group';
 $string['providerapi:update_user'] = 'Update User';
 $string['providerapi:enrol_course'] = 'Enrol Course';
@@ -53,6 +54,7 @@ $string['providerapi:deletebatch'] = 'Delete batch of Institution';
 $string['providerapi:assigncourse'] = 'Assign shared course to batch';
 $string['providerapi:deleteassigncourse'] = 'Delete assign shared course';
 $string['providerapi:viewassigncourse'] = 'View assign shared course';
+
 
 // Privacy.
 $string['privacy:metadata'] = 'The Providerapi plugin does not store any personal data.';

@@ -173,9 +173,13 @@ $capabilities = [
                 'archetypes' => [
                 ],
         ],
-
         'local/providerapi:delete_user' => [
                 'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                ],
+        ], 'local/providerapi:get_users' => [
+                'captype' => 'read',
                 'contextlevel' => 10,
                 'archetypes' => [
                 ],

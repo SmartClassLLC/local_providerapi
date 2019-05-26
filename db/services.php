@@ -67,6 +67,14 @@ $functions = array(
                 'type' => 'write',
                 'capabilities' => 'local/providerapi:delete_user',
                 'services' => array('providerapi')
+        ),
+        'local_providerapi_get_users' => array(
+                'classname' => 'local_providerapi\webservice\institution\external',
+                'methodname' => 'get_users',
+                'description' => 'Get User Information',
+                'type' => 'read',
+                'capabilities' => 'local/providerapi:get_users,moodle/user:viewdetails',
+                'services' => array('providerapi')
         )
 
 );
