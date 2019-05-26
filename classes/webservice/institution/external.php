@@ -129,13 +129,6 @@ class external extends external_api {
                         VALUE_OPTIONAL),
             // Interests.
                 'interests' => new external_value(PARAM_TEXT, 'User interests (separated by commas)', VALUE_OPTIONAL),
-            // Optional.
-                'url' => new external_value(core_user::get_property_type('url'), 'User web page', VALUE_OPTIONAL),
-                'icq' => new external_value(core_user::get_property_type('icq'), 'ICQ number', VALUE_OPTIONAL),
-                'skype' => new external_value(core_user::get_property_type('skype'), 'Skype ID', VALUE_OPTIONAL),
-                'aim' => new external_value(core_user::get_property_type('aim'), 'AIM ID', VALUE_OPTIONAL),
-                'yahoo' => new external_value(core_user::get_property_type('yahoo'), 'Yahoo ID', VALUE_OPTIONAL),
-                'msn' => new external_value(core_user::get_property_type('msn'), 'MSN ID', VALUE_OPTIONAL),
                 'department' => new external_value(core_user::get_property_type('department'), 'department', VALUE_OPTIONAL),
                 'phone1' => new external_value(core_user::get_property_type('phone1'), 'Phone 1', VALUE_OPTIONAL),
                 'phone2' => new external_value(core_user::get_property_type('phone2'), 'Phone 2', VALUE_OPTIONAL),
@@ -228,6 +221,11 @@ class external extends external_api {
                 }
             }
 
+            // Make sure that the idnumber doesn't already exist.
+            if ($DB->record_exists('user', array('mnethostid' => $CFG->mnet_localhost_id,
+                    'idnumber' => $user['idnumber']))) {
+                throw new invalid_parameter_exception('Studentno already exists: ' . $user['idnumber']);
+            }
             // Make sure that the username doesn't already exist.
             if ($DB->record_exists('user', array('username' => $user['username'], 'mnethostid' => $CFG->mnet_localhost_id))) {
                 throw new invalid_parameter_exception('Username already exists: ' . $user['username']);
@@ -408,14 +406,7 @@ class external extends external_api {
                         VALUE_OPTIONAL),
             // Interests.
                 'interests' => new external_value(PARAM_TEXT, 'User interests (separated by commas)', VALUE_OPTIONAL),
-            // Optional.
-                'url' => new external_value(core_user::get_property_type('url'), 'User web page', VALUE_OPTIONAL),
-                'icq' => new external_value(core_user::get_property_type('icq'), 'ICQ number', VALUE_OPTIONAL),
-                'skype' => new external_value(core_user::get_property_type('skype'), 'Skype ID', VALUE_OPTIONAL),
-                'aim' => new external_value(core_user::get_property_type('aim'), 'AIM ID', VALUE_OPTIONAL),
-                'yahoo' => new external_value(core_user::get_property_type('yahoo'), 'Yahoo ID', VALUE_OPTIONAL),
-                'msn' => new external_value(core_user::get_property_type('msn'), 'MSN ID', VALUE_OPTIONAL),
-                'department' => new external_value(core_user::get_property_type('department'), 'Department', VALUE_OPTIONAL),
+                'department' => new external_value(core_user::get_property_type('department'), 'department', VALUE_OPTIONAL),
                 'phone1' => new external_value(core_user::get_property_type('phone1'), 'Phone', VALUE_OPTIONAL),
                 'phone2' => new external_value(core_user::get_property_type('phone2'), 'Mobile phone', VALUE_OPTIONAL),
                 'address' => new external_value(core_user::get_property_type('address'), 'Postal address', VALUE_OPTIONAL),
@@ -499,9 +490,16 @@ class external extends external_api {
                 throw new invalid_parameter_exception('Invalid studentno type: ' . $user['studentno']);
             }
             // Override idnumber.
-            if (!empty($user['idnumber'])) {
+            if (!empty($user['studentno'])) {
                 $user['idnumber'] = $institution->shortname . (string) $user['studentno'];
+                // Make sure that the idnumber doesn't already exist.
+                if ($DB->record_exists_select('user', 'mnethostid = :mnethostid AND idnumber = :idnumber AND id <> :id',
+                        array('mnethostid' => $CFG->mnet_localhost_id,
+                                'idnumber' => $user['idnumber'], 'id' => $user['id']))) {
+                    throw new invalid_parameter_exception('Studentno already exists: ' . $user['idnumber']);
+                }
             }
+
             // First check the user exists.
             if (!$existinguser = core_user::get_user($user['id'])) {
                 continue;
