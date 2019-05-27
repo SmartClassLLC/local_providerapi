@@ -106,6 +106,7 @@ $string['nofounduserininstitutuion'] = 'User is not found in this institutuion';
 // Strings.
 $string['institutions'] = 'Institutions';
 $string['institutionsmembers'] = 'Members of Institutions';
+$string['batchmembers'] = 'Members of Batch';
 $string['addinstitution'] = 'Add Institution';
 $string['error'] = 'some errors occurred';
 $string['secretkey'] = 'Secret Key';

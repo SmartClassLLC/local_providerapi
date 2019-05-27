@@ -115,6 +115,19 @@ class institution extends modelbase {
     }
 
     /**
+     * @param $userid
+     * @return bool
+     * @throws moodle_exception
+     */
+    public function is_member($userid) {
+        $cohortid = $this->cohortid;
+        if (empty($cohortid)) {
+            throw new moodle_exception('cohortnotexist', 'local_providerapi');
+        }
+        return cohortHelper::is_member($cohortid, $userid);
+    }
+
+    /**
      * @param int $id
      * @return bool
      * @throws \dml_exception

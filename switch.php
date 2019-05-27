@@ -24,10 +24,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\notification;
+
 require_once("../../config.php");
 require_login();
 
-global $PAGE, $SESSION;
+global $PAGE, $SESSION, $USER;
 
 $returnurl = required_param('returnurl', PARAM_LOCALURL);
 $institutionid = optional_param('institutionid', null, PARAM_INT);
@@ -37,9 +39,10 @@ $returnurl = new moodle_url($returnurl);
 if (!empty($institutionid) && confirm_sesskey()) {
     unset($SESSION->institution);
     $SESSION->institution = $institutionid;
-    \core\notification::success(get_string('successswitchinstitution', 'local_providerapi'));
+    notification::success(get_string('successswitchinstitution', 'local_providerapi'));
 } else {
-    \core\notification::error(get_string('somethingwrong', 'local_providerapi'));
+    notification::error(get_string('somethingwrong', 'local_providerapi'));
+    \core\session\manager::kill_user_sessions($USER->id);
 }
 
 redirect($returnurl);

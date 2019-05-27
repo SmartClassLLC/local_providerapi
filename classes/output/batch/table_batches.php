@@ -156,7 +156,12 @@ class table_batches extends table_sql implements \renderable {
             $visibleimg = $OUTPUT->pix_icon('i/course', get_string('assigncourse', 'local_providerapi'));
             $buttons[] =
                     \html_writer::link($assignurl, $visibleimg, array('title' => get_string('assigncourse', 'local_providerapi')));
-
+        }
+        if (has_capability('local/providerapi:viewbatchmembers', $this->context)) {
+            $urlparams = array('id' => $row->id, 'returnurl' => $this->baseurl->out_as_local_url());
+            $editurl = new moodle_url('/local/providerapi/modules/batch/members.php', $urlparams);
+            $visibleimg = $OUTPUT->pix_icon('i/cohort', get_string('view'));
+            $buttons[] = \html_writer::link($editurl, $visibleimg, array('title' => get_string('view')));
         }
         if ($row->source === PROVIDERAPI_SOURCEWEB) {
             if (has_capability('local/providerapi:editbatch', $this->context)) {
@@ -166,7 +171,6 @@ class table_batches extends table_sql implements \renderable {
                         $urlparams + array('sesskey' => sesskey()));
                 $visibleimg = $OUTPUT->pix_icon('t/edit', get_string('edit'));
                 $buttons[] = \html_writer::link($editurl, $visibleimg, array('title' => get_string('edit')));
-
             }
             if (has_capability('local/providerapi:deletebatch', $this->context)) {
                 $deleteurl = new moodle_url('/local/providerapi/modules/batch/edit.php',
@@ -177,7 +181,6 @@ class table_batches extends table_sql implements \renderable {
                         new confirm_action(get_string('areyousuredel', 'local_providerapi', $row->name)));
             }
         }
-
         return \html_writer::div(implode(' ', $buttons), 'text-nowrap');
     }
 

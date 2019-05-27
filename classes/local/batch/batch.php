@@ -29,10 +29,10 @@ namespace local_providerapi\local\batch;
 use local_providerapi\event\batch_created;
 use local_providerapi\event\batch_deleted;
 use local_providerapi\event\batch_updated;
-use local_providerapi\event\btcourse_deleted;
 use local_providerapi\local\cohortHelper;
 use local_providerapi\local\institution\institution;
 use local_providerapi\local\modelbase;
+use moodle_exception;
 use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
@@ -94,7 +94,6 @@ class batch extends modelbase {
         }
     }
 
-
     /**
      * @return int
      * @throws \coding_exception
@@ -128,6 +127,41 @@ class batch extends modelbase {
         $string = $institution->name . ' (' . $this->name . ')';
         return format_string($string);
     }
+    /**
+     * @param $userid
+     */
+    public function add_member($userid) {
+        $cohortid = $this->cohortid;
+        if (empty($cohortid)) {
+            throw new moodle_exception('cohortnotexist', 'local_providerapi');
+        }
+        cohortHelper::add_member($this->cohortid, $userid);
+    }
+
+    /**
+     * @param $userid
+     * @throws moodle_exception
+     */
+    public function remove_member($userid) {
+        $cohortid = $this->cohortid;
+        if (empty($cohortid)) {
+            throw new moodle_exception('cohortnotexist', 'local_providerapi');
+        }
+        cohortHelper::delete_member($cohortid, $userid);
+    }
+
+    /**
+     * @param $userid
+     * @return bool
+     * @throws moodle_exception
+     */
+    public function is_member($userid) {
+        $cohortid = $this->cohortid;
+        if (empty($cohortid)) {
+            throw new moodle_exception('cohortnotexist', 'local_providerapi');
+        }
+        return cohortHelper::is_member($cohortid, $userid);
+    }
 
     /**
      * @param int $institutionid
@@ -159,6 +193,35 @@ class batch extends modelbase {
         return array($select, $from, $wheres, $params);
     }
 
+    /**
+     * @param string $additionalwhere
+     * @param array $additionalparams
+     * @return array
+     */
+    public function get_member_sql($additionalwhere = '', $additionalparams = array()) {
+        $wheres = array();
+        $params = array();
+        $select = "u.*,bt.cohortid AS cohortid,bt.source ";
+        $joins = array('{local_providerapi_batches} bt');
+        $joins[] = "JOIN {cohort_members} cm ON cm.cohortid = bt.cohortid ";
+        $joins[] = "JOIN {user} u ON u.id = cm.userid ";
+        $wheres[] = 'bt.id = :batchid';
+        $params['batchid'] = $this->id;
+        $wheres[] = 'u.deleted = 0 ';
+
+        if (!empty($additionalwhere)) {
+            $wheres[] = $additionalwhere;
+            $params = array_merge($params, $additionalparams);
+        }
+
+        $from = implode("\n", $joins);
+        if ($wheres) {
+            $wheres = implode(' AND ', $wheres);
+        } else {
+            $wheres = '';
+        }
+        return array($select, $from, $wheres, $params);
+    }
 
     /**
      * yeni kayıt için event olayı yazılacak

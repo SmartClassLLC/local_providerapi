@@ -150,31 +150,25 @@ class table_institutions extends table_sql implements \renderable {
 
         $buttons = array();
         if (has_capability('local/providerapi:viewinstitutionmembers', $this->context)) {
-
             $urlparams = array('id' => $row->id, 'returnurl' => $this->baseurl->out_as_local_url());
             $editurl = new moodle_url('/local/providerapi/modules/institution/members.php', $urlparams);
             $visibleimg = $OUTPUT->pix_icon('i/cohort', get_string('view'));
             $buttons[] = \html_writer::link($editurl, $visibleimg, array('title' => get_string('view')));
-
         }
         if (has_capability('local/providerapi:editinstitution', $this->context)) {
-
             $urlparams = array('id' => $row->id, 'returnurl' => $this->baseurl->out_as_local_url());
             $editurl = new moodle_url('/local/providerapi/modules/institution/editinstitution.php',
                     $urlparams + array('sesskey' => sesskey()));
             $visibleimg = $OUTPUT->pix_icon('t/edit', get_string('edit'));
             $buttons[] = \html_writer::link($editurl, $visibleimg, array('title' => get_string('edit')));
-
         }
         if (has_capability('local/providerapi:deleteinstitution', $this->context)) {
-
             $deleteurl = new moodle_url('/local/providerapi/modules/institution/editinstitution.php',
                     array('delid' => $row->id, 'returnurl' => $this->baseurl->out_as_local_url(), 'sesskey' => sesskey()));
             $visibleimg = new pix_icon('t/delete', get_string('delete'));
             $buttons[] = $OUTPUT->action_icon($deleteurl, $visibleimg,
                     new confirm_action(get_string('areyousuredel', 'local_providerapi', $row->name)));
         }
-
         return \html_writer::div(implode(' ', $buttons), 'text-nowrap');
     }
 
