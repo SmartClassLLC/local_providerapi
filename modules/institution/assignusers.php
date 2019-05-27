@@ -62,8 +62,9 @@ $PAGE->set_heading(get_string('assignmembers', 'local_providerapi'));
 
 // Nav.
 $node = $PAGE->navigation->find('institutionmodule', navigation_node::TYPE_SETTING);
-$viewnode = $node->add(get_string('institutionsmembers', 'local_providerapi'), $institutionmember, navigation_node::TYPE_SETTING, null,
-        'viewmembers');
+$viewnode =
+        $node->add(get_string('institutionsmembers', 'local_providerapi'), $institutionmember, navigation_node::TYPE_SETTING, null,
+                'viewmembers');
 $assignnode = $viewnode->add(get_string('assignmembers', 'local_providerapi'), $baseurl, navigation_node::TYPE_SETTING, null,
         'assignmembers');
 $assignnode->make_active();

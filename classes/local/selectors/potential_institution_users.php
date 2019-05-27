@@ -54,6 +54,7 @@ class potential_institution_users extends user_selector_base {
     public function __construct($name, $options) {
         $this->institutionid = $options['institutionid'];
         parent::__construct($name, $options);
+        $this->maxusersperpage = 1000;
     }
 
     /**
@@ -92,6 +93,7 @@ class potential_institution_users extends user_selector_base {
         list($wherecondition, $searchparams) = $this->search_sql($search, 'u');
         if ($wherecondition) {
             $whereconditions[] = $wherecondition;
+            $params = array_merge($params, $searchparams);
         }
         $userids = $DB->get_fieldset_sql("SELECT u.id FROM {$from} WHERE {$where} ", $params);
         if ($userids) {
@@ -112,13 +114,13 @@ class potential_institution_users extends user_selector_base {
 
         if (!$this->is_validating()) {
             $potentialmemberscount =
-                    $DB->count_records_sql($countfields . $sql, array_merge($params, $searchparams, $sortparams));
+                    $DB->count_records_sql($countfields . $sql, array_merge($params, $sortparams));
             if ($potentialmemberscount > $this->maxusersperpage) {
                 return $this->too_many_results($search, $potentialmemberscount);
             }
         }
         $availableusers =
-                $DB->get_records_sql($fields . $sql . $order, array_merge($params, $searchparams, $sortparams));
+                $DB->get_records_sql($fields . $sql . $order, array_merge($params, $sortparams));
 
         if (empty($availableusers)) {
             return array();

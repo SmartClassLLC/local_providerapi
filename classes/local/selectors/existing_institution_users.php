@@ -54,6 +54,7 @@ class existing_institution_users extends user_selector_base {
     public function __construct($name, $options) {
         $this->institutionid = $options['institutionid'];
         parent::__construct($name, $options);
+        $this->maxusersperpage = 1000;
     }
 
     /**
