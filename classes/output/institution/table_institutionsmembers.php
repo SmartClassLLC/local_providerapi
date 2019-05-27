@@ -41,7 +41,7 @@ require_once($CFG->libdir . '/tablelib.php');
  *
  * @package local_providerapi\outpu\institution
  */
-class table_institutions extends table_sql implements \renderable {
+class table_institutionsmembers extends table_sql implements \renderable {
 
     /**
      * @var context_system
@@ -57,14 +57,14 @@ class table_institutions extends table_sql implements \renderable {
      * @throws \dml_exception
      */
     public function __construct($baseurl, $pagesize) {
-        parent::__construct('table_institutions');
+        parent::__construct('table_institutionsmembers');
         $this->define_baseurl($baseurl);
         $this->collapsible(true);
         $this->sortable(true);
         $this->pageable(true);
         $this->is_downloadable(true);
         $this->is_downloading(optional_param('download', 0, PARAM_ALPHA),
-                'institutions', 'page1');
+                'institutionsmembers', 'page1');
         $this->show_download_buttons_at(array(TABLE_P_BOTTOM, TABLE_P_TOP));
         $context = context_system::instance();
         $this->context = $context;
@@ -74,16 +74,9 @@ class table_institutions extends table_sql implements \renderable {
         $columns = [];
 
         $headers[] = get_string('fullname');
-        $columns[] = 'name';
-
-        $headers[] = get_string('shortname');
-        $columns[] = 'shortname';
-
-        $headers[] = get_string('secretkey', 'local_providerapi');
-        $columns[] = 'Secretkey';
-
-        $headers[] = 'Creater';
-        $columns[] = 'createrid';
+        $columns[] = 'fullname';
+        $headers[] = get_string('username');
+        $columns[] = 'username';
 
         if (!$this->is_downloading()) {
             $headers[] = get_string('manage', 'local_providerapi');
@@ -95,50 +88,8 @@ class table_institutions extends table_sql implements \renderable {
         $this->define_headers($headers);
 
         // Make this table sorted by first name by default.
-        $this->no_sorting('createrid');
         $this->no_sorting('manage');
 
-    }
-
-    /**
-     * @param object $row
-     * @return string
-     */
-    public function col_name($row) {
-        return format_string($row->name);
-    }
-
-    /**
-     * @param $row
-     * @return string
-     */
-    public function col_shortname($row) {
-        return format_string($row->shortname);
-    }
-
-    /**
-     * @param $row
-     * @return string
-     */
-    public function col_secretkey($row) {
-        return format_string($row->secretkey);
-    }
-
-    /**
-     * @param $row
-     * @return string
-     * @throws \dml_exception
-     * @throws \moodle_exception
-     */
-    public function col_createrid($row) {
-        $user = \core_user::get_user($row->createrid);
-        $name = fullname($user);
-        if ($this->is_downloading()) {
-            return format_string($name);
-        } else {
-            $profileurl = new moodle_url('/user/profile.php', array('id' => $user->id));
-            return \html_writer::link($profileurl, $name);
-        }
     }
 
     /**
@@ -149,25 +100,14 @@ class table_institutions extends table_sql implements \renderable {
         global $OUTPUT;
 
         $buttons = array();
-        if (has_capability('local/providerapi:viewinstitutionmembers', $this->context)) {
-            $urlparams = array('id' => $row->id, 'returnurl' => $this->baseurl->out_as_local_url());
-            $editurl = new moodle_url('/local/providerapi/modules/institution/members.php', $urlparams);
-            $visibleimg = $OUTPUT->pix_icon('i/cohort', get_string('view'));
-            $buttons[] = \html_writer::link($editurl, $visibleimg, array('title' => get_string('view')));
-        }
-        if (has_capability('local/providerapi:editinstitution', $this->context)) {
-            $urlparams = array('id' => $row->id, 'returnurl' => $this->baseurl->out_as_local_url());
-            $editurl = new moodle_url('/local/providerapi/modules/institution/editinstitution.php',
-                    $urlparams + array('sesskey' => sesskey()));
-            $visibleimg = $OUTPUT->pix_icon('t/edit', get_string('edit'));
-            $buttons[] = \html_writer::link($editurl, $visibleimg, array('title' => get_string('edit')));
-        }
-        if (has_capability('local/providerapi:deleteinstitution', $this->context)) {
+        if (has_capability('local/providerapi:unassigninstitutionmembers', $this->context)) {
+
             $deleteurl = new moodle_url('/local/providerapi/modules/institution/editinstitution.php',
-                    array('delid' => $row->id, 'returnurl' => $this->baseurl->out_as_local_url(), 'sesskey' => sesskey()));
+                    array('action' => 'deletemember', 'userid' => $row->id, 'cohortid' => $row->cohortid,
+                            'returnurl' => $this->baseurl->out_as_local_url(), 'sesskey' => sesskey()));
             $visibleimg = new pix_icon('t/delete', get_string('delete'));
             $buttons[] = $OUTPUT->action_icon($deleteurl, $visibleimg,
-                    new confirm_action(get_string('areyousuredel', 'local_providerapi', $row->name)));
+                    new confirm_action(get_string('areyousuredel', 'local_providerapi', $row->firstname . ' ' . $row->lastname)));
         }
         return \html_writer::div(implode(' ', $buttons), 'text-nowrap');
     }

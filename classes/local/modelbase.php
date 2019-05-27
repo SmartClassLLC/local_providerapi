@@ -167,7 +167,7 @@ abstract class modelbase {
     }
 
     /**
-     * yeni kayıt için event olayı yazılacak
+     * Create Event
      *
      * @param $id
      *
@@ -175,7 +175,7 @@ abstract class modelbase {
     abstract protected function create_event($id);
 
     /**
-     * güncelleme için event olayı yazılacak
+     * Update Event
      *
      * @param $id
      *
@@ -183,7 +183,7 @@ abstract class modelbase {
     abstract protected function update_event($id);
 
     /**
-     * silme için event olayı yazılacak
+     * Delete Event
      *
      * @param \stdClass $data
      *

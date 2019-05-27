@@ -74,6 +74,26 @@ $capabilities = [
                 'archetypes' => [
                 ],
         ],
+        'local/providerapi:viewinstitutionmembers' => [
+                'captype' => 'view',
+                'contextlevel' => 10,
+                'archetypes' => [
+                        'manager' => CAP_ALLOW
+                ],
+        ],
+        'local/providerapi:assigninstitutionmembers' => [
+                'captype' => 'view',
+                'contextlevel' => 10,
+                'archetypes' => [
+                        'manager' => CAP_ALLOW
+                ],
+        ], 'local/providerapi:unassigninstitutionmembers' => [
+                'captype' => 'view',
+                'contextlevel' => 10,
+                'archetypes' => [
+                        'manager' => CAP_ALLOW
+                ],
+        ],
         'local/providerapi:sharedcourse' => [
                 'captype' => 'write',
                 'contextlevel' => 10,
@@ -130,6 +150,27 @@ $capabilities = [
                         'manager' => CAP_ALLOW
                 ],
         ],
+        'local/providerapi:viewbatchmembers' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                        'manager' => CAP_ALLOW
+                ],
+        ],
+        'local/providerapi:assignbatchmembers' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                        'manager' => CAP_ALLOW
+                ],
+        ],
+        'local/providerapi:unassignbatchmembers' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                        'manager' => CAP_ALLOW
+                ],
+        ],
         'local/providerapi:deletesharedcourse' => [
                 'captype' => 'write',
                 'contextlevel' => 10,
@@ -167,15 +208,19 @@ $capabilities = [
                 'archetypes' => [
                 ],
         ],
-        'local/providerapi:edit_user' => [
+        'local/providerapi:update_user' => [
                 'captype' => 'write',
                 'contextlevel' => 10,
                 'archetypes' => [
                 ],
         ],
-
         'local/providerapi:delete_user' => [
                 'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                ],
+        ], 'local/providerapi:get_users' => [
+                'captype' => 'read',
                 'contextlevel' => 10,
                 'archetypes' => [
                 ],

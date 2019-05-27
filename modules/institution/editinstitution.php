@@ -26,6 +26,7 @@
 
 use core\notification;
 use local_providerapi\form\addinstitution;
+use local_providerapi\local\cohortHelper;
 use local_providerapi\local\institution\institution;
 
 require('../../../../config.php');
@@ -39,6 +40,9 @@ $context = context_system::instance();
 // Params.
 $id = optional_param('id', -1, PARAM_INT);
 $delid = optional_param('delid', null, PARAM_INT);
+$userid = optional_param('userid', null, PARAM_INT);
+$cohortid = optional_param('cohortid', null, PARAM_INT);
+$action = optional_param('action', null, PARAM_TEXT);
 // Baseurl.
 $baseurl = new moodle_url('/local/providerapi/modules/institution/editinstitution.php');
 $institutionurl = new moodle_url('/local/providerapi/modules/institution/index.php');
@@ -61,6 +65,13 @@ if ($delid and has_capability('local/providerapi:deleteinstitution', $context) a
     if (institution::get($delid)->delete()) {
         notification::success(get_string('success'));
     }
+    redirect($returnurl);
+}
+// Delete member.
+if ($action === 'deletemember' && $userid && $cohortid &&
+        has_capability('local/providerapi:unassigninstitutionmembers', $context) && confirm_sesskey()) {
+    cohortHelper::delete_member($cohortid, $userid);
+    notification::success(get_string('success'));
     redirect($returnurl);
 }
 

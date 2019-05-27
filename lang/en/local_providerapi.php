@@ -33,8 +33,9 @@ $string['providerapi:add_grouping_to_course'] = 'Add Course Grouping';
 $string['providerapi:create_user'] = 'Create User';
 $string['providerapi:delete_course_group'] = 'Delete course group';
 $string['providerapi:delete_user'] = 'Delete User ';
+$string['providerapi:get_users'] = 'Get User';
 $string['providerapi:edit_course_group'] = 'Create course group';
-$string['providerapi:edit_user'] = 'Edit User';
+$string['providerapi:update_user'] = 'Update User';
 $string['providerapi:enrol_course'] = 'Enrol Course';
 $string['providerapi:get_shared_courses'] = 'Get Shared Course from İnstitution';
 $string['providerapi:get_site_info'] = 'Get Site İnfo';
@@ -53,6 +54,13 @@ $string['providerapi:deletebatch'] = 'Delete batch of Institution';
 $string['providerapi:assigncourse'] = 'Assign shared course to batch';
 $string['providerapi:deleteassigncourse'] = 'Delete assign shared course';
 $string['providerapi:viewassigncourse'] = 'View assign shared course';
+$string['providerapi:viewinstitutionmembers'] = 'View institution\'s members';
+$string['providerapi:assigninstitutionmembers'] = 'Assign members to institution';
+$string['providerapi:unassigninstitutionmembers'] = 'Unassign members to institution';
+$string['providerapi:viewbatchmembers'] = 'View batch\'s members';
+$string['providerapi:assignbatchmembers'] = 'Assign members to batch';
+$string['providerapi:unassignbatchmembers'] = 'Unassign members to batch';
+
 
 // Privacy.
 $string['privacy:metadata'] = 'The Providerapi plugin does not store any personal data.';
@@ -60,8 +68,6 @@ $string['privacy:metadata'] = 'The Providerapi plugin does not store any persona
 // Tasks.
 $string['grouphealtcheck'] = 'Check batch\'s course groups';
 $string['enrolhealtcheck'] = 'Check batch\'s course enrol';
-
-
 
 // Helpbuttons.
 $string['fullname'] = 'Institution fullname explain';
@@ -95,9 +101,12 @@ $string['cohortnotexist'] = 'The Cohort is not exist';
 $string['missingproperty'] = 'required property missing';
 $string['requiredproperty'] = 'required property name \'{$a}\' missing';
 $string['hackattempt'] = 'Unauthorized transaction';
+$string['nofounduserininstitutuion'] = 'User is not found in this institutuion';
 
 // Strings.
 $string['institutions'] = 'Institutions';
+$string['institutionsmembers'] = 'Members of Institutions';
+$string['batchmembers'] = 'Members of Batch';
 $string['addinstitution'] = 'Add Institution';
 $string['error'] = 'some errors occurred';
 $string['secretkey'] = 'Secret Key';
@@ -123,6 +132,10 @@ $string['assigncourse'] = 'Assign Course';
 $string['sharedcourse'] = 'Shared Course';
 $string['assigncoursetobatch'] = '{$a} \'s Courses';
 $string['coursename'] = 'Course Name';
+$string['assignmembers'] = 'Assign Members';
+$string['back'] = 'Back';
+$string['extusers'] = 'Existing users';
+$string['extusersmatching'] = 'Exist matching users';
 
 
 

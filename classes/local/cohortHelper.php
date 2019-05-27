@@ -99,4 +99,21 @@ class cohortHelper {
         cohort_add_member($cohortid, $userid);
     }
 
+    /**
+     * @param int $cohortid
+     * @param $userid
+     */
+    public static function delete_member(int $cohortid, $userid) {
+        cohort_remove_member($cohortid, $userid);
+    }
+
+    /**
+     * @param int $cohortid
+     * @param $userid
+     * @return bool
+     */
+    public static function is_member(int $cohortid, $userid) {
+        return cohort_is_member($cohortid, $userid);
+    }
+
 }

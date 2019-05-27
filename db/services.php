@@ -51,6 +51,30 @@ $functions = array(
                 'type' => 'write',
                 'capabilities' => 'local/providerapi:create_user',
                 'services' => array('providerapi')
+        ),
+        'local_providerapi_update_users' => array(
+                'classname' => 'local_providerapi\webservice\institution\external',
+                'methodname' => 'update_users',
+                'description' => 'Update user in moodle and this user update institutiton\'s cohort',
+                'type' => 'write',
+                'capabilities' => 'local/providerapi:update_user',
+                'services' => array('providerapi')
+        ),
+        'local_providerapi_delete_users' => array(
+                'classname' => 'local_providerapi\webservice\institution\external',
+                'methodname' => 'delete_users',
+                'description' => 'Delete user in moodle and this user delete institutiton\'s cohort',
+                'type' => 'write',
+                'capabilities' => 'local/providerapi:delete_user',
+                'services' => array('providerapi')
+        ),
+        'local_providerapi_get_users' => array(
+                'classname' => 'local_providerapi\webservice\institution\external',
+                'methodname' => 'get_users',
+                'description' => 'Get User Information',
+                'type' => 'read',
+                'capabilities' => 'local/providerapi:get_users,moodle/user:viewdetails',
+                'services' => array('providerapi')
         )
 
 );
