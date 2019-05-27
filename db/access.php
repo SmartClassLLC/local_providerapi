@@ -74,6 +74,26 @@ $capabilities = [
                 'archetypes' => [
                 ],
         ],
+        'local/providerapi:viewinstitutionmembers' => [
+                'captype' => 'view',
+                'contextlevel' => 10,
+                'archetypes' => [
+                        'manager' => CAP_ALLOW
+                ],
+        ],
+        'local/providerapi:assigninstitutionmembers' => [
+                'captype' => 'view',
+                'contextlevel' => 10,
+                'archetypes' => [
+                        'manager' => CAP_ALLOW
+                ],
+        ], 'local/providerapi:unassigninstitutionmembers' => [
+                'captype' => 'view',
+                'contextlevel' => 10,
+                'archetypes' => [
+                        'manager' => CAP_ALLOW
+                ],
+        ],
         'local/providerapi:sharedcourse' => [
                 'captype' => 'write',
                 'contextlevel' => 10,
@@ -124,6 +144,27 @@ $capabilities = [
                 ],
         ],
         'local/providerapi:deletebatch' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                        'manager' => CAP_ALLOW
+                ],
+        ],
+        'local/providerapi:viewbatchmembers' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                        'manager' => CAP_ALLOW
+                ],
+        ],
+        'local/providerapi:assignbatchmembers' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                        'manager' => CAP_ALLOW
+                ],
+        ],
+        'local/providerapi:unassignbatchmembers' => [
                 'captype' => 'write',
                 'contextlevel' => 10,
                 'archetypes' => [

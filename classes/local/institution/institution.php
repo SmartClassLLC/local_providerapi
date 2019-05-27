@@ -103,6 +103,18 @@ class institution extends modelbase {
     }
 
     /**
+     * @param $userid
+     * @throws moodle_exception
+     */
+    public function remove_member($userid) {
+        $cohortid = $this->cohortid;
+        if (empty($cohortid)) {
+            throw new moodle_exception('cohortnotexist', 'local_providerapi');
+        }
+        cohortHelper::delete_member($cohortid, $userid);
+    }
+
+    /**
      * @param int $id
      * @return bool
      * @throws \dml_exception
@@ -125,6 +137,39 @@ class institution extends modelbase {
         $joins = array('{local_providerapi_companies} cmp');
 
         $wheres[] = ' cmp.secretkey IS NOT null';
+
+        if (!empty($additionalwhere)) {
+            $wheres[] = $additionalwhere;
+            $params = array_merge($params, $additionalparams);
+        }
+
+        $from = implode("\n", $joins);
+        if ($wheres) {
+            $wheres = implode(' AND ', $wheres);
+        } else {
+            $wheres = '';
+        }
+
+        return array($select, $from, $wheres, $params);
+    }
+
+    /**
+     * @param string $additionalwhere
+     * @param array $additionalparams
+     * @return array
+     */
+    public function get_member_sql($additionalwhere = '', $additionalparams = array()) {
+
+        $wheres = array();
+        $params = array();
+        $select = "u.*,cmp.cohortid AS cohortid ";
+        $joins = array('{local_providerapi_companies} cmp');
+        $joins[] = "JOIN {cohort_members} cm ON cm.cohortid = cmp.cohortid ";
+        $joins[] = "JOIN {user} u ON u.id = cm.userid ";
+        $wheres[] = 'cmp.id = :institutionid';
+        $params['institutionid'] = $this->id;
+        $wheres[] = 'cmp.secretkey IS NOT null';
+        $wheres[] = 'u.deleted = 0 ';
 
         if (!empty($additionalwhere)) {
             $wheres[] = $additionalwhere;

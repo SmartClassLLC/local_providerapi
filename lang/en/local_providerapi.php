@@ -54,6 +54,12 @@ $string['providerapi:deletebatch'] = 'Delete batch of Institution';
 $string['providerapi:assigncourse'] = 'Assign shared course to batch';
 $string['providerapi:deleteassigncourse'] = 'Delete assign shared course';
 $string['providerapi:viewassigncourse'] = 'View assign shared course';
+$string['providerapi:viewinstitutionmembers'] = 'View institution\'s members';
+$string['providerapi:assigninstitutionmembers'] = 'Assign members to institution';
+$string['providerapi:unassigninstitutionmembers'] = 'Unassign members to institution';
+$string['providerapi:viewbatchmembers'] = 'View batch\'s members';
+$string['providerapi:assignbatchmembers'] = 'Assign members to batch';
+$string['providerapi:unassignbatchmembers'] = 'Unassign members to batch';
 
 
 // Privacy.
@@ -99,6 +105,7 @@ $string['nofounduserininstitutuion'] = 'User is not found in this institutuion';
 
 // Strings.
 $string['institutions'] = 'Institutions';
+$string['institutionsmembers'] = 'Members of Institutions';
 $string['addinstitution'] = 'Add Institution';
 $string['error'] = 'some errors occurred';
 $string['secretkey'] = 'Secret Key';
@@ -124,6 +131,10 @@ $string['assigncourse'] = 'Assign Course';
 $string['sharedcourse'] = 'Shared Course';
 $string['assigncoursetobatch'] = '{$a} \'s Courses';
 $string['coursename'] = 'Course Name';
+$string['assignmembers'] = 'Assign Members';
+$string['back'] = 'Back';
+$string['extusers'] = 'Existing users';
+$string['extusersmatching'] = 'Exist matching users';
 
 
 
