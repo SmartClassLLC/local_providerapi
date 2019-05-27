@@ -370,37 +370,40 @@ class external extends external_api {
                         VALUE_OPTIONAL),
             // General.
                 'username' => new external_value(core_user::get_property_type('username'),
-                        'Username policy is defined in Moodle security config.', VALUE_OPTIONAL, '', NULL_NOT_ALLOWED),
-                'auth' => new external_value(core_user::get_property_type('auth'), 'Auth plugins include manual, ldap, etc',
+                        'Username policy is defined in Moodle security config. for update', VALUE_OPTIONAL, '', NULL_NOT_ALLOWED),
+                'auth' => new external_value(core_user::get_property_type('auth'),
+                        'Auth plugins include manual, ldap,lti etc for update',
                         VALUE_OPTIONAL, '', NULL_NOT_ALLOWED),
                 'suspended' => new external_value(core_user::get_property_type('suspended'),
-                        'Suspend user account, either false to enable user login or true to disable it', VALUE_OPTIONAL),
+                        'Suspend user account, either false to enable user login or true to disable it for update', VALUE_OPTIONAL),
                 'password' => new external_value(core_user::get_property_type('password'),
-                        'Plain text password consisting of any characters', VALUE_OPTIONAL, '', NULL_NOT_ALLOWED),
-                'firstname' => new external_value(core_user::get_property_type('firstname'), 'The first name(s) of the user',
+                        'Plain text password consisting of any characters for update', VALUE_OPTIONAL, '', NULL_NOT_ALLOWED),
+                'firstname' => new external_value(core_user::get_property_type('firstname'),
+                        'The first name(s) of the user for update',
                         VALUE_OPTIONAL, '', NULL_NOT_ALLOWED),
-                'lastname' => new external_value(core_user::get_property_type('lastname'), 'The family name of the user',
+                'lastname' => new external_value(core_user::get_property_type('lastname'), 'The family name of the user for update',
                         VALUE_OPTIONAL),
-                'email' => new external_value(core_user::get_property_type('email'), 'A valid and unique email address',
+                'email' => new external_value(core_user::get_property_type('email'), 'A valid and unique email address for update',
                         VALUE_OPTIONAL,
                         '', NULL_NOT_ALLOWED),
-                'maildisplay' => new external_value(core_user::get_property_type('maildisplay'), 'Email display', VALUE_OPTIONAL),
+                'maildisplay' => new external_value(core_user::get_property_type('maildisplay'), 'Email display for update',
+                        VALUE_OPTIONAL),
                 'city' => new external_value(core_user::get_property_type('city'), 'Home city of the user', VALUE_OPTIONAL),
                 'country' => new external_value(core_user::get_property_type('country'),
-                        'Home country code of the user, such as AU or CZ', VALUE_OPTIONAL),
+                        'Home country code of the user, such as AU or CZ for update', VALUE_OPTIONAL),
                 'timezone' => new external_value(core_user::get_property_type('timezone'),
-                        'Timezone code such as Australia/Perth, or 99 for default', VALUE_OPTIONAL),
+                        'Timezone code such as Australia/Perth, or 99 for default for update', VALUE_OPTIONAL),
                 'description' => new external_value(core_user::get_property_type('description'),
-                        'User profile description, no HTML',
+                        'User profile description, no HTML for update',
                         VALUE_OPTIONAL),
             // User picture.
                 'userpicture' => new external_value(PARAM_INT,
-                        'The itemid where the new user picture has been uploaded to, 0 to delete', VALUE_OPTIONAL),
+                        'The itemid where the new user picture has been uploaded to, 0 to delete for update', VALUE_OPTIONAL),
             // Additional names.
                 'firstnamephonetic' => new external_value(core_user::get_property_type('firstnamephonetic'),
-                        'The first name(s) phonetically of the user', VALUE_OPTIONAL),
+                        'The first name(s) phonetically of the user for update', VALUE_OPTIONAL),
                 'lastnamephonetic' => new external_value(core_user::get_property_type('lastnamephonetic'),
-                        'The family name phonetically of the user', VALUE_OPTIONAL),
+                        'The family name phonetically of the user for update', VALUE_OPTIONAL),
                 'middlename' => new external_value(core_user::get_property_type('middlename'), 'The middle name of the user',
                         VALUE_OPTIONAL),
                 'alternatename' => new external_value(core_user::get_property_type('alternatename'),
@@ -408,35 +411,37 @@ class external extends external_api {
                         VALUE_OPTIONAL),
             // Interests.
                 'interests' => new external_value(PARAM_TEXT, 'User interests (separated by commas)', VALUE_OPTIONAL),
-                'department' => new external_value(core_user::get_property_type('department'), 'department', VALUE_OPTIONAL),
-                'phone1' => new external_value(core_user::get_property_type('phone1'), 'Phone', VALUE_OPTIONAL),
-                'phone2' => new external_value(core_user::get_property_type('phone2'), 'Mobile phone', VALUE_OPTIONAL),
-                'address' => new external_value(core_user::get_property_type('address'), 'Postal address', VALUE_OPTIONAL),
+                'department' => new external_value(core_user::get_property_type('department'), 'department for update',
+                        VALUE_OPTIONAL),
+                'phone1' => new external_value(core_user::get_property_type('phone1'), 'Phone for update', VALUE_OPTIONAL),
+                'phone2' => new external_value(core_user::get_property_type('phone2'), 'Mobile phone for update', VALUE_OPTIONAL),
+                'address' => new external_value(core_user::get_property_type('address'), 'Postal address for update',
+                        VALUE_OPTIONAL),
             // Other user preferences stored in the user table.
                 'lang' => new external_value(core_user::get_property_type('lang'),
-                        'Language code such as "en", must exist on server',
+                        'Language code such as "en", must exist on server for update',
                         VALUE_OPTIONAL, '', NULL_NOT_ALLOWED),
                 'calendartype' => new external_value(core_user::get_property_type('calendartype'),
-                        'Calendar type such as "gregorian", must exist on server', VALUE_OPTIONAL, '', NULL_NOT_ALLOWED),
+                        'Calendar type such as "gregorian", must exist on server for update', VALUE_OPTIONAL, '', NULL_NOT_ALLOWED),
                 'theme' => new external_value(core_user::get_property_type('theme'),
-                        'Theme name such as "standard", must exist on server', VALUE_OPTIONAL),
+                        'Theme name such as "standard", must exist on server for update', VALUE_OPTIONAL),
                 'mailformat' => new external_value(core_user::get_property_type('mailformat'),
-                        'Mail format code is 0 for plain text, 1 for HTML etc', VALUE_OPTIONAL),
+                        'Mail format code is 0 for plain text, 1 for HTML etc for update', VALUE_OPTIONAL),
             // Custom user profile fields.
                 'customfields' => new external_multiple_structure(
                         new external_single_structure(
                                 [
-                                        'type' => new external_value(PARAM_ALPHANUMEXT, 'The name of the custom field'),
-                                        'value' => new external_value(PARAM_RAW, 'The value of the custom field')
+                                        'type' => new external_value(PARAM_ALPHANUMEXT, 'The name of the custom field for update'),
+                                        'value' => new external_value(PARAM_RAW, 'The value of the custom field for update')
                                 ]
-                        ), 'User custom fields (also known as user profil fields)', VALUE_OPTIONAL),
+                        ), 'User custom fields (also known as user profil fields ) for update', VALUE_OPTIONAL),
                 'preferences' => new external_multiple_structure(
                         new external_single_structure(
                                 [
-                                        'type' => new external_value(PARAM_RAW, 'The name of the preference'),
-                                        'value' => new external_value(PARAM_RAW, 'The value of the preference')
+                                        'type' => new external_value(PARAM_RAW, 'The name of the preference for update'),
+                                        'value' => new external_value(PARAM_RAW, 'The value of the preference for update')
                                 ]
-                        ), 'User preferences', VALUE_OPTIONAL),
+                        ), 'User preferences for update', VALUE_OPTIONAL),
         ];
         return new external_function_parameters(
                 [
