@@ -114,7 +114,9 @@ class external extends external_api {
     public static function create_batches_parameters() {
         $batchfields = [
                 'name' => new external_value(PARAM_TEXT, 'Batch\'s name must be unique for each institution'),
-                'capacity' => new external_value(PARAM_INT, 'Batch\'s capacity must be max 3 digits', VALUE_DEFAULT, 0,
+                'capacity' => new external_value(PARAM_INT,
+                        'Batch\'s capacity must be max 3 digits.Don\'t use this parameter if you want infinity capacity',
+                        VALUE_DEFAULT, 0,
                         NULL_NOT_ALLOWED)
         ];
         return new external_function_parameters(
@@ -306,6 +308,56 @@ class external extends external_api {
      */
     public static function delete_batches_returns() {
         return null;
+    }
+
+    public static function get_batches_parameters() {
+        return new external_function_parameters(
+                ['institutionkey' => new external_value(PARAM_ALPHANUM, 'Institution SecretKey')], 'Get institution\'s all batches'
+        );
+    }
+
+    /**
+     * @param $institutionkey
+     * @param array
+     * @return null
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \dml_transaction_exception
+     * @throws \required_capability_exception
+     * @throws \restricted_context_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     */
+    public static function get_batches($institutionkey) {
+        global $DB;
+        $params = self::validate_parameters(self::get_batches_parameters(),
+                array('institutionkey' => $institutionkey));
+        $context = context_system::instance();
+        require_capability('local/providerapi:viewbatch', $context);
+        self::validate_context($context);
+
+        // Get institution.
+        $institution = institution::get_by_secretkey($params['institutionkey']);
+        list($select, $from, $where, $params) = batch::get_sql($institution->id);
+
+        return $DB->get_records_sql("SELECT {$select} FROM {$from} WHERE {$where} ORDER BY bt.name ", $params);
+    }
+
+    /**
+     * @return null
+     */
+    public static function get_batches_returns() {
+        return new external_multiple_structure(
+                new external_single_structure(
+                        array(
+                                'id' => new external_value(PARAM_INT, 'batch\'s id'),
+                                'name' => new external_value(PARAM_TEXT, 'batch\'s name'),
+                                'capacity' => new external_value(PARAM_INT, 'batch\'s capacity'),
+                                'timecreated' => new external_value(PARAM_INT, 'batch\'s timecreated'),
+                                'timemodified' => new external_value(PARAM_INT, 'batch\'s timemodified')
+                        ), 'Batches records', VALUE_OPTIONAL
+                )
+        );
     }
 
 }

@@ -107,6 +107,14 @@ $functions = array(
                 'type' => 'write',
                 'capabilities' => 'local/providerapi:deletebatch',
                 'services' => array('providerapi')
+        ),
+        'local_providerapi_get_batches' => array(
+                'classname' => 'local_providerapi\webservice\batch\external',
+                'methodname' => 'get_batches',
+                'description' => 'Get all Batches',
+                'type' => 'read',
+                'capabilities' => 'local/providerapi:viewbatch',
+                'services' => array('providerapi')
         )
 
 );
