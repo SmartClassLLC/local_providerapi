@@ -28,6 +28,7 @@ namespace local_providerapi\webservice\batch;
 
 use context;
 use context_system;
+use core_user;
 use external_api;
 use external_function_parameters;
 use external_multiple_structure;
@@ -258,6 +259,9 @@ class external extends external_api {
         return null;
     }
 
+    /**
+     * @return external_function_parameters
+     */
     public static function delete_batches_parameters() {
         $batchfields = [
                 'id' => new external_value(PARAM_INT, 'batch \'s id')
@@ -311,6 +315,9 @@ class external extends external_api {
         return null;
     }
 
+    /**
+     * @return external_function_parameters
+     */
     public static function get_batches_parameters() {
         return new external_function_parameters(
                 ['institutionkey' => new external_value(PARAM_ALPHANUM, 'Institution SecretKey')], 'Get institution\'s all batches'
@@ -361,4 +368,176 @@ class external extends external_api {
         );
     }
 
+    /**
+     * @return external_function_parameters
+     */
+    public static function assign_batchmembers_parameters() {
+        $batchfields = [
+                'userid' => new external_value(PARAM_INT, 'Moodle user id')
+        ];
+        return new external_function_parameters(
+                [
+                        'institutionkey' => new external_value(PARAM_ALPHANUM, 'Institution SecretKey'),
+                        'batchid' => new external_value(PARAM_INT, 'Batch\'s id'),
+                        'users' => new external_multiple_structure(
+                                new external_single_structure($batchfields)
+                        )
+                ]
+        );
+    }
+
+    /**
+     * @param $institutionkey
+     * @param $batchid
+     * @param array $users
+     * @return array
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \required_capability_exception
+     * @throws \restricted_context_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     */
+    public static function assign_batchmembers($institutionkey, $batchid, $users = array()) {
+        global $DB;
+        $params = self::validate_parameters(self::assign_batchmembers_parameters(),
+                array('institutionkey' => $institutionkey, 'batchid' => $batchid, 'users' => $users));
+        $context = context_system::instance();
+        require_capability('local/providerapi:assignbatchmembers', $context);
+        self::validate_context($context);
+        // Get institution.
+        $institution = institution::get_by_secretkey($params['institutionkey']);
+
+        if (!$DB->record_exists(batch::$dbname, array('id' => $params['batchid'], 'institutionid' => $institution->id))) {
+            throw new moodle_exception('notexistbatch', 'local_providerapi');
+        }
+
+        $batch = batch::get($params['batchid']);
+
+        if ($batch->is_full_members()) {
+            throw new moodle_exception('batchcapacityisfull', 'local_providerapi');
+        }
+
+        $results = array();
+
+        foreach ($params['users'] as $userids) {
+            $user = core_user::get_user($userids['userid'], '*', MUST_EXIST);
+            if (!$institution->is_member($user->id)) {
+                $results[] = array('userid' => $user->id, 'fullname' => fullname($user), 'status' => false,
+                        'message' => 'the user is not member of this institution');
+                continue;
+            }
+            if ($batch->is_member($user->id)) {
+                $results[] = array('userid' => $user->id, 'fullname' => fullname($user), 'status' => false,
+                        'message' => 'already exist');
+                continue;
+            }
+            if ($batch->add_member($userids['userid'])) {
+                $results[] = array('userid' => $userids['userid'], 'fullname' => fullname($user), 'status' => true,
+                        'message' => 'add successfuly');
+            } else {
+                $results[] = array('userid' => $userids['userid'], 'fullname' => fullname($user), 'status' => false,
+                        'message' => get_string('batchcapacityisfull',
+                                'local_providerapi'));
+            }
+
+        }
+        return $results;
+    }
+
+    /**
+     * @return external_multiple_structure
+     * @throws \coding_exception
+     */
+    public static function assign_batchmembers_returns() {
+        return new external_multiple_structure(
+                new external_single_structure(
+                        array(
+                                'userid' => new external_value(PARAM_INT, 'moodle user id'),
+                                'fullname' => new external_value(PARAM_TEXT, 'moodle user fullname'),
+                                'status' => new external_value(PARAM_BOOL, 'assign status . False mean capacity is full'),
+                                'message' => new external_value(PARAM_TEXT, 'information process', VALUE_OPTIONAL)
+                        )
+                )
+        );
+    }
+
+    public static function unassign_batchmembers_parameters() {
+        $batchfields = [
+                'userid' => new external_value(PARAM_INT, 'Moodle user id')
+        ];
+        return new external_function_parameters(
+                [
+                        'institutionkey' => new external_value(PARAM_ALPHANUM, 'Institution SecretKey'),
+                        'batchid' => new external_value(PARAM_INT, 'Batch\'s id'),
+                        'users' => new external_multiple_structure(
+                                new external_single_structure($batchfields)
+                        )
+                ]
+        );
+    }
+
+    /**
+     * @param string $institutionkey
+     * @param int $batchid
+     * @param array $users
+     * @return array
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \required_capability_exception
+     * @throws \restricted_context_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     */
+    public static function unassign_batchmembers($institutionkey, $batchid, $users = array()) {
+        global $DB;
+        $params = self::validate_parameters(self::unassign_batchmembers_parameters(),
+                array('institutionkey' => $institutionkey, 'batchid' => $batchid, 'users' => $users));
+        $context = context_system::instance();
+        require_capability('local/providerapi:unassignbatchmembers', $context);
+        self::validate_context($context);
+        // Get institution.
+        $institution = institution::get_by_secretkey($params['institutionkey']);
+
+        if (!$DB->record_exists(batch::$dbname, array('id' => $params['batchid'], 'institutionid' => $institution->id))) {
+            throw new moodle_exception('notexistbatch', 'local_providerapi');
+        }
+        $batch = batch::get($params['batchid']);
+        $results = array();
+
+        foreach ($params['users'] as $userids) {
+            $user = core_user::get_user($userids['userid'], '*', MUST_EXIST);
+            if (!$institution->is_member($user->id)) {
+                $results[] = array('userid' => $user->id, 'fullname' => fullname($user), 'status' => false,
+                        'message' => 'the user is not member of this institution');
+                continue;
+            }
+            if (!$batch->is_member($user->id)) {
+                $results[] = array('userid' => $user->id, 'fullname' => fullname($user), 'status' => false,
+                        'message' => 'the user is not member of this batch');
+                continue;
+            }
+            $batch->remove_member($user->id);
+            $results[] = array('userid' => $user->id, 'fullname' => fullname($user), 'status' => true,
+                    'message' => 'remove user successfuly');
+        }
+        return $results;
+    }
+
+    /**
+     * @return external_multiple_structure
+     * @throws \coding_exception
+     */
+    public static function unassign_batchmembers_returns() {
+        return new external_multiple_structure(
+                new external_single_structure(
+                        array(
+                                'userid' => new external_value(PARAM_INT, 'moodle user id'),
+                                'fullname' => new external_value(PARAM_TEXT, 'moodle user fullname'),
+                                'status' => new external_value(PARAM_BOOL, 'unassign status'),
+                                'message' => new external_value(PARAM_TEXT, 'information process', VALUE_OPTIONAL)
+                        )
+                )
+        );
+    }
 }

@@ -584,4 +584,156 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         \local_providerapi\webservice\batch\external::get_batches($institution->secretkey);
 
     }
+
+    public function test_assign_batchmember() {
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $providergenerator = $generator->get_plugin_generator('local_providerapi');
+        $institution = $providergenerator->create_institution();
+
+        $contextid = context_system::instance()->id;
+        $roleid = $this->assignUserCapability('local/providerapi:create_user', $contextid);
+        $this->assignUserCapability('local/providerapi:addbatch', $contextid, $roleid);
+        $this->assignUserCapability('local/providerapi:assignbatchmembers', $contextid, $roleid);
+
+        $user1 = array(
+                'institutionkey' => '123456',
+                'studentno' => '123456',
+                'username' => 'dummyuser1',
+                'firstname' => 'testuser1',
+                'lastname' => 'testuserlastname1',
+                'password' => '34255345345+?Sa1',
+                'email' => 'dummy1@example.com'
+        );
+        $user2 = array(
+                'institutionkey' => '123456',
+                'studentno' => '123457',
+                'username' => 'dummyuser2',
+                'firstname' => 'testuser2',
+                'lastname' => 'testuserlastname2',
+                'password' => '34255345345+?Sa2',
+                'email' => 'dummy2@example.com'
+        );
+        $batch1 = array(
+                'name' => 'test1',
+                'capacity' => 11
+        );
+
+        // Call the external function.
+        $this->setCurrentTimeStart();
+        $createduser = \local_providerapi\webservice\institution\external::create_users(array($user1, $user2));
+        $createduser = external_api::clean_returnvalue(\local_providerapi\webservice\institution\external::create_users_returns(),
+                $createduser);
+        $this->assertEquals(2, count($createduser));
+        $users = array();
+        foreach ($createduser as $newusers) {
+            $users[] = array('userid' => $newusers['id']);
+        }
+        $batchrecords =
+                \local_providerapi\webservice\batch\external::create_batches($institution->secretkey, array($batch1));
+        $batchrecords = external_api::clean_returnvalue(\local_providerapi\webservice\batch\external::create_batches_returns(),
+                $batchrecords);
+        $this->assertEquals(1, count($batchrecords));
+        $batchrecords = reset($batchrecords);
+        $batch = \local_providerapi\local\batch\batch::get($batchrecords['id']);
+        $assignrecords =
+                \local_providerapi\webservice\batch\external::assign_batchmembers($institution->secretkey, $batch->id, $users);
+        $assignrecords =
+                external_api::clean_returnvalue(\local_providerapi\webservice\batch\external::assign_batchmembers_returns(),
+                        $assignrecords);
+        $this->assertEquals(2, count($assignrecords));
+
+        foreach ($assignrecords as $assignrecord) {
+            $this->assertTrue($assignrecord['status']);
+            $this->assertTrue($batch->is_member($assignrecord['userid']));
+        }
+        // Call without required capability.
+        $this->unassignUserCapability('local/providerapi:assignbatchmembers', $contextid, $roleid);
+        $this->expectException('required_capability_exception');
+        \local_providerapi\webservice\batch\external::assign_batchmembers($institution->secretkey, $batch->id, $users);
+
+    }
+
+    public function test_unassign_batchmember() {
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $providergenerator = $generator->get_plugin_generator('local_providerapi');
+        $institution = $providergenerator->create_institution();
+
+        $contextid = context_system::instance()->id;
+        $roleid = $this->assignUserCapability('local/providerapi:create_user', $contextid);
+        $this->assignUserCapability('local/providerapi:addbatch', $contextid, $roleid);
+        $this->assignUserCapability('local/providerapi:assignbatchmembers', $contextid, $roleid);
+        $this->assignUserCapability('local/providerapi:unassignbatchmembers', $contextid, $roleid);
+
+        $user1 = array(
+                'institutionkey' => '123456',
+                'studentno' => '123456',
+                'username' => 'dummyuser1',
+                'firstname' => 'testuser1',
+                'lastname' => 'testuserlastname1',
+                'password' => '34255345345+?Sa1',
+                'email' => 'dummy1@example.com'
+        );
+        $user2 = array(
+                'institutionkey' => '123456',
+                'studentno' => '123457',
+                'username' => 'dummyuser2',
+                'firstname' => 'testuser2',
+                'lastname' => 'testuserlastname2',
+                'password' => '34255345345+?Sa2',
+                'email' => 'dummy2@example.com'
+        );
+        $batch1 = array(
+                'name' => 'test1',
+                'capacity' => 11
+        );
+
+        // Call the external function.
+        $this->setCurrentTimeStart();
+        $createduser = \local_providerapi\webservice\institution\external::create_users(array($user1, $user2));
+        $createduser = external_api::clean_returnvalue(\local_providerapi\webservice\institution\external::create_users_returns(),
+                $createduser);
+        $this->assertEquals(2, count($createduser));
+        $users = array();
+        foreach ($createduser as $newusers) {
+            $users[] = array('userid' => $newusers['id']);
+        }
+        $batchrecords =
+                \local_providerapi\webservice\batch\external::create_batches($institution->secretkey, array($batch1));
+        $batchrecords = external_api::clean_returnvalue(\local_providerapi\webservice\batch\external::create_batches_returns(),
+                $batchrecords);
+        $this->assertEquals(1, count($batchrecords));
+        $batchrecords = reset($batchrecords);
+        $batch = \local_providerapi\local\batch\batch::get($batchrecords['id']);
+        $assignrecords =
+                \local_providerapi\webservice\batch\external::assign_batchmembers($institution->secretkey, $batch->id, $users);
+        $assignrecords =
+                external_api::clean_returnvalue(\local_providerapi\webservice\batch\external::assign_batchmembers_returns(),
+                        $assignrecords);
+        $this->assertEquals(2, count($assignrecords));
+
+        foreach ($assignrecords as $assignrecord) {
+            $this->assertTrue($assignrecord['status']);
+            $this->assertTrue($batch->is_member($assignrecord['userid']));
+        }
+
+        $unassignrecord =
+                \local_providerapi\webservice\batch\external::unassign_batchmembers($institution->secretkey, $batch->id, $users);
+        $unassignrecord =
+                external_api::clean_returnvalue(\local_providerapi\webservice\batch\external::unassign_batchmembers_returns(),
+                        $unassignrecord);
+        $this->assertEquals(2, count($unassignrecord));
+
+        foreach ($unassignrecord as $record) {
+            $this->assertTrue($record['status']);
+            $this->assertNotTrue($batch->is_member($record['userid']));
+        }
+
+        // Call without required capability.
+        $this->unassignUserCapability('local/providerapi:unassignbatchmembers', $contextid, $roleid);
+        $this->expectException('required_capability_exception');
+        \local_providerapi\webservice\batch\external::unassign_batchmembers($institution->secretkey, $batch->id, $users);
+
+    }
 }

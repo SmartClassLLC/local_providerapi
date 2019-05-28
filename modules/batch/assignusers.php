@@ -84,6 +84,10 @@ $existinguserselector = new existing_batch_users('removeselect', array('batchid'
 
 // Process incoming user assignments to the cohort.
 $batch = batch::get($batchid);
+// WS unexpected.
+if ($batch->source == PROVIDERAPI_SOURCEWS) {
+    notice(get_string('hackattempt', 'local_providerapi'), $batchurl);
+}
 if (optional_param('add', false, PARAM_BOOL) && confirm_sesskey()) {
     $userstoassign = $potentialuserselector->get_selected_users();
     if (!empty($userstoassign)) {

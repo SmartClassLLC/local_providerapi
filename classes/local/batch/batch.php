@@ -26,6 +26,7 @@
 
 namespace local_providerapi\local\batch;
 
+use core\notification;
 use local_providerapi\event\batch_created;
 use local_providerapi\event\batch_deleted;
 use local_providerapi\event\batch_updated;
@@ -177,13 +178,24 @@ class batch extends modelbase {
 
     /**
      * @param $userid
+     * @return bool
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws moodle_exception
      */
     public function add_member($userid) {
         $cohortid = $this->cohortid;
         if (empty($cohortid)) {
             throw new moodle_exception('cohortnotexist', 'local_providerapi');
         }
-        cohortHelper::add_member($this->cohortid, $userid);
+        if (!$this->is_full_members()) {
+            cohortHelper::add_member($this->cohortid, $userid);
+            return true;
+        } else {
+            $user = \core_user::get_user($userid);
+            notification::error(get_string('capacityisfull', 'local_providerapi', fullname($user)));
+            return false;
+        }
     }
 
     /**
@@ -209,6 +221,29 @@ class batch extends modelbase {
             throw new moodle_exception('cohortnotexist', 'local_providerapi');
         }
         return cohortHelper::is_member($cohortid, $userid);
+    }
+
+    /**
+     * @return int
+     * @throws \dml_exception
+     */
+    public function count_members() {
+        global $DB;
+        list($select, $from, $where, $params) = $this->get_member_sql();
+        return $DB->count_records_sql("SELECT COUNT(1) FROM {$from} WHERE {$where}", $params);
+    }
+
+    /**
+     * @return bool
+     * @throws \dml_exception
+     */
+    public function is_full_members() {
+        $data = fullclone($this->_data);
+        if ($data->capacity == 0) {
+            return false;
+        }
+        $memberscount = $this->count_members();
+        return ($memberscount >= $data->capacity) ? true : false;
     }
 
     /**

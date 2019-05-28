@@ -115,6 +115,22 @@ $functions = array(
                 'type' => 'read',
                 'capabilities' => 'local/providerapi:viewbatch',
                 'services' => array('providerapi')
+        ),
+        'local_providerapi_assign_batchmembers' => array(
+                'classname' => 'local_providerapi\webservice\batch\external',
+                'methodname' => 'assign_batchmembers',
+                'description' => 'Assign user to batch',
+                'type' => 'write',
+                'capabilities' => 'local/providerapi:assignbatchmembers',
+                'services' => array('providerapi')
+        ),
+        'local_providerapi_unassign_batchmembers' => array(
+                'classname' => 'local_providerapi\webservice\batch\external',
+                'methodname' => 'unassign_batchmembers',
+                'description' => 'Unassign user from batch',
+                'type' => 'write',
+                'capabilities' => 'local/providerapi:unassignbatchmembers',
+                'services' => array('providerapi')
         )
 
 );
