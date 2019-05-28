@@ -324,4 +324,197 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         $this->expectException('required_capability_exception');
         external::get_courses($institution->secretkey);
     }
+
+    /**
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws dml_transaction_exception
+     * @throws invalid_parameter_exception
+     * @throws invalid_response_exception
+     * @throws moodle_exception
+     * @throws required_capability_exception
+     * @throws restricted_context_exception
+     */
+    public function test_create_batches() {
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $providergenerator = $generator->get_plugin_generator('local_providerapi');
+        $institution = $providergenerator->create_institution();
+
+        $contextid = context_system::instance()->id;
+        $roleid = $this->assignUserCapability('local/providerapi:addbatch', $contextid);
+
+        $batch1 = array(
+                'name' => 'test1',
+                'capacity' => 11
+        );
+        $batch2 = array(
+                'name' => 'test2'
+        );
+
+        $batchrecords =
+                \local_providerapi\webservice\batch\external::create_batches($institution->secretkey, array($batch1, $batch2));
+        $batchrecords = external_api::clean_returnvalue(\local_providerapi\webservice\batch\external::create_batches_returns(),
+                $batchrecords);
+        $this->assertEquals(2, count($batchrecords));
+
+        foreach ($batchrecords as $batchrecord) {
+            if ($batchrecord['name'] === $batch1['name']) {
+                $this->assertEquals($batchrecord['capacity'], $batch1['capacity']);
+            } else if ($batchrecord['name'] === $batch2['name']) {
+                $this->assertEquals(0, $batchrecord['capacity']);
+            } else {
+                $this->fail('Unrecognised batch found');
+            }
+        }
+
+        // Call without required capability.
+        $this->unassignUserCapability('local/providerapi:addbatch', $contextid, $roleid);
+        $this->expectException('required_capability_exception');
+        \local_providerapi\webservice\batch\external::create_batches($institution->secretkey, array($batch1, $batch2));
+
+    }
+
+    /**
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws dml_transaction_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     * @throws required_capability_exception
+     * @throws restricted_context_exception
+     */
+    public function test_create_same_name_batch() {
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $providergenerator = $generator->get_plugin_generator('local_providerapi');
+        $institution = $providergenerator->create_institution();
+
+        $contextid = context_system::instance()->id;
+        $roleid = $this->assignUserCapability('local/providerapi:addbatch', $contextid);
+
+        $batch1 = array(
+                'name' => 'test1',
+                'capacity' => 11
+        );
+        $batch2 = array(
+                'name' => 'test1'
+        );
+
+        $this->expectException('moodle_exception');
+        \local_providerapi\webservice\batch\external::create_batches($institution->secretkey, array($batch1, $batch2));
+
+    }
+
+    /**
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws dml_transaction_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     * @throws required_capability_exception
+     * @throws restricted_context_exception
+     */
+    public function test_create_invalid_capacity() {
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $providergenerator = $generator->get_plugin_generator('local_providerapi');
+        $institution = $providergenerator->create_institution();
+
+        $contextid = context_system::instance()->id;
+        $this->assignUserCapability('local/providerapi:addbatch', $contextid);
+
+        $batch1 = array(
+                'name' => 'test1',
+                'capacity' => 1111
+        );
+
+        $this->expectException('invalid_parameter_exception');
+        \local_providerapi\webservice\batch\external::create_batches($institution->secretkey, array($batch1));
+
+        $batch2 = array(
+                'name' => 'test1',
+                'capacity' => -2
+        );
+        $this->expectException('invalid_parameter_exception');
+        \local_providerapi\webservice\batch\external::create_batches($institution->secretkey, array($batch2));
+
+    }
+
+    public function test_update_batches() {
+        global $DB;
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $providergenerator = $generator->get_plugin_generator('local_providerapi');
+        $institution = $providergenerator->create_institution();
+
+        $contextid = context_system::instance()->id;
+        $roleid = $this->assignUserCapability('local/providerapi:addbatch', $contextid);
+        $this->assignUserCapability('local/providerapi:editbatch', $contextid, $roleid);
+
+        $batch1 = array(
+                'name' => 'test1',
+                'capacity' => 11
+        );
+
+        $batchrecords =
+                \local_providerapi\webservice\batch\external::create_batches($institution->secretkey, array($batch1));
+        $batchrecords = external_api::clean_returnvalue(\local_providerapi\webservice\batch\external::create_batches_returns(),
+                $batchrecords);
+        $this->assertEquals(1, count($batchrecords));
+        $batchrecords = reset($batchrecords);
+
+        $batch2 = array(
+                'id' => $batchrecords['id'],
+                'name' => 'test12',
+                'capacity' => 111
+        );
+        \local_providerapi\webservice\batch\external::update_batches($institution->secretkey, array($batch2));
+
+        $this->assertTrue($DB->record_exists(\local_providerapi\local\batch\batch::$dbname,
+                array('id' => $batchrecords['id'], 'name' => 'test12', 'capacity' => 111)));
+
+        // Call without required capability.
+        $this->unassignUserCapability('local/providerapi:editbatch', $contextid, $roleid);
+        $this->expectException('required_capability_exception');
+        \local_providerapi\webservice\batch\external::update_batches($institution->secretkey, array($batch2));
+
+    }
+
+    public function test_delete_batches() {
+        global $DB;
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $providergenerator = $generator->get_plugin_generator('local_providerapi');
+        $institution = $providergenerator->create_institution();
+
+        $contextid = context_system::instance()->id;
+        $roleid = $this->assignUserCapability('local/providerapi:addbatch', $contextid);
+        $this->assignUserCapability('local/providerapi:deletebatch', $contextid, $roleid);
+
+        $batch1 = array(
+                'name' => 'test1',
+                'capacity' => 11
+        );
+
+        $batchrecords =
+                \local_providerapi\webservice\batch\external::create_batches($institution->secretkey, array($batch1));
+        $batchrecords = external_api::clean_returnvalue(\local_providerapi\webservice\batch\external::create_batches_returns(),
+                $batchrecords);
+        $this->assertEquals(1, count($batchrecords));
+        $batchrecords = reset($batchrecords);
+
+        \local_providerapi\webservice\batch\external::delete_batches($institution->secretkey,
+                array(array('id' => $batchrecords['id'])));
+
+        $this->assertNotTrue($DB->record_exists(\local_providerapi\local\batch\batch::$dbname, array('id' => $batchrecords['id'])));
+
+        // Call without required capability.
+        $this->unassignUserCapability('local/providerapi:deletebatch', $contextid, $roleid);
+        $this->expectException('required_capability_exception');
+        \local_providerapi\webservice\batch\external::delete_batches($institution->secretkey,
+                array(array('id' => $batchrecords['id'])));
+
+    }
+
 }

@@ -167,7 +167,7 @@ class external extends external_api {
                 throw new moodle_exception('somethingwrong', 'local_providerapi');
             }
             $newbatch = batch::get($newbatchid);
-            $batches[] = array('id' => $newbatch->id, 'name' => $newbatch->name);
+            $batches[] = array('id' => $newbatch->id, 'name' => $newbatch->name, 'capacity' => $newbatch->capacity);
         }
         $transaction->allow_commit();
         return $batches;
@@ -184,6 +184,7 @@ class external extends external_api {
                         array(
                                 'id' => new external_value(PARAM_INT, 'batch id'),
                                 'name' => new external_value(PARAM_TEXT, 'batch name'),
+                                'capacity' => new external_value(PARAM_INT, 'batch capacity')
                         )
                 )
         );
