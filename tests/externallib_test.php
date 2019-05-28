@@ -517,4 +517,41 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
 
     }
 
+    public function test_get_batches() {
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $providergenerator = $generator->get_plugin_generator('local_providerapi');
+        $institution = $providergenerator->create_institution();
+
+        $contextid = context_system::instance()->id;
+        $roleid = $this->assignUserCapability('local/providerapi:addbatch', $contextid);
+        $this->assignUserCapability('local/providerapi:viewbatch', $contextid, $roleid);
+
+        $batch1 = array(
+                'name' => 'test1',
+                'capacity' => 11
+        );
+
+        $batchrecords =
+                \local_providerapi\webservice\batch\external::create_batches($institution->secretkey, array($batch1));
+        $batchrecords = external_api::clean_returnvalue(\local_providerapi\webservice\batch\external::create_batches_returns(),
+                $batchrecords);
+        $this->assertEquals(1, count($batchrecords));
+        $batchrecords = reset($batchrecords);
+
+        $getbatches = \local_providerapi\webservice\batch\external::get_batches($institution->secretkey);
+        $getbatches = external_api::clean_returnvalue(\local_providerapi\webservice\batch\external::get_batches_returns(),
+                $getbatches);
+        $getbatches = reset($getbatches);
+
+        $this->assertEquals($batchrecords['id'], $getbatches['id']);
+        $this->assertEquals($batchrecords['name'], $getbatches['name']);
+        $this->assertEquals($batchrecords['capacity'], $getbatches['capacity']);
+
+        // Call without required capability.
+        $this->unassignUserCapability('local/providerapi:viewbatch', $contextid, $roleid);
+        $this->expectException('required_capability_exception');
+        \local_providerapi\webservice\batch\external::get_batches($institution->secretkey);
+
+    }
 }
