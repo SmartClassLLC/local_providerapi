@@ -73,7 +73,7 @@ class external extends external_api {
         if ($institution = institution::get_by_secretkey($params['institutionkey'])) {
             global $DB;
             list($select, $from, $wheres, $params) = course::get_sql($institution->id);
-            $courseids = $DB->get_records_sql("SELECT c.* FROM {$from} WHERE {$wheres}", $params);
+            $courseids = $DB->get_records_sql("SELECT sc.id AS sharedcourseid,c.* FROM {$from} WHERE {$wheres}", $params);
         }
         return $courseids;
     }
@@ -85,6 +85,7 @@ class external extends external_api {
         return new external_multiple_structure(
                 new external_single_structure(
                         array(
+                                'sharedcourseid' => new external_value(PARAM_INT, 'Shared Course id'),
                                 'id' => new external_value(PARAM_INT, 'course id'),
                                 'shortname' => new external_value(PARAM_TEXT, 'course short name'),
                                 'fullname' => new external_value(PARAM_TEXT, 'full name'),

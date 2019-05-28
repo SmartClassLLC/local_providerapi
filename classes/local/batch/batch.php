@@ -80,6 +80,53 @@ class batch extends modelbase {
     }
 
     /**
+     * @return bool|int
+     * @throws \dml_exception
+     */
+    public function create() {
+        global $DB, $USER;
+        $data = fullclone($this->_data);
+        if (empty($data->createrid)) {
+            $data->createrid = $USER->id;
+        }
+        if (empty($data->modifiedby)) {
+            $data->modifiedby = $USER->id;
+        }
+        $data->timecreated = time();
+        $data->timemodified = $data->timecreated;
+        if (!$DB->record_exists(self::$dbname, array('institutionid' => $data->institutionid, 'name' => $data->name))) {
+            if ($newid = $DB->insert_record(self::$dbname, $data)) {
+                self::create_event($newid);
+                return $newid;
+            }
+        } else {
+            throw new moodle_exception('alreadyexists', 'local_providerapi', null, $data->name);
+        }
+        return false;
+    }
+
+    /**
+     * @return bool
+     * @throws \dml_exception
+     */
+    public function update() {
+        global $DB, $USER;
+        $data = fullclone($this->_data);
+        $data->modifiedby = $USER->id;
+        $data->timemodified = time();
+        if (!$DB->record_exists_select(self::$dbname, 'institutionid = :institutionid AND name = :name AND id <> :id',
+                array('institutionid' => $data->institutionid, 'name' => $data->name, 'id' => $data->id))) {
+            if ($DB->update_record(self::$dbname, $data)) {
+                self::update_event($data->id);
+                return true;
+            }
+        } else {
+            throw new moodle_exception('alreadyexists', 'local_providerapi', null, $data->name);
+        }
+        return false;
+    }
+
+    /**
      * @param int $institutionid
      * @throws \coding_exception
      * @throws \dml_exception
@@ -127,6 +174,7 @@ class batch extends modelbase {
         $string = $institution->name . ' (' . $this->name . ')';
         return format_string($string);
     }
+
     /**
      * @param $userid
      */

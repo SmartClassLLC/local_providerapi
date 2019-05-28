@@ -87,8 +87,8 @@ class addbatch extends moodleform {
         global $DB;
         $data = (object) $data;
         $err = array();
-        $select = "name = ?";
-        $param = array($data->name);
+        $select = "name = ? AND institutionid = ?";
+        $param = array($data->name, $data->institutionid);
         if (!empty($data->id)) {
             $select .= " AND id <> ?";
             $param[] = $data->id;
@@ -99,7 +99,7 @@ class addbatch extends moodleform {
 
         if (isset($data->capacity)) {
             $lenghtcapacity = strlen($data->capacity);
-            if ($lenghtcapacity > 3 || $lenghtcapacity < 0) {
+            if ($lenghtcapacity > 3 || $data->capacity < 0) {
                 $err['capacity'] = get_string('notcorrect', 'local_providerapi');
             }
         }

@@ -83,6 +83,30 @@ $functions = array(
                 'type' => 'read',
                 'capabilities' => 'local/providerapi:viewassigncourse',
                 'services' => array('providerapi')
+        ),
+        'local_providerapi_create_batches' => array(
+                'classname' => 'local_providerapi\webservice\batch\external',
+                'methodname' => 'create_batches',
+                'description' => 'Create Batch',
+                'type' => 'write',
+                'capabilities' => 'local/providerapi:addbatch',
+                'services' => array('providerapi')
+        ),
+        'local_providerapi_update_batches' => array(
+                'classname' => 'local_providerapi\webservice\batch\external',
+                'methodname' => 'update_batches',
+                'description' => 'Update Batch',
+                'type' => 'write',
+                'capabilities' => 'local/providerapi:editbatch',
+                'services' => array('providerapi')
+        ),
+        'local_providerapi_delete_batches' => array(
+                'classname' => 'local_providerapi\webservice\batch\external',
+                'methodname' => 'delete_batches',
+                'description' => 'Delete Batch',
+                'type' => 'write',
+                'capabilities' => 'local/providerapi:deletebatch',
+                'services' => array('providerapi')
         )
 
 );
