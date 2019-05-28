@@ -75,6 +75,14 @@ $functions = array(
                 'type' => 'read',
                 'capabilities' => 'local/providerapi:get_users,moodle/user:viewdetails',
                 'services' => array('providerapi')
+        ),
+        'local_providerapi_get_courses' => array(
+                'classname' => 'local_providerapi\webservice\course\external',
+                'methodname' => 'get_courses',
+                'description' => 'Get Moodle shared course',
+                'type' => 'read',
+                'capabilities' => 'local/providerapi:viewassigncourse',
+                'services' => array('providerapi')
         )
 
 );
