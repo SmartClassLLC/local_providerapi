@@ -24,7 +24,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_providerapi\webservice\institution\external;
+use local_providerapi\webservice\course\external;
 
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
@@ -72,8 +72,8 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
 
         // Call the external function.
         $this->setCurrentTimeStart();
-        $createduser = external::create_users(array($user1, $user2));
-        $createduser = external_api::clean_returnvalue(external::create_users_returns(),
+        $createduser = \local_providerapi\webservice\institution\external::create_users(array($user1, $user2));
+        $createduser = external_api::clean_returnvalue(\local_providerapi\webservice\institution\external::create_users_returns(),
                 $createduser);
         $this->assertEquals(2, count($createduser));
 
@@ -102,7 +102,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         // Call without required capability.
         $this->unassignUserCapability('local/providerapi:create_user', $contextid, $roleid);
         $this->expectException('required_capability_exception');
-        external::create_users(array($user1));
+        \local_providerapi\webservice\institution\external::create_users(array($user1));
     }
 
     /**
@@ -138,7 +138,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
                 'email' => 'dummy2@example.com'
         );
         $this->expectException('invalid_parameter_exception');
-        external::create_users(array($user1, $user2));
+        \local_providerapi\webservice\institution\external::create_users(array($user1, $user2));
 
     }
 
@@ -177,8 +177,8 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
                 'password' => '34245345+?Sa2',
                 'email' => 'dummy2@example.com'
         );
-        $usercreated = external::create_users(array($user1, $user2));
-        $usercreated = external_api::clean_returnvalue(external::create_users_returns(),
+        $usercreated = \local_providerapi\webservice\institution\external::create_users(array($user1, $user2));
+        $usercreated = external_api::clean_returnvalue(\local_providerapi\webservice\institution\external::create_users_returns(),
                 $usercreated);
         $this->assertEquals(2, count($usercreated));
         $usercreated = reset($usercreated);
@@ -194,7 +194,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
                 'email' => 'dummy1@example.com'
         );
         $this->expectException('invalid_parameter_exception');
-        external::update_users(array($user2));
+        \local_providerapi\webservice\institution\external::update_users(array($user2));
 
     }
 
@@ -237,8 +237,8 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
                 'password' => '34255345345+?Sa22',
                 'email' => 'dummy22@example.com'
         );
-        $createduser = external::create_users(array($user1, $user2));
-        $createduser = external_api::clean_returnvalue(external::create_users_returns(),
+        $createduser = \local_providerapi\webservice\institution\external::create_users(array($user1, $user2));
+        $createduser = external_api::clean_returnvalue(\local_providerapi\webservice\institution\external::create_users_returns(),
                 $createduser);
         $this->assertEquals(2, count($createduser));
         $user1 = $DB->get_record('user', array('username' => $user1['username']));
@@ -248,7 +248,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
             $userfields['institutionkey'] = '123456';
             $userfields['id'] = $newuser['id'];
         }
-        external::delete_users(array(
+        \local_providerapi\webservice\institution\external::delete_users(array(
                 array('institutionkey' => '123456', 'id' => $user1->id),
                 array('institutionkey' => '123456', 'id' => $user2->id)
         ));
@@ -258,7 +258,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         // Call without required capability.
         $this->unassignUserCapability('local/providerapi:delete_user', $contextid, $roleid);
         $this->expectException('required_capability_exception');
-        external::delete_users(array(
+        \local_providerapi\webservice\institution\external::delete_users(array(
                 array('institutionkey' => '123456', 'id' => $user1->id),
                 array('institutionkey' => '123456', 'id' => $user2->id)
         ));
@@ -285,9 +285,43 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         $user1 = $generator->create_user();
         $this->expectExceptionObject(new moodle_exception('nofounduserininstitutuion', 'local_providerapi'));
         $this->expectExceptionMessage('User is not found in this institutuion');
-        external::delete_users(array(
+        \local_providerapi\webservice\institution\external::delete_users(array(
                 array('institutionkey' => $institution->secretkey, 'id' => $user1->id),
         ));
 
+    }
+
+    /**
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws invalid_response_exception
+     */
+    public function test_get_courses() {
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $providergenerator = $generator->get_plugin_generator('local_providerapi');
+        $institution = $providergenerator->create_institution();
+        $course1 = $generator->create_course();
+        $course2 = $generator->create_course();
+
+        $providergenerator->create_sharedcourse(array(
+                'institutionid' => $institution->id,
+                'courseids' => array($course1->id, $course2->id)
+        ));
+        $contextid = context_system::instance()->id;
+        $roleid = $this->assignUserCapability('local/providerapi:viewassigncourse', $contextid);
+        $courserecords = external::get_courses($institution->secretkey);
+        $courserecords = external_api::clean_returnvalue(external::get_courses_returns(),
+                $courserecords);
+        $this->assertEquals(2, count($courserecords));
+        foreach ($courserecords as $courserecord) {
+            $this->assertTrue(($courserecord['id'] == $course1->id || $courserecord['id'] == $course2->id));
+            $this->assertTrue(($courserecord['fullname'] === $course1->fullname ||
+                    $courserecord['fullname'] === $course2->fullname));
+        }
+        // Call without required capability.
+        $this->unassignUserCapability('local/providerapi:viewassigncourse', $contextid, $roleid);
+        $this->expectException('required_capability_exception');
+        external::get_courses($institution->secretkey);
     }
 }
