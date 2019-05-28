@@ -441,6 +441,16 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
 
     }
 
+    /**
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws dml_transaction_exception
+     * @throws invalid_parameter_exception
+     * @throws invalid_response_exception
+     * @throws moodle_exception
+     * @throws required_capability_exception
+     * @throws restricted_context_exception
+     */
     public function test_update_batches() {
         global $DB;
         $this->resetAfterTest();
@@ -481,6 +491,16 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
 
     }
 
+    /**
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws dml_transaction_exception
+     * @throws invalid_parameter_exception
+     * @throws invalid_response_exception
+     * @throws moodle_exception
+     * @throws required_capability_exception
+     * @throws restricted_context_exception
+     */
     public function test_delete_batches() {
         global $DB;
         $this->resetAfterTest();
@@ -517,6 +537,16 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
 
     }
 
+    /**
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws dml_transaction_exception
+     * @throws invalid_parameter_exception
+     * @throws invalid_response_exception
+     * @throws moodle_exception
+     * @throws required_capability_exception
+     * @throws restricted_context_exception
+     */
     public function test_get_batches() {
         $this->resetAfterTest();
         $generator = $this->getDataGenerator();
