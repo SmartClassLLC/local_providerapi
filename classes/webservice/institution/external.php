@@ -697,7 +697,6 @@ class external extends external_api {
                                         array(
                                                 'key' => new external_value(PARAM_ALPHA, 'the user column to search,
                                                  expected keys (value format) are:
-                                "institutionkey" (string) matching institutionkey,
                                 "id" (int) matching user id,
                                 "lastname" (string) user last name
                                 (Note: you can use % for searching but it may be considerably slower!),
@@ -715,7 +714,7 @@ class external extends external_api {
                         The search is executed with AND operator on the criterias. Invalid criterias (keys) are ignored,
                         the search is still executed on the valid criterias.
                         You can search without criteria, but the function is not designed for it.
-                        It could very slow or timeout. The function is designed to search some specific users.'
+                        It could very slow or timeout. The function is designed to search some specific users.', VALUE_OPTIONAL
                         )
 
                 )
@@ -873,7 +872,8 @@ class external extends external_api {
     public static function get_users_returns() {
         return new external_single_structure(
                 array('users' => new external_multiple_structure(
-                        self::user_description()
+                        self::user_description(array('fullname' => new external_value(core_user::get_property_type('firstname'),
+                                'The fullname of the user', VALUE_OPTIONAL)))
                 ),
                         'warnings' => new external_warnings('always set to \'key\'', 'faulty key name')
                 )
@@ -893,17 +893,11 @@ class external extends external_api {
                         VALUE_OPTIONAL),
                 'lastname' => new external_value(core_user::get_property_type('lastname'), 'The family name of the user',
                         VALUE_OPTIONAL),
-                'fullname' => new external_value(core_user::get_property_type('firstname'), 'The fullname of the user'),
                 'email' => new external_value(core_user::get_property_type('email'),
                         'An email address - allow email as root@localhost', VALUE_OPTIONAL),
                 'address' => new external_value(core_user::get_property_type('address'), 'Postal address', VALUE_OPTIONAL),
                 'phone1' => new external_value(core_user::get_property_type('phone1'), 'Phone 1', VALUE_OPTIONAL),
                 'phone2' => new external_value(core_user::get_property_type('phone2'), 'Phone 2', VALUE_OPTIONAL),
-                'icq' => new external_value(core_user::get_property_type('icq'), 'icq number', VALUE_OPTIONAL),
-                'skype' => new external_value(core_user::get_property_type('skype'), 'skype id', VALUE_OPTIONAL),
-                'yahoo' => new external_value(core_user::get_property_type('yahoo'), 'yahoo id', VALUE_OPTIONAL),
-                'aim' => new external_value(core_user::get_property_type('aim'), 'aim id', VALUE_OPTIONAL),
-                'msn' => new external_value(core_user::get_property_type('msn'), 'msn number', VALUE_OPTIONAL),
                 'department' => new external_value(core_user::get_property_type('department'), 'department', VALUE_OPTIONAL),
                 'institution' => new external_value(core_user::get_property_type('institution'), 'institution', VALUE_OPTIONAL),
                 'idnumber' => new external_value(core_user::get_property_type('idnumber'),
@@ -936,8 +930,6 @@ class external extends external_api {
                 'url' => new external_value(core_user::get_property_type('url'), 'URL of the user', VALUE_OPTIONAL),
                 'country' => new external_value(core_user::get_property_type('country'),
                         'Home country code of the user, such as AU or CZ', VALUE_OPTIONAL),
-                'profileimageurlsmall' => new external_value(PARAM_URL, 'User image profile URL - small version'),
-                'profileimageurl' => new external_value(PARAM_URL, 'User image profile URL - big version'),
                 'customfields' => new external_multiple_structure(
                         new external_single_structure(
                                 array(

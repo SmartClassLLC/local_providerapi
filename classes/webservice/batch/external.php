@@ -462,6 +462,9 @@ class external extends external_api {
         );
     }
 
+    /**
+     * @return external_function_parameters
+     */
     public static function unassign_batchmembers_parameters() {
         $batchfields = [
                 'userid' => new external_value(PARAM_INT, 'Moodle user id')
@@ -538,6 +541,57 @@ class external extends external_api {
                                 'message' => new external_value(PARAM_TEXT, 'information process', VALUE_OPTIONAL)
                         )
                 )
+        );
+    }
+
+    /**
+     * @return external_function_parameters
+     */
+    public static function get_batchmembers_parameters() {
+        return new external_function_parameters(
+                [
+                        'institutionkey' => new external_value(PARAM_ALPHANUM, 'Institution SecretKey'),
+                        'batchid' => new external_value(PARAM_INT, 'Batch\'s id')
+                ]
+        );
+    }
+
+    /**
+     * @param $institutionkey
+     * @param $batchid
+     * @return array
+     * @throws \dml_exception
+     * @throws \required_capability_exception
+     * @throws \restricted_context_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     */
+    public static function get_batchmembers($institutionkey, $batchid) {
+        global $DB;
+        $params = self::validate_parameters(self::get_batchmembers_parameters(),
+                array('institutionkey' => $institutionkey, 'batchid' => $batchid));
+        $context = context_system::instance();
+        require_capability('local/providerapi:viewbatchmembers', $context);
+        self::validate_context($context);
+        // Get institution.
+        $institution = institution::get_by_secretkey($params['institutionkey']);
+
+        if (!$DB->record_exists(batch::$dbname, array('id' => $params['batchid'], 'institutionid' => $institution->id))) {
+            throw new moodle_exception('notexistbatch', 'local_providerapi');
+        }
+        $batch = batch::get($params['batchid']);
+        list($select, $from, $where, $params) = $batch->get_member_sql();
+
+        return $DB->get_records_sql("SELECT {$select} FROM {$from} WHERE {$where}", $params);
+    }
+
+    /**
+     * @return external_multiple_structure
+     * @throws \coding_exception
+     */
+    public static function get_batchmembers_returns() {
+        return new external_multiple_structure(
+                \local_providerapi\webservice\institution\external::user_description(), 'Get users from batch', VALUE_OPTIONAL
         );
     }
 }

@@ -131,6 +131,14 @@ $functions = array(
                 'type' => 'write',
                 'capabilities' => 'local/providerapi:unassignbatchmembers',
                 'services' => array('providerapi')
+        ),
+        'local_providerapi_get_batchmembers' => array(
+                'classname' => 'local_providerapi\webservice\batch\external',
+                'methodname' => 'get_batchmembers',
+                'description' => 'Get users from batch',
+                'type' => 'read',
+                'capabilities' => 'local/providerapi:viewbatchmembers',
+                'services' => array('providerapi')
         )
 
 );
