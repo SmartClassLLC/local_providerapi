@@ -75,6 +75,70 @@ $functions = array(
                 'type' => 'read',
                 'capabilities' => 'local/providerapi:get_users,moodle/user:viewdetails',
                 'services' => array('providerapi')
+        ),
+        'local_providerapi_get_courses' => array(
+                'classname' => 'local_providerapi\webservice\course\external',
+                'methodname' => 'get_courses',
+                'description' => 'Get Moodle shared course',
+                'type' => 'read',
+                'capabilities' => 'local/providerapi:viewassigncourse',
+                'services' => array('providerapi')
+        ),
+        'local_providerapi_create_batches' => array(
+                'classname' => 'local_providerapi\webservice\batch\external',
+                'methodname' => 'create_batches',
+                'description' => 'Create Batch',
+                'type' => 'write',
+                'capabilities' => 'local/providerapi:addbatch',
+                'services' => array('providerapi')
+        ),
+        'local_providerapi_update_batches' => array(
+                'classname' => 'local_providerapi\webservice\batch\external',
+                'methodname' => 'update_batches',
+                'description' => 'Update Batch',
+                'type' => 'write',
+                'capabilities' => 'local/providerapi:editbatch',
+                'services' => array('providerapi')
+        ),
+        'local_providerapi_delete_batches' => array(
+                'classname' => 'local_providerapi\webservice\batch\external',
+                'methodname' => 'delete_batches',
+                'description' => 'Delete Batch',
+                'type' => 'write',
+                'capabilities' => 'local/providerapi:deletebatch',
+                'services' => array('providerapi')
+        ),
+        'local_providerapi_get_batches' => array(
+                'classname' => 'local_providerapi\webservice\batch\external',
+                'methodname' => 'get_batches',
+                'description' => 'Get all Batches',
+                'type' => 'read',
+                'capabilities' => 'local/providerapi:viewbatch',
+                'services' => array('providerapi')
+        ),
+        'local_providerapi_assign_batchmembers' => array(
+                'classname' => 'local_providerapi\webservice\batch\external',
+                'methodname' => 'assign_batchmembers',
+                'description' => 'Assign user to batch',
+                'type' => 'write',
+                'capabilities' => 'local/providerapi:assignbatchmembers',
+                'services' => array('providerapi')
+        ),
+        'local_providerapi_unassign_batchmembers' => array(
+                'classname' => 'local_providerapi\webservice\batch\external',
+                'methodname' => 'unassign_batchmembers',
+                'description' => 'Unassign user from batch',
+                'type' => 'write',
+                'capabilities' => 'local/providerapi:unassignbatchmembers',
+                'services' => array('providerapi')
+        ),
+        'local_providerapi_get_batchmembers' => array(
+                'classname' => 'local_providerapi\webservice\batch\external',
+                'methodname' => 'get_batchmembers',
+                'description' => 'Get users from batch',
+                'type' => 'read',
+                'capabilities' => 'local/providerapi:viewbatchmembers',
+                'services' => array('providerapi')
         )
 
 );

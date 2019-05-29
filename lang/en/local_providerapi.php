@@ -61,7 +61,6 @@ $string['providerapi:viewbatchmembers'] = 'View batch\'s members';
 $string['providerapi:assignbatchmembers'] = 'Assign members to batch';
 $string['providerapi:unassignbatchmembers'] = 'Unassign members to batch';
 
-
 // Privacy.
 $string['privacy:metadata'] = 'The Providerapi plugin does not store any personal data.';
 
@@ -136,6 +135,8 @@ $string['assignmembers'] = 'Assign Members';
 $string['back'] = 'Back';
 $string['extusers'] = 'Existing users';
 $string['extusersmatching'] = 'Exist matching users';
+$string['capacityisfull'] = 'Capacity is full. User named {$a} is not add';
+$string['batchcapacityisfull'] = 'Batch \'s capacity is full';
 
 
 

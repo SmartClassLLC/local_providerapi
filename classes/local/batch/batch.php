@@ -26,6 +26,7 @@
 
 namespace local_providerapi\local\batch;
 
+use core\notification;
 use local_providerapi\event\batch_created;
 use local_providerapi\event\batch_deleted;
 use local_providerapi\event\batch_updated;
@@ -80,6 +81,53 @@ class batch extends modelbase {
     }
 
     /**
+     * @return bool|int
+     * @throws \dml_exception
+     */
+    public function create() {
+        global $DB, $USER;
+        $data = fullclone($this->_data);
+        if (empty($data->createrid)) {
+            $data->createrid = $USER->id;
+        }
+        if (empty($data->modifiedby)) {
+            $data->modifiedby = $USER->id;
+        }
+        $data->timecreated = time();
+        $data->timemodified = $data->timecreated;
+        if (!$DB->record_exists(self::$dbname, array('institutionid' => $data->institutionid, 'name' => $data->name))) {
+            if ($newid = $DB->insert_record(self::$dbname, $data)) {
+                self::create_event($newid);
+                return $newid;
+            }
+        } else {
+            throw new moodle_exception('alreadyexists', 'local_providerapi', null, $data->name);
+        }
+        return false;
+    }
+
+    /**
+     * @return bool
+     * @throws \dml_exception
+     */
+    public function update() {
+        global $DB, $USER;
+        $data = fullclone($this->_data);
+        $data->modifiedby = $USER->id;
+        $data->timemodified = time();
+        if (!$DB->record_exists_select(self::$dbname, 'institutionid = :institutionid AND name = :name AND id <> :id',
+                array('institutionid' => $data->institutionid, 'name' => $data->name, 'id' => $data->id))) {
+            if ($DB->update_record(self::$dbname, $data)) {
+                self::update_event($data->id);
+                return true;
+            }
+        } else {
+            throw new moodle_exception('alreadyexists', 'local_providerapi', null, $data->name);
+        }
+        return false;
+    }
+
+    /**
      * @param int $institutionid
      * @throws \coding_exception
      * @throws \dml_exception
@@ -127,15 +175,27 @@ class batch extends modelbase {
         $string = $institution->name . ' (' . $this->name . ')';
         return format_string($string);
     }
+
     /**
      * @param $userid
+     * @return bool
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws moodle_exception
      */
     public function add_member($userid) {
         $cohortid = $this->cohortid;
         if (empty($cohortid)) {
             throw new moodle_exception('cohortnotexist', 'local_providerapi');
         }
-        cohortHelper::add_member($this->cohortid, $userid);
+        if (!$this->is_full_members()) {
+            cohortHelper::add_member($this->cohortid, $userid);
+            return true;
+        } else {
+            $user = \core_user::get_user($userid);
+            notification::error(get_string('capacityisfull', 'local_providerapi', fullname($user)));
+            return false;
+        }
     }
 
     /**
@@ -161,6 +221,29 @@ class batch extends modelbase {
             throw new moodle_exception('cohortnotexist', 'local_providerapi');
         }
         return cohortHelper::is_member($cohortid, $userid);
+    }
+
+    /**
+     * @return int
+     * @throws \dml_exception
+     */
+    public function count_members() {
+        global $DB;
+        list($select, $from, $where, $params) = $this->get_member_sql();
+        return $DB->count_records_sql("SELECT COUNT(1) FROM {$from} WHERE {$where}", $params);
+    }
+
+    /**
+     * @return bool
+     * @throws \dml_exception
+     */
+    public function is_full_members() {
+        $data = fullclone($this->_data);
+        if ($data->capacity == 0) {
+            return false;
+        }
+        $memberscount = $this->count_members();
+        return ($memberscount >= $data->capacity) ? true : false;
     }
 
     /**

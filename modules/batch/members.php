@@ -67,10 +67,7 @@ $viewnode->make_active();
 
 $output = $PAGE->get_renderer('local_providerapi', 'batch');
 $batch = batch::get($batchid);
-// WS unexpected.
-if ($batch->source == PROVIDERAPI_SOURCEWS) {
-    notice(get_string('hackattempt', 'local_providerapi'), $batchurl);
-}
+
 $table = new table_batchmembers($baseurl, 100);
 list($select, $from, $where, $params) = $batch->get_member_sql();
 $table->set_sql($select, $from, $where, $params);
