@@ -177,7 +177,6 @@ class external extends external_api {
 
     /**
      * @return external_multiple_structure
-     * @throws \coding_exception
      */
     public static function create_batches_returns() {
         return new external_multiple_structure(
@@ -447,7 +446,6 @@ class external extends external_api {
 
     /**
      * @return external_multiple_structure
-     * @throws \coding_exception
      */
     public static function assign_batchmembers_returns() {
         return new external_multiple_structure(
@@ -485,7 +483,6 @@ class external extends external_api {
      * @param int $batchid
      * @param array $users
      * @return array
-     * @throws \coding_exception
      * @throws \dml_exception
      * @throws \required_capability_exception
      * @throws \restricted_context_exception
@@ -529,7 +526,6 @@ class external extends external_api {
 
     /**
      * @return external_multiple_structure
-     * @throws \coding_exception
      */
     public static function unassign_batchmembers_returns() {
         return new external_multiple_structure(

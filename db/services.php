@@ -139,6 +139,30 @@ $functions = array(
                 'type' => 'read',
                 'capabilities' => 'local/providerapi:viewbatchmembers',
                 'services' => array('providerapi')
+        ),
+        'local_providerapi_assign_course_to_batch' => array(
+                'classname' => 'local_providerapi\webservice\course\external',
+                'methodname' => 'assign_course_to_batch',
+                'description' => 'Assign course to batch',
+                'type' => 'write',
+                'capabilities' => 'local/providerapi:assignbtcourse',
+                'services' => array('providerapi')
+        ),
+        'local_providerapi_unassign_course_to_batch' => array(
+                'classname' => 'local_providerapi\webservice\course\external',
+                'methodname' => 'unassign_course_to_batch',
+                'description' => 'Unassign course to batch',
+                'type' => 'write',
+                'capabilities' => 'local/providerapi:unassignbtcourse',
+                'services' => array('providerapi')
+        ),
+        'local_providerapi_get_batch_courses' => array(
+                'classname' => 'local_providerapi\webservice\course\external',
+                'methodname' => 'get_batch_courses',
+                'description' => 'Get courses of batch',
+                'type' => 'read',
+                'capabilities' => 'local/providerapi:unassignbtcourse',
+                'services' => array('providerapi')
         )
 
 );
