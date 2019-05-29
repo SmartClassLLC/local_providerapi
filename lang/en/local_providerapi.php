@@ -60,6 +60,7 @@ $string['providerapi:unassigninstitutionmembers'] = 'Unassign members to institu
 $string['providerapi:viewbatchmembers'] = 'View batch\'s members';
 $string['providerapi:assignbatchmembers'] = 'Assign members to batch';
 $string['providerapi:unassignbatchmembers'] = 'Unassign members to batch';
+$string['providerapi:assignbtcourse'] = 'Assign course to batch';
 
 // Privacy.
 $string['privacy:metadata'] = 'The Providerapi plugin does not store any personal data.';

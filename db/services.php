@@ -139,6 +139,14 @@ $functions = array(
                 'type' => 'read',
                 'capabilities' => 'local/providerapi:viewbatchmembers',
                 'services' => array('providerapi')
+        ),
+        'local_providerapi_assign_course_to_batch' => array(
+                'classname' => 'local_providerapi\webservice\course\external',
+                'methodname' => 'assign_course_to_batch',
+                'description' => 'Assign course to batch',
+                'type' => 'write',
+                'capabilities' => 'local/providerapi:assignbtcourse',
+                'services' => array('providerapi')
         )
 
 );
