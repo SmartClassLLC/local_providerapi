@@ -24,12 +24,15 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_providerapi\local\batch\btcourse;
+use local_providerapi\local\course\course;
 use local_providerapi\webservice\course\external;
 
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
 require_once($CFG->dirroot . '/webservice/tests/helpers.php');
+require_once($CFG->dirroot . '/local/providerapi/locallib.php');
 
 /**
  * Class local_providerapi_externallib_testcase
@@ -114,10 +117,10 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         $this->resetAfterTest();
         $generator = $this->getDataGenerator();
         $providergenerator = $generator->get_plugin_generator('local_providerapi');
-        $institution = $providergenerator->create_institution();
+        $providergenerator->create_institution();
 
         $contextid = context_system::instance()->id;
-        $roleid = $this->assignUserCapability('local/providerapi:create_user', $contextid);
+        $this->assignUserCapability('local/providerapi:create_user', $contextid);
 
         $user1 = array(
                 'institutionkey' => '123456',
@@ -153,7 +156,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         $this->resetAfterTest();
         $generator = $this->getDataGenerator();
         $providergenerator = $generator->get_plugin_generator('local_providerapi');
-        $institution = $providergenerator->create_institution();
+        $providergenerator->create_institution();
 
         $contextid = context_system::instance()->id;
         $roleid = $this->assignUserCapability('local/providerapi:create_user', $contextid);
@@ -213,7 +216,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         $this->resetAfterTest();
         $generator = $this->getDataGenerator();
         $providergenerator = $generator->get_plugin_generator('local_providerapi');
-        $institution = $providergenerator->create_institution();
+        $providergenerator->create_institution();
 
         $contextid = context_system::instance()->id;
         $roleid = $this->assignUserCapability('local/providerapi:create_user', $contextid);
@@ -391,7 +394,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         $institution = $providergenerator->create_institution();
 
         $contextid = context_system::instance()->id;
-        $roleid = $this->assignUserCapability('local/providerapi:addbatch', $contextid);
+        $this->assignUserCapability('local/providerapi:addbatch', $contextid);
 
         $batch1 = array(
                 'name' => 'test1',
@@ -585,6 +588,16 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
 
     }
 
+    /**
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws dml_transaction_exception
+     * @throws invalid_parameter_exception
+     * @throws invalid_response_exception
+     * @throws moodle_exception
+     * @throws required_capability_exception
+     * @throws restricted_context_exception
+     */
     public function test_assign_batchmember() {
         $this->resetAfterTest();
         $generator = $this->getDataGenerator();
@@ -654,6 +667,16 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
 
     }
 
+    /**
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws dml_transaction_exception
+     * @throws invalid_parameter_exception
+     * @throws invalid_response_exception
+     * @throws moodle_exception
+     * @throws required_capability_exception
+     * @throws restricted_context_exception
+     */
     public function test_unassign_batchmember() {
         $this->resetAfterTest();
         $generator = $this->getDataGenerator();
@@ -735,5 +758,122 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         $this->expectException('required_capability_exception');
         \local_providerapi\webservice\batch\external::unassign_batchmembers($institution->secretkey, $batch->id, $users);
 
+    }
+
+    /**
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws dml_transaction_exception
+     * @throws invalid_parameter_exception
+     * @throws invalid_response_exception
+     * @throws moodle_exception
+     * @throws required_capability_exception
+     * @throws restricted_context_exception
+     */
+    public function test_assign_course_to_batch() {
+        global $DB;
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $providergenerator = $generator->get_plugin_generator('local_providerapi');
+        $institution = $providergenerator->create_institution();
+
+        $contextid = context_system::instance()->id;
+        $roleid = $this->assignUserCapability('local/providerapi:assignbtcourse', $contextid);
+        $this->assignUserCapability('local/providerapi:viewassignbtcourse', $contextid, $roleid);
+        $this->assignUserCapability('local/providerapi:unassignbtcourse', $contextid, $roleid);
+
+        $course1 = $generator->create_course();
+        $course1field = array('courseid' => $course1->id);
+        $course2 = $generator->create_course();
+        $course2field = array('courseid' => $course2->id);
+        $providergenerator->create_sharedcourse(array(
+                'institutionid' => $institution->id,
+                'courseids' => array($course1->id)
+        ));
+        $batch1 = $providergenerator->create_batch(array(
+                'institutionid' => $institution->id,
+                'name' => 'testbatch1',
+                'source' => PROVIDERAPI_SOURCEWS
+        ));
+
+        $assigncourses =
+                external::assign_course_to_batch($institution->secretkey, $batch1->id, array($course1field, $course2field));
+        $assigncourses = external_api::clean_returnvalue(external::assign_course_to_batch_returns(), $assigncourses);
+        $this->assertEquals(2, count($assigncourses));
+
+        foreach ($assigncourses as $unassignedcourse) {
+            if ($unassignedcourse['courseid'] == $course1->id) {
+                $this->assertTrue($unassignedcourse['status']);
+                $this->assertEquals($unassignedcourse['message'], 'assign successfuly');
+                $sharedcourse =
+                        $DB->get_record(course::$dbname, array('institutionid' => $institution->id, 'courseid' => $course1->id));
+                $this->assertNotEmpty($sharedcourse);
+                $this->assertTrue($DB->record_exists_select(btcourse::$dbname,
+                        'batchid = :batchid
+                         AND sharedcourseid = :sharedcourseid
+                         AND source = :source',
+                        array(
+                                'batchid' => $batch1->id,
+                                'sharedcourseid' => $sharedcourse->id,
+                                'source' => PROVIDERAPI_SOURCEWS
+                        )));
+            } else if ($unassignedcourse['courseid'] == $course2->id) {
+                $this->assertNotTrue($unassignedcourse['status']);
+                $this->assertEquals($unassignedcourse['message'], 'the course does not exist in this institution');
+                $sharedcourse =
+                        $DB->get_record(course::$dbname, array('institutionid' => $institution->id, 'courseid' => $course2->id));
+                $this->assertFalse($sharedcourse);
+
+            } else {
+                $this->fail('Unrecognised btcourse found');
+            }
+
+        }
+        // Test view assignbtcourses.
+        $assigviewbtcourses = external::get_batch_courses($institution->secretkey, $batch1->id);
+        $assigviewbtcourses = external_api::clean_returnvalue(external::get_batch_courses_returns(), $assigviewbtcourses);
+        $this->assertEquals(1, count($assigviewbtcourses));
+        $assigviewbtcourses = reset($assigviewbtcourses);
+        $this->assertEquals($course1->id, $assigviewbtcourses['courseid']);
+        $this->assertEquals($course1->fullname, $assigviewbtcourses['coursename']);
+
+        // Test Unassign.
+
+        $unassigncourses =
+                external::unassign_course_to_batch($institution->secretkey, $batch1->id, array($course1field, $course2field));
+        $unassigncourses = external_api::clean_returnvalue(external::unassign_course_to_batch_returns(), $unassigncourses);
+        $this->assertEquals(2, count($unassigncourses));
+        $this->assertEquals(2, count($assigncourses));
+        foreach ($unassigncourses as $assignedcourse) {
+            if ($assignedcourse['courseid'] == $course1->id) {
+                $this->assertTrue($assignedcourse['status']);
+                $this->assertEquals($assignedcourse['message'], 'unassign successfuly');
+                $sharedcourse =
+                        $DB->get_record(course::$dbname, array('institutionid' => $institution->id, 'courseid' => $course1->id));
+                $this->assertNotEmpty($sharedcourse);
+                $this->assertFalse($DB->record_exists_select(btcourse::$dbname,
+                        'batchid = :batchid
+                         AND sharedcourseid = :sharedcourseid',
+                        array(
+                                'batchid' => $batch1->id,
+                                'sharedcourseid' => $sharedcourse->id
+                        )));
+            } else if ($assignedcourse['courseid'] == $course2->id) {
+                $this->assertFalse($assignedcourse['status']);
+                $this->assertEquals($assignedcourse['message'], 'the course does not exist in this institution');
+                $sharedcourse =
+                        $DB->get_record(course::$dbname, array('institutionid' => $institution->id, 'courseid' => $course2->id));
+                $this->assertFalse($sharedcourse);
+
+            } else {
+                $this->fail('Unrecognised btcourse found');
+            }
+
+        }
+
+        // Call without required capability.
+        $this->unassignUserCapability('local/providerapi:assignbtcourse', $contextid, $roleid);
+        $this->expectException('required_capability_exception');
+        external::assign_course_to_batch($institution->secretkey, $batch1->id, array($course1field, $course2field));
     }
 }
