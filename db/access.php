@@ -115,6 +115,20 @@ $capabilities = [
                         'manager' => CAP_ALLOW
                 ],
         ],
+        'local/providerapi:unassignbtcourse' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                        'manager' => CAP_ALLOW
+                ],
+        ],
+        'local/providerapi:viewassignbtcourse' => [
+                'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                        'manager' => CAP_ALLOW
+                ],
+        ],
         'local/providerapi:viewassigncourse' => [
                 'captype' => 'write',
                 'contextlevel' => 10,

@@ -146,6 +146,9 @@ class external extends external_api {
                         ), 'course', VALUE_OPTIONAL));
     }
 
+    /**
+     * @return external_function_parameters
+     */
     public static function assign_course_to_batch_parameters() {
         $batchfields = [
                 'sharedcourseid' => new external_value(PARAM_TEXT, 'Batch\'s name must be unique for each institution')
@@ -160,6 +163,18 @@ class external extends external_api {
         );
     }
 
+    /**
+     * @param $institutionkey
+     * @param $batchid
+     * @param array $courses
+     * @return array
+     * @throws \dml_exception
+     * @throws \dml_transaction_exception
+     * @throws \invalid_parameter_exception
+     * @throws \required_capability_exception
+     * @throws \restricted_context_exception
+     * @throws moodle_exception
+     */
     public static function assign_course_to_batch($institutionkey, $batchid, $courses = array()) {
         global $DB;
         $params = self::validate_parameters(self::assign_course_to_batch_parameters(),
@@ -173,28 +188,99 @@ class external extends external_api {
         if (!$DB->record_exists(batch::$dbname, array('id' => $params['batchid'], 'institutionid' => $institution->id))) {
             throw new moodle_exception('notexistbatch', 'local_providerapi');
         }
-
         $courses = array();
-
         $transaction = $DB->start_delegated_transaction();
         foreach ($params['courses'] as $sharecourse) {
-
             $data = new \stdClass();
             $data->batchid = $params['batchid'];
             $data->sharedcourseids = array_values($sharecourse);
             $data->source = PROVIDERAPI_SOURCEWS;
             btcourse::get($data)->create();
-            $courses[] = array('id' => $sharecourse['sharedcourseid'], 'status' => true);
+            $courses[] = array('sharedcourseid' => $sharecourse['sharedcourseid'], 'status' => true);
         }
         $transaction->allow_commit();
         return $courses;
     }
 
+    /**
+     * @return external_multiple_structure
+     */
     public static function assign_course_to_batch_returns() {
         return new external_multiple_structure(
                 new external_single_structure(
                         array(
-                                'id' => new external_value(PARAM_INT, 'sharedcourseid'),
+                                'sharedcourseid' => new external_value(PARAM_INT, 'sharedcourseid'),
+                                'status' => new external_value(PARAM_BOOL, 'status')
+                        )
+                )
+        );
+    }
+
+    /**
+     * @return external_function_parameters
+     */
+    public static function unassign_course_to_batch_parameters() {
+        $batchfields = [
+                'sharedcourseid' => new external_value(PARAM_TEXT, 'Batch\'s name must be unique for each institution')
+        ];
+        return new external_function_parameters(
+                ['institutionkey' => new external_value(PARAM_ALPHANUM, 'Institution SecretKey'),
+                        'batchid' => new external_value(PARAM_INT, 'Batch\'s id'),
+                        'courses' => new external_multiple_structure(
+                                new external_single_structure($batchfields)
+                        )
+                ]
+        );
+    }
+
+    /**
+     * @param $institutionkey
+     * @param $batchid
+     * @param array $courses
+     * @return array
+     * @throws \dml_exception
+     * @throws \dml_transaction_exception
+     * @throws \invalid_parameter_exception
+     * @throws \required_capability_exception
+     * @throws \restricted_context_exception
+     * @throws moodle_exception
+     */
+    public static function unassign_course_to_batch($institutionkey, $batchid, $courses = array()) {
+        global $DB;
+        $params = self::validate_parameters(self::unassign_course_to_batch_parameters(),
+                array('institutionkey' => $institutionkey, 'batchid' => $batchid, 'courses' => $courses));
+        $context = context_system::instance();
+        require_capability('local/providerapi:assignbtcourse', $context);
+        self::validate_context($context);
+        // Get institution.
+        $institution = institution::get_by_secretkey($params['institutionkey']);
+
+        if (!$DB->record_exists(batch::$dbname, array('id' => $params['batchid'], 'institutionid' => $institution->id))) {
+            throw new moodle_exception('notexistbatch', 'local_providerapi');
+        }
+        $courses = array();
+        $transaction = $DB->start_delegated_transaction();
+        foreach ($params['courses'] as $sharecourse) {
+            if ($DB->delete_records(btcourse::$dbname,
+                    array('sharedcourseid' => $sharecourse['sharedcourseid'], 'batchid' => $params['batchid']))) {
+                $courses[] = array('sharedcourseid' => $sharecourse['sharedcourseid'], 'status' => true);
+            } else {
+                $courses[] = array('sharedcourseid' => $sharecourse['sharedcourseid'], 'status' => false);
+            }
+
+        }
+        $transaction->allow_commit();
+        return $courses;
+    }
+
+    /**
+     * @return external_multiple_structure
+     */
+    public static function unassign_course_to_batch_returns() {
+        return new external_multiple_structure(
+                new external_single_structure(
+                        array(
+                                'sharedcourseid' => new external_value(PARAM_INT, 'sharedcourseid'),
                                 'status' => new external_value(PARAM_BOOL, 'status')
                         )
                 )
