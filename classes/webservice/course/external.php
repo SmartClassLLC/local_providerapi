@@ -38,10 +38,12 @@ use local_providerapi\local\batch\btcourse;
 use local_providerapi\local\course\course;
 use local_providerapi\local\institution\institution;
 use moodle_exception;
+use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->libdir . "/externallib.php");
+require_once($CFG->dirroot . '/local/providerapi/locallib.php');
 
 /**
  * Class external
@@ -76,7 +78,7 @@ class external extends external_api {
         if ($institution = institution::get_by_secretkey($params['institutionkey'])) {
             global $DB;
             list($select, $from, $wheres, $params) = course::get_sql($institution->id);
-            $courseids = $DB->get_records_sql("SELECT sc.id AS sharedcourseid,c.* FROM {$from} WHERE {$wheres}", $params);
+            $courseids = $DB->get_records_sql("SELECT c.* FROM {$from} WHERE {$wheres}", $params);
         }
         return $courseids;
     }
@@ -88,7 +90,6 @@ class external extends external_api {
         return new external_multiple_structure(
                 new external_single_structure(
                         array(
-                                'sharedcourseid' => new external_value(PARAM_INT, 'Shared Course id'),
                                 'id' => new external_value(PARAM_INT, 'course id'),
                                 'shortname' => new external_value(PARAM_TEXT, 'course short name'),
                                 'fullname' => new external_value(PARAM_TEXT, 'full name'),
@@ -151,14 +152,14 @@ class external extends external_api {
      * @return external_function_parameters
      */
     public static function assign_course_to_batch_parameters() {
-        $batchfields = [
-                'sharedcourseid' => new external_value(PARAM_TEXT, 'Batch\'s name must be unique for each institution')
+        $coursefields = [
+                'courseid' => new external_value(PARAM_TEXT, 'Moodle course id')
         ];
         return new external_function_parameters(
                 ['institutionkey' => new external_value(PARAM_ALPHANUM, 'Institution SecretKey'),
                         'batchid' => new external_value(PARAM_INT, 'Batch\'s id'),
                         'courses' => new external_multiple_structure(
-                                new external_single_structure($batchfields)
+                                new external_single_structure($coursefields)
                         )
                 ]
         );
@@ -191,13 +192,33 @@ class external extends external_api {
         }
         $courses = array();
         $transaction = $DB->start_delegated_transaction();
-        foreach ($params['courses'] as $sharecourse) {
-            $data = new \stdClass();
-            $data->batchid = $params['batchid'];
-            $data->sharedcourseids = array_values($sharecourse);
-            $data->source = PROVIDERAPI_SOURCEWS;
-            btcourse::get($data)->create();
-            $courses[] = array('sharedcourseid' => $sharecourse['sharedcourseid'], 'status' => true);
+        foreach ($params['courses'] as $course) {
+            if (!$DB->record_exists('course', array('id' => $course['courseid']))) {
+                $courses[] = array('courseid' => $course['courseid'], 'status' => false,
+                        'message' => 'This course does not exist in moodle');
+                continue;
+            }
+            if ($sharedcourse =
+                    $DB->get_record(course::$dbname, array('courseid' => $course['courseid'], 'institutionid' => $institution->id),
+                            'id')) {
+                if ($DB->record_exists(btcourse::$dbname,
+                        array('sharedcourseid' => $sharedcourse->id, 'batchid' => $params['batchid']))) {
+                    $courses[] = array('courseid' => $course['courseid'], 'status' => false,
+                            'message' => 'This course already exist in this batch');
+                    continue;
+                }
+
+                $data = new stdClass();
+                $data->batchid = $params['batchid'];
+                $data->sharedcourseids = array($sharedcourse->id);
+                $data->source = PROVIDERAPI_SOURCEWS;
+                btcourse::get($data)->create();
+                $courses[] = array('courseid' => $course['courseid'], 'status' => true, 'message' => 'assign successfuly');
+            } else {
+                $courses[] = array('courseid' => $course['courseid'], 'status' => false,
+                        'message' => 'the course does not exist in this institution');
+            }
+
         }
         $transaction->allow_commit();
         return $courses;
@@ -210,8 +231,9 @@ class external extends external_api {
         return new external_multiple_structure(
                 new external_single_structure(
                         array(
-                                'sharedcourseid' => new external_value(PARAM_INT, 'sharedcourseid'),
-                                'status' => new external_value(PARAM_BOOL, 'status')
+                                'courseid' => new external_value(PARAM_INT, 'Moodle course id'),
+                                'status' => new external_value(PARAM_BOOL, 'status'),
+                                'message' => new external_value(PARAM_TEXT, 'information', VALUE_OPTIONAL)
                         )
                 )
         );
@@ -221,14 +243,14 @@ class external extends external_api {
      * @return external_function_parameters
      */
     public static function unassign_course_to_batch_parameters() {
-        $batchfields = [
-                'sharedcourseid' => new external_value(PARAM_TEXT, 'Batch\'s name must be unique for each institution')
+        $coursefields = [
+                'courseid' => new external_value(PARAM_TEXT, 'Moodle course id')
         ];
         return new external_function_parameters(
                 ['institutionkey' => new external_value(PARAM_ALPHANUM, 'Institution SecretKey'),
                         'batchid' => new external_value(PARAM_INT, 'Batch\'s id'),
                         'courses' => new external_multiple_structure(
-                                new external_single_structure($batchfields)
+                                new external_single_structure($coursefields)
                         )
                 ]
         );
@@ -251,7 +273,7 @@ class external extends external_api {
         $params = self::validate_parameters(self::unassign_course_to_batch_parameters(),
                 array('institutionkey' => $institutionkey, 'batchid' => $batchid, 'courses' => $courses));
         $context = context_system::instance();
-        require_capability('local/providerapi:assignbtcourse', $context);
+        require_capability('local/providerapi:unassignbtcourse', $context);
         self::validate_context($context);
         // Get institution.
         $institution = institution::get_by_secretkey($params['institutionkey']);
@@ -259,20 +281,35 @@ class external extends external_api {
         if (!$DB->record_exists(batch::$dbname, array('id' => $params['batchid'], 'institutionid' => $institution->id))) {
             throw new moodle_exception('notexistbatch', 'local_providerapi');
         }
+
         $courses = array();
         $transaction = $DB->start_delegated_transaction();
-        foreach ($params['courses'] as $sharecourse) {
-
-            if ($record = $DB->get_record(btcourse::$dbname,
-                    array('sharedcourseid' => $sharecourse['sharedcourseid'], 'batchid' => $params['batchid']))) {
+        foreach ($params['courses'] as $course) {
+            if (!$DB->record_exists('course', array('id' => $course['courseid']))) {
+                $courses[] = array('courseid' => $course['courseid'], 'status' => false,
+                        'message' => 'This course does not exist in moodle');
+                continue;
+            }
+            if ($sharedcourse =
+                    $DB->get_record(course::$dbname, array('courseid' => $course['courseid'], 'institutionid' => $institution->id),
+                            'id')) {
+                if (!$record = $DB->get_record(btcourse::$dbname,
+                        array('sharedcourseid' => $sharedcourse->id, 'batchid' => $params['batchid']))) {
+                    $courses[] = array('courseid' => $course['courseid'], 'status' => false,
+                            'message' => 'This course already not exist in this batch');
+                    continue;
+                }
                 if ($DB->delete_records(btcourse::$dbname,
-                        array('sharedcourseid' => $sharecourse['sharedcourseid'], 'batchid' => $params['batchid']))) {
+                        array('sharedcourseid' => $sharedcourse->id, 'batchid' => $params['batchid']))) {
                     btcourse_deleted::create_from_objectid($record)->trigger();
-                    $courses[] = array('sharedcourseid' => $sharecourse['sharedcourseid'], 'status' => true);
+                    $courses[] = array('courseid' => $course['courseid'], 'status' => true, 'message' => 'unassign successfuly');
                 } else {
-                    $courses[] = array('sharedcourseid' => $sharecourse['sharedcourseid'], 'status' => false);
+                    $courses[] = array('courseid' => $course['courseid'], 'status' => false, 'message' => 'something went wrong');
                 }
 
+            } else {
+                $courses[] = array('courseid' => $course['courseid'], 'status' => false,
+                        'message' => 'the course does not exist in this institution');
             }
 
         }
@@ -287,8 +324,9 @@ class external extends external_api {
         return new external_multiple_structure(
                 new external_single_structure(
                         array(
-                                'sharedcourseid' => new external_value(PARAM_INT, 'sharedcourseid'),
-                                'status' => new external_value(PARAM_BOOL, 'status')
+                                'courseid' => new external_value(PARAM_INT, 'Moodle courseid'),
+                                'status' => new external_value(PARAM_BOOL, 'status'),
+                                'message' => new external_value(PARAM_TEXT, 'information', VALUE_OPTIONAL)
                         )
                 )
         );
@@ -342,9 +380,8 @@ class external extends external_api {
         return new external_multiple_structure(
                 new external_single_structure(
                         array(
-                                'sharedcourseid' => new external_value(PARAM_INT, 'sharedcourseid'),
-                                'coursename' => new external_value(PARAM_TEXT, 'course name'),
-                                'courseid' => new external_value(PARAM_TEXT, 'moodle course id'),
+                                'courseid' => new external_value(PARAM_INT, 'Moodle Course id'),
+                                'coursename' => new external_value(PARAM_TEXT, 'Moodle course name')
                         ), 'Get batch\'s courses', VALUE_OPTIONAL
                 )
         );
