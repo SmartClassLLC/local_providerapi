@@ -483,7 +483,6 @@ class external extends external_api {
      * @param int $batchid
      * @param array $users
      * @return array
-     * @throws \coding_exception
      * @throws \dml_exception
      * @throws \required_capability_exception
      * @throws \restricted_context_exception

@@ -32,6 +32,7 @@ use external_function_parameters;
 use external_multiple_structure;
 use external_single_structure;
 use external_value;
+use local_providerapi\event\btcourse_deleted;
 use local_providerapi\local\batch\batch;
 use local_providerapi\local\batch\btcourse;
 use local_providerapi\local\course\course;
@@ -261,11 +262,17 @@ class external extends external_api {
         $courses = array();
         $transaction = $DB->start_delegated_transaction();
         foreach ($params['courses'] as $sharecourse) {
-            if ($DB->delete_records(btcourse::$dbname,
+
+            if ($record = $DB->get_record(btcourse::$dbname,
                     array('sharedcourseid' => $sharecourse['sharedcourseid'], 'batchid' => $params['batchid']))) {
-                $courses[] = array('sharedcourseid' => $sharecourse['sharedcourseid'], 'status' => true);
-            } else {
-                $courses[] = array('sharedcourseid' => $sharecourse['sharedcourseid'], 'status' => false);
+                if ($DB->delete_records(btcourse::$dbname,
+                        array('sharedcourseid' => $sharecourse['sharedcourseid'], 'batchid' => $params['batchid']))) {
+                    btcourse_deleted::create_from_objectid($record)->trigger();
+                    $courses[] = array('sharedcourseid' => $sharecourse['sharedcourseid'], 'status' => true);
+                } else {
+                    $courses[] = array('sharedcourseid' => $sharecourse['sharedcourseid'], 'status' => false);
+                }
+
             }
 
         }
@@ -283,6 +290,62 @@ class external extends external_api {
                                 'sharedcourseid' => new external_value(PARAM_INT, 'sharedcourseid'),
                                 'status' => new external_value(PARAM_BOOL, 'status')
                         )
+                )
+        );
+    }
+
+    /**
+     * @return external_function_parameters
+     */
+    public static function get_batch_courses_parameters() {
+        return new external_function_parameters(
+                ['institutionkey' => new external_value(PARAM_ALPHANUM, 'Institution SecretKey'),
+                        'batchid' => new external_value(PARAM_INT, 'Batch\'s id')
+                ]
+        );
+    }
+
+    /**
+     * @param $institutionkey
+     * @param $batchid
+     * @return array
+     * @throws \dml_exception
+     * @throws \dml_transaction_exception
+     * @throws \invalid_parameter_exception
+     * @throws \required_capability_exception
+     * @throws \restricted_context_exception
+     * @throws moodle_exception
+     */
+    public static function get_batch_courses($institutionkey, $batchid) {
+        global $DB;
+        $params = self::validate_parameters(self::get_batch_courses_parameters(),
+                array('institutionkey' => $institutionkey, 'batchid' => $batchid));
+        $context = context_system::instance();
+        require_capability('local/providerapi:viewassignbtcourse', $context);
+        self::validate_context($context);
+        // Get institution.
+        $institution = institution::get_by_secretkey($params['institutionkey']);
+
+        if (!$DB->record_exists(batch::$dbname, array('id' => $params['batchid'], 'institutionid' => $institution->id))) {
+            throw new moodle_exception('notexistbatch', 'local_providerapi');
+        }
+
+        list($select, $from, $where, $params) = btcourse::get_sql('b.id = :bid', array('bid' => $params['batchid']));
+
+        return $DB->get_records_sql("SELECT {$select} FROM {$from} WHERE {$where} ", $params);
+    }
+
+    /**
+     * @return external_multiple_structure
+     */
+    public static function get_batch_courses_returns() {
+        return new external_multiple_structure(
+                new external_single_structure(
+                        array(
+                                'sharedcourseid' => new external_value(PARAM_INT, 'sharedcourseid'),
+                                'coursename' => new external_value(PARAM_TEXT, 'course name'),
+                                'courseid' => new external_value(PARAM_TEXT, 'moodle course id'),
+                        ), 'Get batch\'s courses', VALUE_OPTIONAL
                 )
         );
     }

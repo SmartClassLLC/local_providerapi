@@ -160,7 +160,7 @@ $functions = array(
                 'classname' => 'local_providerapi\webservice\course\external',
                 'methodname' => 'get_batch_courses',
                 'description' => 'Get courses of batch',
-                'type' => 'write',
+                'type' => 'read',
                 'capabilities' => 'local/providerapi:unassignbtcourse',
                 'services' => array('providerapi')
         )
