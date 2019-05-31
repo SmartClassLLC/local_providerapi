@@ -96,7 +96,6 @@ class external extends external_api {
     public static function create_users_parameters() {
         global $CFG;
         $userfields = [
-                'institutionkey' => new external_value(PARAM_ALPHANUM, 'Institution SecretKey'),
                 'studentno' => new external_value(PARAM_TEXT, 'Studentno must be 6 digits and must be unique each intitution'),
                 'createpassword' => new external_value(PARAM_BOOL, 'True if password should be created and mailed to user.',
                         VALUE_OPTIONAL),
@@ -163,6 +162,7 @@ class external extends external_api {
         ];
         return new external_function_parameters(
                 [
+                        'institutionkey' => new external_value(PARAM_ALPHANUM, 'Institution SecretKey'),
                         'users' => new external_multiple_structure(
                                 new external_single_structure($userfields)
                         )
@@ -173,12 +173,19 @@ class external extends external_api {
     /**
      * Create one or more users.
      *
-     * @throws |invalid_parameter_exception
+     * @param $institutionkey
      * @param array $users An array of users to create.
      * @return array An array of arrays
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \dml_transaction_exception
+     * @throws \required_capability_exception
+     * @throws \restricted_context_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
      * @since Moodle 2.2
      */
-    public static function create_users($users) {
+    public static function create_users($institutionkey, $users) {
         global $CFG, $DB;
         require_once($CFG->dirroot . "/lib/weblib.php");
         require_once($CFG->dirroot . "/user/lib.php");
@@ -192,7 +199,8 @@ class external extends external_api {
 
         // Do basic automatic PARAM checks on incoming data, using params description.
         // If any problems are found then exceptions are thrown with helpful error messages.
-        $params = self::validate_parameters(self::create_users_parameters(), array('users' => $users));
+        $params = self::validate_parameters(self::create_users_parameters(),
+                array('institutionkey' => $institutionkey, 'users' => $users));
 
         $availableauths = core_component::get_plugin_list('auth');
         unset($availableauths['mnet']);       // These would need mnethostid too.
@@ -200,14 +208,14 @@ class external extends external_api {
 
         $availablethemes = core_component::get_plugin_list('theme');
         $availablelangs = get_string_manager()->get_list_of_translations();
-
+        // Istitution Check.
+        $institution = institution::get_by_secretkey($params['institutionkey']);
+        // Override istitutionname.
         $transaction = $DB->start_delegated_transaction();
 
         $userids = array();
         foreach ($params['users'] as $user) {
-            // Istitution Check.
-            $institution = institution::get_by_secretkey($user['institutionkey']);
-            // Override istitutionname.
+
             $user['istitution'] = $institution->name;
 
             if (strlen($user['studentno']) != 6) {
@@ -365,7 +373,6 @@ class external extends external_api {
     public static function update_users_parameters() {
         $userfields = [
                 'id' => new external_value(core_user::get_property_type('id'), 'ID of the user'),
-                'institutionkey' => new external_value(PARAM_ALPHANUM, 'Institution SecretKey'),
                 'studentno' => new external_value(PARAM_TEXT, 'Studentno must be 6 digits and must be unique each intitution',
                         VALUE_OPTIONAL),
             // General.
@@ -445,6 +452,7 @@ class external extends external_api {
         ];
         return new external_function_parameters(
                 [
+                        'institutionkey' => new external_value(PARAM_ALPHANUM, 'Institution SecretKey'),
                         'users' => new external_multiple_structure(
                                 new external_single_structure($userfields)
                         )
@@ -455,11 +463,19 @@ class external extends external_api {
     /**
      * Update users
      *
+     * @param $institutionkey
      * @param array $users
      * @return null
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \dml_transaction_exception
+     * @throws \required_capability_exception
+     * @throws \restricted_context_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
      * @since Moodle 2.2
      */
-    public static function update_users($users) {
+    public static function update_users($institutionkey, $users) {
         global $CFG, $DB, $USER;
         require_once($CFG->dirroot . "/user/lib.php");
         require_once($CFG->dirroot . "/user/profile/lib.php"); // Required for customfields related function.
@@ -470,19 +486,18 @@ class external extends external_api {
         require_capability('local/providerapi:update_user', $context);
         self::validate_context($context);
 
-        $params = self::validate_parameters(self::update_users_parameters(), array('users' => $users));
+        $params = self::validate_parameters(self::update_users_parameters(),
+                array('institutionkey' => $institutionkey, 'users' => $users));
 
         $filemanageroptions = array('maxbytes' => $CFG->maxbytes,
                 'subdirs' => 0,
                 'maxfiles' => 1,
                 'accepted_types' => 'web_image');
-
+        // Istitution Check.
+        $institution = institution::get_by_secretkey($params['institutionkey']);
         $transaction = $DB->start_delegated_transaction();
 
         foreach ($params['users'] as $user) {
-
-            // Istitution Check.
-            $institution = institution::get_by_secretkey($user['institutionkey']);
 
             // Check user in institutuion.
             if (!cohortHelper::is_member($institution->cohortid, $user['id'])) {
@@ -613,11 +628,11 @@ class external extends external_api {
      */
     public static function delete_users_parameters() {
         $userfields = [
-                'id' => new external_value(core_user::get_property_type('id'), 'ID of the user'),
-                'institutionkey' => new external_value(PARAM_ALPHANUM, 'Institution SecretKey')
+                'id' => new external_value(core_user::get_property_type('id'), 'ID of the user')
         ];
         return new external_function_parameters(
                 [
+                        'institutionkey' => new external_value(PARAM_ALPHANUM, 'Institution SecretKey'),
                         'users' => new external_multiple_structure(
                                 new external_single_structure($userfields)
                         )
@@ -628,6 +643,7 @@ class external extends external_api {
     /**
      * Delete users
      *
+     * @param $institutionkey
      * @param array $userids
      * @return null
      * @throws \coding_exception
@@ -639,7 +655,7 @@ class external extends external_api {
      * @throws moodle_exception
      * @since Moodle 2.2
      */
-    public static function delete_users($userids) {
+    public static function delete_users($institutionkey, $userids) {
         global $CFG, $DB, $USER;
         require_once($CFG->dirroot . "/user/lib.php");
 
@@ -648,13 +664,14 @@ class external extends external_api {
         require_capability('local/providerapi:delete_user', $context);
         self::validate_context($context);
 
-        $params = self::validate_parameters(self::delete_users_parameters(), array('users' => $userids));
-
+        $params = self::validate_parameters(self::delete_users_parameters(),
+                array('institutionkey' => $institutionkey, 'users' => $userids));
+        // Istitution Check.
+        $institution = institution::get_by_secretkey($params['institutionkey']);
         $transaction = $DB->start_delegated_transaction();
 
         foreach ($params['users'] as $user) {
-            // Istitution Check.
-            $institution = institution::get_by_secretkey($user['institutionkey']);
+
             // Check user in institutuion.
             if (!cohortHelper::is_member($institution->cohortid, $user['id'])) {
                 throw new moodle_exception('nofounduserininstitutuion', 'local_providerapi');
