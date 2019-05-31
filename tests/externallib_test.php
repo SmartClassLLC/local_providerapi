@@ -55,7 +55,6 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         $roleid = $this->assignUserCapability('local/providerapi:create_user', $contextid);
 
         $user1 = array(
-                'institutionkey' => '123456',
                 'studentno' => '123456',
                 'username' => 'dummyuser1',
                 'firstname' => 'testuser1',
@@ -64,7 +63,6 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
                 'email' => 'dummy1@example.com'
         );
         $user2 = array(
-                'institutionkey' => '123456',
                 'studentno' => '123457',
                 'username' => 'dummyuser2',
                 'firstname' => 'testuser2',
@@ -75,7 +73,8 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
 
         // Call the external function.
         $this->setCurrentTimeStart();
-        $createduser = \local_providerapi\webservice\institution\external::create_users(array($user1, $user2));
+        $createduser =
+                \local_providerapi\webservice\institution\external::create_users($institution->secretkey, array($user1, $user2));
         $createduser = external_api::clean_returnvalue(\local_providerapi\webservice\institution\external::create_users_returns(),
                 $createduser);
         $this->assertEquals(2, count($createduser));
@@ -105,7 +104,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         // Call without required capability.
         $this->unassignUserCapability('local/providerapi:create_user', $contextid, $roleid);
         $this->expectException('required_capability_exception');
-        \local_providerapi\webservice\institution\external::create_users(array($user1));
+        \local_providerapi\webservice\institution\external::create_users($institution->secretkey, array($user1));
     }
 
     /**
@@ -117,13 +116,12 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         $this->resetAfterTest();
         $generator = $this->getDataGenerator();
         $providergenerator = $generator->get_plugin_generator('local_providerapi');
-        $providergenerator->create_institution();
+        $institution = $providergenerator->create_institution();
 
         $contextid = context_system::instance()->id;
         $this->assignUserCapability('local/providerapi:create_user', $contextid);
 
         $user1 = array(
-                'institutionkey' => '123456',
                 'studentno' => '123456',
                 'username' => 'user1',
                 'firstname' => 'testuser1',
@@ -132,7 +130,6 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
                 'email' => 'dummy1@example.com'
         );
         $user2 = array(
-                'institutionkey' => '123456',
                 'studentno' => '123456',
                 'username' => 'user2',
                 'firstname' => 'testuser2',
@@ -141,7 +138,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
                 'email' => 'dummy2@example.com'
         );
         $this->expectException('invalid_parameter_exception');
-        \local_providerapi\webservice\institution\external::create_users(array($user1, $user2));
+        \local_providerapi\webservice\institution\external::create_users($institution->secretkey, array($user1, $user2));
 
     }
 
@@ -156,14 +153,12 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         $this->resetAfterTest();
         $generator = $this->getDataGenerator();
         $providergenerator = $generator->get_plugin_generator('local_providerapi');
-        $providergenerator->create_institution();
-
+        $institution = $providergenerator->create_institution();
         $contextid = context_system::instance()->id;
         $roleid = $this->assignUserCapability('local/providerapi:create_user', $contextid);
         $this->assignUserCapability('local/providerapi:update_user', $contextid, $roleid);
 
         $user1 = array(
-                'institutionkey' => '123456',
                 'studentno' => '123456',
                 'username' => 'user1',
                 'firstname' => 'testuser1',
@@ -172,7 +167,6 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
                 'email' => 'dummy1@example.com'
         );
         $user2 = array(
-                'institutionkey' => '123456',
                 'studentno' => '765432',
                 'username' => 'user2',
                 'firstname' => 'testuser2',
@@ -180,7 +174,8 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
                 'password' => '34245345+?Sa2',
                 'email' => 'dummy2@example.com'
         );
-        $usercreated = \local_providerapi\webservice\institution\external::create_users(array($user1, $user2));
+        $usercreated =
+                \local_providerapi\webservice\institution\external::create_users($institution->secretkey, array($user1, $user2));
         $usercreated = external_api::clean_returnvalue(\local_providerapi\webservice\institution\external::create_users_returns(),
                 $usercreated);
         $this->assertEquals(2, count($usercreated));
@@ -188,7 +183,6 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
 
         $user2 = array(
                 'id' => $usercreated['id'],
-                'institutionkey' => '123456',
                 'studentno' => '765432',
                 'username' => 'user1',
                 'firstname' => 'testuser1',
@@ -197,7 +191,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
                 'email' => 'dummy1@example.com'
         );
         $this->expectException('invalid_parameter_exception');
-        \local_providerapi\webservice\institution\external::update_users(array($user2));
+        \local_providerapi\webservice\institution\external::update_users($institution->secretkey, array($user2));
 
     }
 
@@ -216,14 +210,12 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         $this->resetAfterTest();
         $generator = $this->getDataGenerator();
         $providergenerator = $generator->get_plugin_generator('local_providerapi');
-        $providergenerator->create_institution();
-
+        $institution = $providergenerator->create_institution();
         $contextid = context_system::instance()->id;
         $roleid = $this->assignUserCapability('local/providerapi:create_user', $contextid);
         $this->assignUserCapability('local/providerapi:delete_user', $contextid, $roleid);
 
         $user1 = array(
-                'institutionkey' => '123456',
                 'studentno' => '123456',
                 'username' => 'dummyuser12',
                 'firstname' => 'testuser12',
@@ -232,7 +224,6 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
                 'email' => 'dummy12@example.com'
         );
         $user2 = array(
-                'institutionkey' => '123456',
                 'studentno' => '123457',
                 'username' => 'dummyuser22',
                 'firstname' => 'testuser22',
@@ -240,7 +231,8 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
                 'password' => '34255345345+?Sa22',
                 'email' => 'dummy22@example.com'
         );
-        $createduser = \local_providerapi\webservice\institution\external::create_users(array($user1, $user2));
+        $createduser =
+                \local_providerapi\webservice\institution\external::create_users($institution->secretkey, array($user1, $user2));
         $createduser = external_api::clean_returnvalue(\local_providerapi\webservice\institution\external::create_users_returns(),
                 $createduser);
         $this->assertEquals(2, count($createduser));
@@ -251,9 +243,9 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
             $userfields['institutionkey'] = '123456';
             $userfields['id'] = $newuser['id'];
         }
-        \local_providerapi\webservice\institution\external::delete_users(array(
-                array('institutionkey' => '123456', 'id' => $user1->id),
-                array('institutionkey' => '123456', 'id' => $user2->id)
+        \local_providerapi\webservice\institution\external::delete_users($institution->secretkey, array(
+                array('id' => $user1->id),
+                array('id' => $user2->id)
         ));
         // Check we retrieve no users + no error on capability.
         $this->assertEquals(0, $DB->count_records_select('user', 'deleted = 0 AND (id = :userid1 OR id = :userid2)',
@@ -261,9 +253,9 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         // Call without required capability.
         $this->unassignUserCapability('local/providerapi:delete_user', $contextid, $roleid);
         $this->expectException('required_capability_exception');
-        \local_providerapi\webservice\institution\external::delete_users(array(
-                array('institutionkey' => '123456', 'id' => $user1->id),
-                array('institutionkey' => '123456', 'id' => $user2->id)
+        \local_providerapi\webservice\institution\external::delete_users($institution->secretkey, array(
+                array('id' => $user1->id),
+                array('id' => $user2->id)
         ));
 
     }
@@ -288,8 +280,8 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         $user1 = $generator->create_user();
         $this->expectExceptionObject(new moodle_exception('nofounduserininstitutuion', 'local_providerapi'));
         $this->expectExceptionMessage('User is not found in this institutuion');
-        \local_providerapi\webservice\institution\external::delete_users(array(
-                array('institutionkey' => $institution->secretkey, 'id' => $user1->id),
+        \local_providerapi\webservice\institution\external::delete_users($institution->secretkey, array(
+                array('id' => $user1->id)
         ));
 
     }
@@ -610,7 +602,6 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         $this->assignUserCapability('local/providerapi:assignbatchmembers', $contextid, $roleid);
 
         $user1 = array(
-                'institutionkey' => '123456',
                 'studentno' => '123456',
                 'username' => 'dummyuser1',
                 'firstname' => 'testuser1',
@@ -619,7 +610,6 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
                 'email' => 'dummy1@example.com'
         );
         $user2 = array(
-                'institutionkey' => '123456',
                 'studentno' => '123457',
                 'username' => 'dummyuser2',
                 'firstname' => 'testuser2',
@@ -634,7 +624,8 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
 
         // Call the external function.
         $this->setCurrentTimeStart();
-        $createduser = \local_providerapi\webservice\institution\external::create_users(array($user1, $user2));
+        $createduser =
+                \local_providerapi\webservice\institution\external::create_users($institution->secretkey, array($user1, $user2));
         $createduser = external_api::clean_returnvalue(\local_providerapi\webservice\institution\external::create_users_returns(),
                 $createduser);
         $this->assertEquals(2, count($createduser));
@@ -690,7 +681,6 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         $this->assignUserCapability('local/providerapi:unassignbatchmembers', $contextid, $roleid);
 
         $user1 = array(
-                'institutionkey' => '123456',
                 'studentno' => '123456',
                 'username' => 'dummyuser1',
                 'firstname' => 'testuser1',
@@ -699,7 +689,6 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
                 'email' => 'dummy1@example.com'
         );
         $user2 = array(
-                'institutionkey' => '123456',
                 'studentno' => '123457',
                 'username' => 'dummyuser2',
                 'firstname' => 'testuser2',
@@ -714,7 +703,8 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
 
         // Call the external function.
         $this->setCurrentTimeStart();
-        $createduser = \local_providerapi\webservice\institution\external::create_users(array($user1, $user2));
+        $createduser =
+                \local_providerapi\webservice\institution\external::create_users($institution->secretkey, array($user1, $user2));
         $createduser = external_api::clean_returnvalue(\local_providerapi\webservice\institution\external::create_users_returns(),
                 $createduser);
         $this->assertEquals(2, count($createduser));
