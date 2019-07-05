@@ -140,6 +140,10 @@ $string['extusers'] = 'Existing users';
 $string['extusersmatching'] = 'Exist matching users';
 $string['capacityisfull'] = 'Capacity is full. User named {$a} is not add';
 $string['batchcapacityisfull'] = 'Batch \'s capacity is full';
-
+$string['opentool'] = 'Open tool';
+$string['failedrequest'] = 'Failed request. Reason: {$a->reason}';
+$string['invalidrequest'] = 'Invalid request';
+$string['invalidtoolconsumer'] = 'Invalid tool consumer.';
+$string['invaliduser'] = 'Invalid user.';
 
 
