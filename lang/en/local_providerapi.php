@@ -145,5 +145,8 @@ $string['failedrequest'] = 'Failed request. Reason: {$a->reason}';
 $string['invalidrequest'] = 'Invalid request';
 $string['invalidtoolconsumer'] = 'Invalid tool consumer.';
 $string['invaliduser'] = 'Invalid user.';
-
-
+$string['usernotenrolled'] = 'User is unenrol';
+$string['frameembeddingnotenabled'] = 'To access the tool, please follow the link below.';
+$string['invalidtoolconsumer'] = 'Invalid tool consumer.';
+$string['returnurlnotset'] = 'Return URL was not set.';
+$string['successfulregistration'] = 'Successful registration';

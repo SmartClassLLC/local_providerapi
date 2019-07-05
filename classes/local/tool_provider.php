@@ -276,22 +276,20 @@ class tool_provider extends ToolProvider {
         }
 
         // Enrol check.
-        $result = helper::enrol_user($tool, $user->id);
+        $result = is_enrolled($context, $user->id);
 
         // Display an error, if there is one.
-        if ($result !== helper::ENROLMENT_SUCCESSFUL) {
-            print_error($result, 'enrol_lti');
+        if (!$result) {
+            print_error('usernotenrolled', 'local_providerapi');
             exit();
         }
-
-
 
         // Login user.
         $sourceid = $this->user->ltiResultSourcedId;
         $serviceurl = $this->resourceLink->getSetting('lis_outcome_service_url');
 
         // Check if we have recorded this user before.
-        if ($userlog = $DB->get_record('enrol_lti_users', ['toolid' => $tool->id, 'userid' => $user->id])) {
+        if ($userlog = $DB->get_record('local_api_users', ['toolid' => $tool->id, 'userid' => $user->id])) {
             if ($userlog->sourceid != $sourceid) {
                 $userlog->sourceid = $sourceid;
             }
@@ -299,7 +297,7 @@ class tool_provider extends ToolProvider {
                 $userlog->serviceurl = $serviceurl;
             }
             $userlog->lastaccess = time();
-            $DB->update_record('enrol_lti_users', $userlog);
+            $DB->update_record('local_api_users', $userlog);
         } else {
             // Add the user details so we can use it later when syncing grades and members.
             $userlog = new stdClass();
@@ -315,7 +313,7 @@ class tool_provider extends ToolProvider {
             $userlog->membershipsurl = $this->resourceLink->getSetting('ext_ims_lis_memberships_url');
             $userlog->membershipsid = $this->resourceLink->getSetting('ext_ims_lis_memberships_id');
 
-            $DB->insert_record('enrol_lti_users', $userlog);
+            $DB->insert_record('local_api_users', $userlog);
         }
 
         // Finalise the user log in.
@@ -327,8 +325,8 @@ class tool_provider extends ToolProvider {
 
         if (empty($CFG->allowframembedding)) {
             // Provide an alternative link.
-            $stropentool = get_string('opentool', 'enrol_lti');
-            echo html_writer::tag('p', get_string('frameembeddingnotenabled', 'enrol_lti'));
+            $stropentool = get_string('opentool', 'local_providerapi');
+            echo html_writer::tag('p', get_string('frameembeddingnotenabled', 'local_providerapi'));
             echo html_writer::link($urltogo, $stropentool, ['target' => '_blank']);
         } else {
             // All done, redirect the user to where they want to go.
@@ -344,13 +342,13 @@ class tool_provider extends ToolProvider {
 
         if (empty($this->consumer)) {
             $this->ok = false;
-            $this->message = get_string('invalidtoolconsumer', 'enrol_lti');
+            $this->message = get_string('invalidtoolconsumer', 'local_providerapi');
             return;
         }
 
         if (empty($this->returnUrl)) {
             $this->ok = false;
-            $this->message = get_string('returnurlnotset', 'enrol_lti');
+            $this->message = get_string('returnurlnotset', 'local_providerapi');
             return;
         }
 
@@ -359,11 +357,11 @@ class tool_provider extends ToolProvider {
             $this->map_tool_to_consumer();
 
             // Indicate successful processing in message.
-            $this->message = get_string('successfulregistration', 'enrol_lti');
+            $this->message = get_string('successfulregistration', 'local_providerapi');
 
             // Prepare response.
             $returnurl = new moodle_url($this->returnUrl);
-            $returnurl->param('lti_msg', get_string("successfulregistration", "enrol_lti"));
+            $returnurl->param('lti_msg', get_string("successfulregistration", 'local_providerapi'));
             $returnurl->param('status', 'success');
             $guid = $this->consumer->getKey();
             $returnurl->param('tool_proxy_guid', $guid);
@@ -390,7 +388,7 @@ class tool_provider extends ToolProvider {
         global $DB;
 
         if (empty($this->consumer)) {
-            throw new moodle_exception('invalidtoolconsumer', 'enrol_lti');
+            throw new moodle_exception('invalidtoolconsumer', 'local_providerapi');
         }
 
         // Map the consumer to the tool.
@@ -398,9 +396,9 @@ class tool_provider extends ToolProvider {
                 'toolid' => $this->tool->id,
                 'consumerid' => $this->consumer->getRecordId()
         ];
-        $mappingexists = $DB->record_exists('enrol_lti_tool_consumer_map', $mappingparams);
+        $mappingexists = $DB->record_exists('local_api_tool_consumer_map', $mappingparams);
         if (!$mappingexists) {
-            $DB->insert_record('enrol_lti_tool_consumer_map', (object) $mappingparams);
+            $DB->insert_record('local_api_tool_consumer_map', (object) $mappingparams);
         }
     }
 }

@@ -494,6 +494,25 @@ function xmldb_local_providerapi_upgrade($oldversion) {
         // Providerapi savepoint reached.
         upgrade_plugin_savepoint(true, 2019070500, 'local', 'providerapi');
     }
+    if ($oldversion < 2019070501) {
+
+        // Define field courseid to be added to local_api_tools.
+        $table = new xmldb_table('local_api_tools');
+        $field = new xmldb_field('courseid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'id');
+
+        // Conditionally launch add field courseid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $key = new xmldb_key('courseid', XMLDB_KEY_FOREIGN, ['courseid'], 'course', ['id']);
+
+        // Launch add key courseid.
+        $dbman->add_key($table, $key);
+
+
+        // Providerapi savepoint reached.
+        upgrade_plugin_savepoint(true, 2019070501, 'local', 'providerapi');
+    }
 
     return true;
 }
