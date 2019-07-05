@@ -255,13 +255,9 @@ class tool_provider extends ToolProvider {
         // Check if we need to force the page layout to embedded.
         $isforceembed = $this->resourceLink->getSetting('custom_force_embed') == 1;
 
-        // Check if we are an instructor.
-        $isinstructor = $this->user->isStaff() || $this->user->isAdmin();
-
         if ($context->contextlevel == CONTEXT_COURSE) {
             $courseid = $context->instanceid;
             $urltogo = new moodle_url('/course/view.php', ['id' => $courseid]);
-
         } else {
             print_error('invalidcontext');
             exit();
@@ -278,10 +274,10 @@ class tool_provider extends ToolProvider {
         // Enrol check.
         $result = is_enrolled($context, $user->id);
 
-        // Display an error, if there is one.
         if (!$result) {
-            print_error('usernotenrolled', 'local_providerapi');
-            exit();
+            $this->ok = false;
+            $this->message = get_string('usernotenrolled', 'local_providerapi');
+            return;
         }
 
         // Login user.

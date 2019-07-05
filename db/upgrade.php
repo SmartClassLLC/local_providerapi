@@ -509,7 +509,6 @@ function xmldb_local_providerapi_upgrade($oldversion) {
         // Launch add key courseid.
         $dbman->add_key($table, $key);
 
-
         // Providerapi savepoint reached.
         upgrade_plugin_savepoint(true, 2019070501, 'local', 'providerapi');
     }
