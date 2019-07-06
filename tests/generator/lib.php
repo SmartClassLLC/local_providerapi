@@ -26,6 +26,7 @@
 
 use local_providerapi\local\batch\batch;
 use local_providerapi\local\batch\btcourse;
+use local_providerapi\local\helper;
 use local_providerapi\local\institution\institution;
 
 defined('MOODLE_INTERNAL') || die();
@@ -129,6 +130,20 @@ class local_providerapi_generator extends component_generator_base {
         $record = $DB->get_record(btcourse::$dbname, array('batchid' => $batch1->id, 'sharedcourseid' => $sharedcourse1->id));
         $record->courseid = $course1->id;
         return $record;
+    }
+
+    /**
+     * @param array $data
+     * @return bool|mixed|stdClass
+     * @throws dml_exception
+     */
+    public function create_lti_tool($data = array()) {
+        if (empty($data['courseid'])) {
+            $generator = $this->datagenerator;
+            $course = $generator->create_course();
+            $data['courseid'] = $course->id;
+        }
+        return helper::create_tool($data['courseid']);
     }
 
 }

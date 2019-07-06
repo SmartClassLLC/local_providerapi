@@ -93,7 +93,7 @@ class helper {
 
     /**
      * @param int $courseid
-     * @return bool|int|mixed
+     * @return bool|mixed|\stdClass
      * @throws \dml_exception
      */
     public static function create_tool(int $courseid) {
@@ -102,8 +102,8 @@ class helper {
         if (!$DB->record_exists('course', array('id' => $courseid))) {
             return false;
         }
-        if ($toolid = $DB->get_field('local_api_tools', 'id', array('courseid' => $courseid))) {
-            return $toolid;
+        if ($tool = $DB->get_record('local_api_tools', array('courseid' => $courseid))) {
+            return $tool;
         }
         $tool = new \stdClass();
         $tool->courseid = $courseid;
@@ -111,8 +111,10 @@ class helper {
         $tool->secret = random_string(32);
         $tool->timecreated = time();
         $tool->timemodified = $tool->timecreated;
-        return $DB->insert_record('local_api_tools', $tool);
-
+        if ($tool->id = $DB->insert_record('local_api_tools', $tool)) {
+            return $tool;
+        }
+        return false;
     }
 
     /**

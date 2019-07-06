@@ -969,7 +969,7 @@ class data_connector extends DataConnector {
         global $DB;
 
         $consumers = [];
-        $consumerrecords = $DB->get_records('enrol_lti_tool_consumer_map', ['toolid' => $toolid], '', 'consumerid');
+        $consumerrecords = $DB->get_records('local_api_tool_consumer_map', ['toolid' => $toolid], '', 'consumerid');
         foreach ($consumerrecords as $record) {
             $consumers[] = ToolConsumer::fromRecordId($record->consumerid, $this);
         }
