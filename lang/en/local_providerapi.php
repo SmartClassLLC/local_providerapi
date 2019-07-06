@@ -155,3 +155,4 @@ $string['returnurlnotset'] = 'Return URL was not set.';
 $string['successfulregistration'] = 'Successful registration';
 $string['registration'] = 'ProviderApi registration';
 $string['incorrecttoken'] = 'The token was incorrect. Please check the URL and try again, or contact the administrator of this tool.';
+$string['couldnotestablishproxy'] = 'Could not establish proxy with consumer.';
