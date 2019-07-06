@@ -15,25 +15,26 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * LTI enrolment plugin helper.
+ * short_description
  *
- * @package enrol_lti
- * @copyright 2016 Mark Nelson <markn@moodle.com>
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * long_description
+ *
+ * @package    local_providerapi
+ * @copyright  2019 çağlar MERSİNLİ <ceremy@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace local_providerapi\local;
 
+use context_course;
 use local_providerapi\local\course\course;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * LTI enrolment plugin helper class.
+ * Class helper
  *
- * @package enrol_lti
- * @copyright 2016 Mark Nelson <markn@moodle.com>
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package local_providerapi\local
  */
 class helper {
     /*
@@ -106,7 +107,7 @@ class helper {
         }
         $tool = new \stdClass();
         $tool->courseid = $courseid;
-        $tool->contextid = \context_course::instance($courseid, MUST_EXIST)->id;
+        $tool->contextid = context_course::instance($courseid, MUST_EXIST)->id;
         $tool->secret = random_string(32);
         $tool->timecreated = time();
         $tool->timemodified = $tool->timecreated;
@@ -194,6 +195,16 @@ class helper {
     public static function get_lti_tool($toolid) {
         global $DB;
         return $DB->get_record('local_api_tools', array('id' => $toolid), '*', MUST_EXIST);
+    }
+
+    /**
+     * @param int $courseid
+     * @return mixed
+     * @throws \dml_exception
+     */
+    public static function get_toolid_by_courseid(int $courseid) {
+        global $DB;
+        return $DB->get_field('local_api_tools', 'id', array('courseid' => $courseid));
     }
 
     /**
