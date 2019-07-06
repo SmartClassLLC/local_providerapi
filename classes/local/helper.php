@@ -499,7 +499,7 @@ class helper {
      */
     public static function create_cartridge($toolid) {
         $cartridge = new \DOMDocument();
-        $cartridge->load(realpath(__DIR__ . '/../xml/imslticc.xml'));
+        $cartridge->load(realpath(__DIR__ . '/../../xml/imslticc.xml'));
         $xpath = new \DOMXpath($cartridge);
         $xpath->registerNamespace('cc', 'http://www.imsglobal.org/xsd/imslticc_v1p0');
         $parameters = self::get_cartridge_parameters($toolid);
