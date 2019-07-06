@@ -423,13 +423,12 @@ class external extends external_api {
         if (!$DB->record_exists('course', array('id' => $params['courseid']))) {
             throw new moodle_exception('notexistcourse', 'local_providerapi');
         }
-        $toolid = helper::get_toolid_by_courseid($params['courseid']);
-        if (!$toolid) {
+        $tool = helper::get_tool_by_courseid($params['courseid']);
+        if (!$tool) {
             throw new moodle_exception('notexistcourselti', 'local_providerapi');
         }
-        $tool = helper::get_lti_tool($toolid);
         $toolinfo = array();
-        $toolinfo['launchurl'] = helper::get_launch_url($toolid)->out(false);
+        $toolinfo['launchurl'] = helper::get_launch_url($tool->id)->out(false);
         $toolinfo['proxyurl'] = helper::get_proxy_url($tool)->out(false);
         $toolinfo['cartridgeurl'] = helper::get_cartridge_url($tool)->out(false);
         $toolinfo['secret'] = $tool->secret;
