@@ -46,7 +46,7 @@ $messagetype = required_param('lti_message_type', PARAM_TEXT);
 
 // Only accept launch requests from this endpoint.
 if ($messagetype != "basic-lti-launch-request") {
-    print_error('invalidrequest', 'enrol_lti');
+    print_error('invalidrequest', 'local_providerapi');
     exit();
 }
 

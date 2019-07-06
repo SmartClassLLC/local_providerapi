@@ -512,6 +512,30 @@ function xmldb_local_providerapi_upgrade($oldversion) {
         // Providerapi savepoint reached.
         upgrade_plugin_savepoint(true, 2019070501, 'local', 'providerapi');
     }
+    if ($oldversion < 2019070502) {
 
+        // Define key courseid (foreign) to be dropped form local_api_tools.
+        $table = new xmldb_table('local_api_tools');
+        $key = new xmldb_key('courseid', XMLDB_KEY_FOREIGN, ['courseid'], 'course', ['id']);
+
+        // Launch drop key courseid.
+        $dbman->drop_key($table, $key);
+        $key = new xmldb_key('courseid', XMLDB_KEY_FOREIGN_UNIQUE, ['courseid'], 'course', ['id']);
+
+        // Launch add key courseid.
+        $dbman->add_key($table, $key);
+        // Providerapi savepoint reached.
+        upgrade_plugin_savepoint(true, 2019070502, 'local', 'providerapi');
+    }
+    if ($oldversion < 2019070504) {
+        global $DB;
+        $sharedcourses = $DB->get_fieldset_select(\local_providerapi\local\course\course::$dbname, 'courseid', null);
+        if ($sharedcourses) {
+            foreach ($sharedcourses as $courseid) {
+                \local_providerapi\local\helper::create_tool($courseid);
+            }
+        }
+        upgrade_plugin_savepoint(true, 2019070504, 'local', 'providerapi');
+    }
     return true;
 }

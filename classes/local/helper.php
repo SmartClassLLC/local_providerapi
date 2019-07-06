@@ -39,15 +39,24 @@ class helper {
     /*
      * The value used when we want to enrol new members and unenrol old ones.
      */
+    /**
+     *
+     */
     const MEMBER_SYNC_ENROL_AND_UNENROL = 1;
 
     /*
      * The value used when we want to enrol new members only.
      */
+    /**
+     *
+     */
     const MEMBER_SYNC_ENROL_NEW = 2;
 
     /*
      * The value used when we want to unenrol missing users.
+     */
+    /**
+     *
      */
     const MEMBER_SYNC_UNENROL_MISSING = 3;
 
@@ -82,31 +91,37 @@ class helper {
     const PROFILE_IMAGE_UPDATE_FAILED = 'profileimagefailed';
 
     /**
-     * Adds default values for the user object based on the tool provided.
-     *
-     * @param \stdClass $tool
-     * @param \stdClass $user
-     * @return \stdClass The $user class with added default values
+     * @param int $courseid
+     * @return bool|int|mixed
+     * @throws \dml_exception
      */
-    public static function assign_user_tool_data($tool, $user) {
-        global $CFG;
-
-        $user->city = (!empty($tool->city)) ? $tool->city : "";
-        $user->country = (!empty($tool->country)) ? $tool->country : "";
-        $user->institution = (!empty($tool->institution)) ? $tool->institution : "";
-        $user->timezone = (!empty($tool->timezone)) ? $tool->timezone : "";
-        if (isset($tool->maildisplay)) {
-            $user->maildisplay = $tool->maildisplay;
-        } else if (isset($CFG->defaultpreference_maildisplay)) {
-            $user->maildisplay = $CFG->defaultpreference_maildisplay;
-        } else {
-            $user->maildisplay = 2;
+    public static function create_tool(int $courseid) {
+        global $DB;
+        // Is valid course?
+        if (!$DB->record_exists('course', array('id' => $courseid))) {
+            return false;
         }
-        $user->mnethostid = $CFG->mnet_localhost_id;
-        $user->confirmed = 1;
-        $user->lang = $tool->lang;
+        if ($toolid = $DB->get_field('local_api_tools', 'id', array('courseid' => $courseid))) {
+            return $toolid;
+        }
+        $tool = new \stdClass();
+        $tool->courseid = $courseid;
+        $tool->contextid = \context_course::instance($courseid, MUST_EXIST)->id;
+        $tool->secret = random_string(32);
+        $tool->timecreated = time();
+        $tool->timemodified = $tool->timecreated;
+        return $DB->insert_record('local_api_tools', $tool);
 
-        return $user;
+    }
+
+    /**
+     * @param int $courseid
+     * @return bool
+     * @throws \dml_exception
+     */
+    public static function delete_tool(int $courseid) {
+        global $DB;
+        return $DB->delete_records('local_api_tools', array('courseid' => $courseid));
     }
 
     /**

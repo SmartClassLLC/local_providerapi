@@ -27,6 +27,7 @@ use local_providerapi\event\btcourse_deleted;
 use local_providerapi\event\sharedcourse_created;
 use local_providerapi\event\sharedcourse_deleted;
 use local_providerapi\local\course\course;
+use local_providerapi\local\helper;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -44,6 +45,8 @@ function coursedeleted(course_deleted $event) {
             course::delete($sharedcourse->id);
         }
     }
+    // Delete lti sharecourse.
+    helper::delete_tool($event->objectid);
 }
 
 /**
@@ -78,6 +81,10 @@ function sharedcoursecreated(sharedcourse_created $event) {
     $courserecord->groupmode = SEPARATEGROUPS;
     $courserecord->groupmodeforce = 1;
     update_course($courserecord);
+
+    // Start lti sharing.
+    helper::create_tool($courserecord->id);
+
 }
 
 
