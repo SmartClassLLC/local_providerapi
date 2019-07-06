@@ -300,14 +300,9 @@ class helper {
     }
 
     /**
-     * Returns the url to the cartridge representing the tool.
-     *
-     * If you have slash arguments enabled, this will be a nice url ending in cartridge.xml.
-     * If not it will be a php page with some parameters passed.
-     *
-     * @param \stdClass $tool The lti tool
-     * @return string The url to the cartridge representing the tool
-     * @since Moodle 3.2
+     * @param $tool
+     * @return \moodle_url|null
+     * @throws \moodle_exception
      */
     public static function get_cartridge_url($tool) {
         global $CFG;
@@ -329,13 +324,9 @@ class helper {
     }
 
     /**
-     * Returns the url to the tool proxy registration url.
-     *
-     * If you have slash arguments enabled, this will be a nice url ending in cartridge.xml.
-     * If not it will be a php page with some parameters passed.
-     *
-     * @param \stdClass $tool The lti tool
-     * @return string The url to the cartridge representing the tool
+     * @param $tool
+     * @return \moodle_url|null
+     * @throws \moodle_exception
      */
     public static function get_proxy_url($tool) {
         global $CFG;

@@ -63,6 +63,7 @@ $string['providerapi:unassignbatchmembers'] = 'Unassign members to batch';
 $string['providerapi:assignbtcourse'] = 'Assign course to batch';
 $string['providerapi:unassignbtcourse'] = 'Unssign course to batch';
 $string['providerapi:viewassignbtcourse'] = 'View course of batch';
+$string['providerapi:get_lti_info'] = 'Get Lti launch info';
 
 // Privacy.
 $string['privacy:metadata'] = 'The Providerapi plugin does not store any personal data.';
@@ -99,6 +100,8 @@ $string['eventdeleted'] = 'The {$a->objname} with id \'{$a->objid}\' has deleted
 // Exceptions.
 $string['notexistinstitution'] = 'The Institution is not exist';
 $string['notexistbatch'] = 'The Batch is not exist';
+$string['notexistcourse'] = 'The Course is not exist in Moodle';
+$string['notexistcourselti'] = 'The Course hasn\'t lti share in Moodle';
 $string['cohortnotexist'] = 'The Cohort is not exist';
 $string['missingproperty'] = 'required property missing';
 $string['requiredproperty'] = 'required property name \'{$a}\' missing';
