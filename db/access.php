@@ -246,16 +246,19 @@ $capabilities = [
                 'archetypes' => [
                 ],
         ],
-
         'local/providerapi:delete_course_group' => [
                 'captype' => 'write',
                 'contextlevel' => 10,
                 'archetypes' => [
                 ],
         ],
-
         'local/providerapi:edit_course_group' => [
                 'captype' => 'write',
+                'contextlevel' => 10,
+                'archetypes' => [
+                ],
+        ], 'local/providerapi:get_lti_info' => [
+                'captype' => 'read',
                 'contextlevel' => 10,
                 'archetypes' => [
                 ],

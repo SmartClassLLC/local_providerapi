@@ -36,6 +36,7 @@ use local_providerapi\event\btcourse_deleted;
 use local_providerapi\local\batch\batch;
 use local_providerapi\local\batch\btcourse;
 use local_providerapi\local\course\course;
+use local_providerapi\local\helper;
 use local_providerapi\local\institution\institution;
 use moodle_exception;
 use stdClass;
@@ -384,6 +385,67 @@ class external extends external_api {
                                 'coursename' => new external_value(PARAM_TEXT, 'Moodle course name')
                         ), 'Get batch\'s courses', VALUE_OPTIONAL
                 )
+        );
+    }
+
+    /**
+     * @return external_function_parameters
+     */
+    public static function get_lti_info_parameters() {
+        return new external_function_parameters(
+                ['institutionkey' => new external_value(PARAM_ALPHANUM, 'Institution SecretKey'),
+                        'courseid' => new external_value(PARAM_INT, 'Moodle Courseid')
+                ]
+        );
+    }
+
+    /**
+     * @param $institutionkey
+     * @param $courseid
+     * @return array
+     * @throws \dml_exception
+     * @throws \dml_transaction_exception
+     * @throws \invalid_parameter_exception
+     * @throws \required_capability_exception
+     * @throws \restricted_context_exception
+     * @throws moodle_exception
+     */
+    public static function get_lti_info($institutionkey, $courseid) {
+        global $DB;
+        $params = self::validate_parameters(self::get_lti_info_parameters(),
+                array('institutionkey' => $institutionkey, 'courseid' => $courseid));
+        $context = context_system::instance();
+        require_capability('local/providerapi:get_lti_info', $context);
+        self::validate_context($context);
+        // Get institution.
+        institution::get_by_secretkey($params['institutionkey']);
+
+        if (!$DB->record_exists('course', array('id' => $params['courseid']))) {
+            throw new moodle_exception('notexistcourse', 'local_providerapi');
+        }
+        $tool = helper::get_tool_by_courseid($params['courseid']);
+        if (!$tool) {
+            throw new moodle_exception('notexistcourselti', 'local_providerapi');
+        }
+        $toolinfo = array();
+        $toolinfo['launchurl'] = helper::get_launch_url($tool->id)->out(false);
+        $toolinfo['proxyurl'] = helper::get_proxy_url($tool)->out(false);
+        $toolinfo['cartridgeurl'] = helper::get_cartridge_url($tool)->out(false);
+        $toolinfo['secret'] = $tool->secret;
+        return $toolinfo;
+    }
+
+    /**
+     * @return external_single_structure
+     */
+    public static function get_lti_info_returns() {
+        return new external_single_structure(
+                array(
+                        'launchurl' => new external_value(PARAM_URL, 'Lti launch url for ltiv1'),
+                        'proxyurl' => new external_value(PARAM_URL, 'Lti proxyurl for ltiv2'),
+                        'cartridgeurl' => new external_value(PARAM_URL, 'Lti cartridgeurl'),
+                        'secret' => new external_value(PARAM_TEXT, 'Lti secret')
+                ), 'Get course\'s Lti info', VALUE_OPTIONAL
         );
     }
 

@@ -163,6 +163,14 @@ $functions = array(
                 'type' => 'read',
                 'capabilities' => 'local/providerapi:unassignbtcourse',
                 'services' => array('providerapi')
+        ),
+        'local_providerapi_get_lti_info' => array(
+                'classname' => 'local_providerapi\webservice\course\external',
+                'methodname' => 'get_lti_info',
+                'description' => 'Get lti info of course',
+                'type' => 'read',
+                'capabilities' => 'local/providerapi:get_lti_info',
+                'services' => array('providerapi')
         )
 
 );

@@ -63,6 +63,7 @@ $string['providerapi:unassignbatchmembers'] = 'Unassign members to batch';
 $string['providerapi:assignbtcourse'] = 'Assign course to batch';
 $string['providerapi:unassignbtcourse'] = 'Unssign course to batch';
 $string['providerapi:viewassignbtcourse'] = 'View course of batch';
+$string['providerapi:get_lti_info'] = 'Get Lti launch info';
 
 // Privacy.
 $string['privacy:metadata'] = 'The Providerapi plugin does not store any personal data.';
@@ -99,6 +100,8 @@ $string['eventdeleted'] = 'The {$a->objname} with id \'{$a->objid}\' has deleted
 // Exceptions.
 $string['notexistinstitution'] = 'The Institution is not exist';
 $string['notexistbatch'] = 'The Batch is not exist';
+$string['notexistcourse'] = 'The Course is not exist in Moodle';
+$string['notexistcourselti'] = 'The Course hasn\'t lti share in Moodle';
 $string['cohortnotexist'] = 'The Cohort is not exist';
 $string['missingproperty'] = 'required property missing';
 $string['requiredproperty'] = 'required property name \'{$a}\' missing';
@@ -140,6 +143,16 @@ $string['extusers'] = 'Existing users';
 $string['extusersmatching'] = 'Exist matching users';
 $string['capacityisfull'] = 'Capacity is full. User named {$a} is not add';
 $string['batchcapacityisfull'] = 'Batch \'s capacity is full';
-
-
-
+$string['opentool'] = 'Open tool';
+$string['failedrequest'] = 'Failed request. Reason: {$a->reason}';
+$string['invalidrequest'] = 'Invalid request';
+$string['invalidtoolconsumer'] = 'Invalid tool consumer.';
+$string['invaliduser'] = 'Invalid user.';
+$string['usernotenrolled'] = 'User is unenrol';
+$string['frameembeddingnotenabled'] = 'To access the tool, please follow the link below.';
+$string['invalidtoolconsumer'] = 'Invalid tool consumer.';
+$string['returnurlnotset'] = 'Return URL was not set.';
+$string['successfulregistration'] = 'Successful registration';
+$string['registration'] = 'ProviderApi registration';
+$string['incorrecttoken'] = 'The token was incorrect. Please check the URL and try again, or contact the administrator of this tool.';
+$string['couldnotestablishproxy'] = 'Could not establish proxy with consumer.';
