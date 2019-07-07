@@ -40,7 +40,14 @@ before_install:
   - composer selfupdate
   - composer create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci ^2
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
-
+  - openssl aes-256-cbc -K $encrypted_7d5fd5a42fc4_key -iv $encrypted_7d5fd5a42fc4_iv
+    -in deploy_key.enc -out ./deploy_key -d
+  - eval "$(ssh-agent -s)"
+  - chmod 600 ./deploy_key
+  - echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+  - ssh-add ./deploy_key
+  # test ssh connection for: https://github.com/dwyl/learn-travis/issues/42
+  - ssh -i ./deploy_key root@$SERVER_IP_ADDRESS -p$SERVER_PORT pwd
 jobs:
   include:
     - stage: static
@@ -77,15 +84,7 @@ stages:
   - name: test
     if: branch = master OR (type = pull_request AND head_branch = master) OR (tag IS
       present)
-before_deploy:
-  - openssl aes-256-cbc -K $encrypted_7d5fd5a42fc4_key -iv $encrypted_7d5fd5a42fc4_iv
-    -in deploy_key.enc -out ./deploy_key -d
-  - eval "$(ssh-agent -s)"
-  - chmod 600 ./deploy_key
-  - echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-  - ssh-add ./deploy_key
-  # test ssh connection for: https://github.com/dwyl/learn-travis/issues/42
-  - ssh -i ./deploy_key root@$SERVER_IP_ADDRESS -p$SERVER_PORT pwd
+
 deploy:
   provider: script
   skip_cleanup: true
