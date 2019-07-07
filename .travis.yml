@@ -42,7 +42,7 @@ before_install:
   - echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
   - ssh-add ./deploy_key
   # test ssh connection for: https://github.com/dwyl/learn-travis/issues/42
-  - ssh -i ./deploy_key root@138.68.163.126 -p3333 pwd
+  - ssh -i ./deploy_key root@$SERVER_IP_ADDRESS -p3333 pwd
   - phpenv config-rm xdebug.ini
   - nvm install v8.9.4
   - cd ../..
