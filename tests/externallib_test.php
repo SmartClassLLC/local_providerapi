@@ -26,6 +26,7 @@
 
 use local_providerapi\local\batch\btcourse;
 use local_providerapi\local\course\course;
+use local_providerapi\local\helper;
 use local_providerapi\webservice\course\external;
 
 defined('MOODLE_INTERNAL') || die();
@@ -865,5 +866,47 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         $this->unassignUserCapability('local/providerapi:assignbtcourse', $contextid, $roleid);
         $this->expectException('required_capability_exception');
         external::assign_course_to_batch($institution->secretkey, $batch1->id, array($course1field, $course2field));
+    }
+
+    /**
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws dml_transaction_exception
+     * @throws invalid_parameter_exception
+     * @throws invalid_response_exception
+     * @throws moodle_exception
+     * @throws required_capability_exception
+     * @throws restricted_context_exception
+     */
+    public function test_get_lti_info() {
+        global $DB, $CFG;
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $providergenerator = $generator->get_plugin_generator('local_providerapi');
+        $institution = $providergenerator->create_institution();
+
+        $contextid = context_system::instance()->id;
+        $roleid = $this->assignUserCapability('local/providerapi:get_lti_info', $contextid);
+
+        $course1 = $generator->create_course();
+        $providergenerator->create_sharedcourse(array(
+                'institutionid' => $institution->id,
+                'courseids' => array($course1->id)
+        ));
+        $getltiinfo = external::get_lti_info($institution->secretkey, $course1->id);
+        $getltiinfo = external_api::clean_returnvalue(external::get_lti_info_returns(), $getltiinfo);
+        $this->assertEquals(4, count($getltiinfo));
+
+        $tool = helper::get_tool_by_courseid($course1->id);
+
+        $this->assertEquals($getltiinfo['launchurl'], $CFG->wwwroot . '/local/providerapi/tool.php?id=' . $tool->id);
+        $this->assertEquals($getltiinfo['proxyurl'], helper::get_proxy_url($tool)->out(false));
+        $this->assertEquals($getltiinfo['cartridgeurl'], helper::get_cartridge_url($tool)->out(false));
+        $this->assertEquals($getltiinfo['secret'], $tool->secret);
+
+        // Call without required capability.
+        $this->unassignUserCapability('local/providerapi:get_lti_info', $contextid, $roleid);
+        $this->expectException('required_capability_exception');
+        external::get_lti_info($institution->secretkey, $course1->id);
     }
 }

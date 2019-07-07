@@ -1,36 +1,27 @@
 language: php
-
 sudo: false
 dist: trusty
-
 addons:
-  firefox: "47.0.1"
-  postgresql: "9.4"
+  firefox: 47.0.1
+  postgresql: '9.4'
   apt:
     packages:
       - openjdk-8-jre-headless
-
 cache:
   directories:
-    - $HOME/.composer/cache
-    - $HOME/.npm
-
+    - "$HOME/.composer/cache"
+    - "$HOME/.npm"
 php:
   - 7.1
   - 7.2
   - 7.3
-
 matrix:
-  #allow_failures:
-  #- env: DB=pgsql MOODLE_BRANCH=master
-  #- env: DB=mysqli MOODLE_BRANCH=master
   exclude:
     - php: 7.1
       env: DB=pgsql MOODLE_BRANCH=master
     - php: 7.1
       env: DB=mysqli MOODLE_BRANCH=master
   fast_finish: true
-
 env:
   global:
     - BEHAT=no
@@ -42,7 +33,6 @@ env:
     - DB=mysqli MOODLE_BRANCH=MOODLE_36_STABLE
     - DB=mysqli MOODLE_BRANCH=MOODLE_37_STABLE
     - DB=mysqli MOODLE_BRANCH=master
-
 before_install:
   - phpenv config-rm xdebug.ini
   - nvm install v8.9.4
@@ -53,22 +43,17 @@ before_install:
 
 jobs:
   include:
-    # Prechecks against latest Moodle stable only.
     - stage: static
-      php: 7.2
-      env: DB=mysqli MOODLE_BRANCH=MOODLE_36_STABLE
+      php: 7.3
+      env: DB=mysqli MOODLE_BRANCH=MOODLE_37_STABLE
       install:
         - moodle-plugin-ci install --no-init
       script:
         - moodle-plugin-ci phplint
         - moodle-plugin-ci phpmd
-        - moodle-plugin-ci codechecker
-        - moodle-plugin-ci validate
         - moodle-plugin-ci savepoints
         - moodle-plugin-ci mustache
         - moodle-plugin-ci grunt
-
-    # Smaller build matrix for development builds
     - stage: develop
       php: 7.2
       env: DB=mysqli MOODLE_BRANCH=MOODLE_36_STABLE
@@ -77,21 +62,33 @@ jobs:
       script:
         - moodle-plugin-ci phpunit --coverage-clover
         - moodle-plugin-ci behat
-
-# Default 'test' stage: Unit tests and behat tests against full matrix.
 install:
   - moodle-plugin-ci install
-
 script:
   - moodle-plugin-ci phpunit --coverage-clover
   - moodle-plugin-ci behat
-
 after_success:
   - bash <(curl -s https://codecov.io/bash) -t CODECOV_TOKEN
-
 stages:
   - static
   - name: develop
-    if: branch != master AND (type != pull_request OR head_branch != master) AND (tag IS blank)
+    if: branch != master AND (type != pull_request OR head_branch != master) AND (tag
+      IS blank)
   - name: test
-    if: branch = master OR (type = pull_request AND head_branch = master) OR (tag IS present)
+    if: branch = master OR (type = pull_request AND head_branch = master) OR (tag IS
+      present)
+before_deploy:
+  - openssl aes-256-cbc -K $encrypted_7d5fd5a42fc4_key -iv $encrypted_7d5fd5a42fc4_iv
+    -in deploy_key.enc -out ./deploy_key -d
+    - eval "$(ssh-agent -s)"
+    - chmod 600 ./deploy_key
+    - echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+    - ssh-add ./deploy_key
+    # test ssh connection for: https://github.com/dwyl/learn-travis/issues/42
+    - ssh -i ./deploy_key root@$SERVER_IP_ADDRESS -p$SERVER_PORT pwd
+deploy:
+  provider: script
+  skip_cleanup: true
+  script: rsync -r --delete-after --quiet -e"ssh -v -i ./deploy_key" $TRAVIS_BUILD_DIR/ root@$SERVER_IP_ADDRESS:$DEVEDOPPATH
+  on:
+    branch: master

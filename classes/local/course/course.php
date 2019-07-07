@@ -67,6 +67,16 @@ class course extends core_course_list_element {
     }
 
     /**
+     * @param int $courseid
+     * @return course
+     * @throws \dml_exception
+     */
+    public static function get_by_courseid(int $courseid) {
+        $record = get_course($courseid);
+        return new self($record);
+    }
+
+    /**
      * @return stdClass
      */
     public function get_record() {
