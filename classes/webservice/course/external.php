@@ -80,6 +80,18 @@ class external extends external_api {
             global $DB;
             list($select, $from, $wheres, $params) = course::get_sql($institution->id);
             $courseids = $DB->get_records_sql("SELECT c.* FROM {$from} WHERE {$wheres}", $params);
+
+            // Lti info attached.
+            @array_walk($courseids, function(&$v, &$k) {
+                $tool = helper::get_tool_by_courseid($v->id, IGNORE_MISSING);
+                if ($tool) {
+                    $v->launchurl = helper::get_launch_url($tool->id)->out(false);
+                    $v->proxyurl = helper::get_proxy_url($tool)->out(false);
+                    $v->cartridgeurl = helper::get_cartridge_url($tool)->out(false);
+                    $v->secret = $tool->secret;
+                }
+
+            });
         }
         return $courseids;
     }
@@ -146,6 +158,10 @@ class external extends external_api {
                                                 )),
                                         'additional options for particular course format', VALUE_OPTIONAL
                                 ),
+                                'launchurl' => new external_value(PARAM_URL, 'lti v1 launchurl', VALUE_OPTIONAL),
+                                'proxyurl' => new external_value(PARAM_URL, 'lti v2 proxyurl', VALUE_OPTIONAL),
+                                'cartridgeurl' => new external_value(PARAM_URL, 'cartridgeurl', VALUE_OPTIONAL),
+                                'secret' => new external_value(PARAM_TEXT, 'cartridgeurl', VALUE_OPTIONAL),
                         ), 'course', VALUE_OPTIONAL));
     }
 
