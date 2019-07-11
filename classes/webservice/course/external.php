@@ -645,7 +645,8 @@ class external extends external_api {
     public static function manual_unenrol_parameters() {
         $enrolfields = [
                 'userid' => new external_value(PARAM_INT, 'Moodle user id'),
-                'courseid' => new external_value(PARAM_INT, 'Moodle Course id')
+                'courseid' => new external_value(PARAM_INT, 'Moodle Course id'),
+                'batchid' => new external_value(PARAM_INT, 'Batch id', VALUE_OPTIONAL)
         ];
         return new external_function_parameters(
                 ['institutionkey' => new external_value(PARAM_ALPHANUM, 'Institution SecretKey'),
@@ -670,6 +671,8 @@ class external extends external_api {
     public static function manual_unenrol($institutionkey, $users = array()) {
         global $DB, $CFG;
         require_once($CFG->libdir . '/enrollib.php');
+        require_once($CFG->libdir . '/grouplib.php');
+        require_once($CFG->dirroot . '/group/lib.php');
         $params = self::validate_parameters(self::manual_unenrol_parameters(),
                 array('institutionkey' => $institutionkey, 'users' => $users));
 
@@ -699,6 +702,7 @@ class external extends external_api {
             if (!cohortHelper::is_member($institution->cohortid, $user['userid'])) {
                 throw new moodle_exception('notexistuser', 'local_providerapi');
             }
+
             $instance = $DB->get_record('enrol', array('courseid' => $user['courseid'], 'enrol' => 'manual'));
             if (!$instance) {
                 throw new moodle_exception('wsnoinstance', 'enrol_manual', $user);
@@ -707,10 +711,28 @@ class external extends external_api {
             if (!$realuser) {
                 throw new invalid_parameter_exception('User id not exist: ' . $user['userid']);
             }
-            if (!$enrol->allow_unenrol($instance)) {
-                throw new moodle_exception('wscannotunenrol', 'enrol_manual', '', $user);
+            if (!empty($user['batchid'])) {
+                // Is there the batch in institution.
+                if (!$DB->record_exists('local_providerapi_batches',
+                        array('institutionid' => $institution->id, 'id' => $user['batchid']))) {
+                    throw new moodle_exception('notexistbatch', 'local_providerapi');
+                }
+                $sql = "SELECT btc.*
+                    FROM {local_providerapi_btcourses} btc
+                    JOIN {local_providerapi_courses} c ON c.id = btc.sharedcourseid
+                    WHERE btc.batchid = :batchid
+                    AND c.courseid = :courseid ";
+                if (!$btcourse = $DB->get_record_sql($sql, array('batchid' => $user['batchid'], 'courseid' => $user['courseid']))) {
+                    throw new moodle_exception('notexistcourseinbatch', 'local_providerapi');
+                }
+                groups_remove_member($btcourse->groupid, $user['userid']);
+            } else {
+                if (!$enrol->allow_unenrol($instance)) {
+                    throw new moodle_exception('wscannotunenrol', 'enrol_manual', '', $user);
+                }
+                $enrol->unenrol_user($instance, $user['userid']);
             }
-            $enrol->unenrol_user($instance, $user['userid']);
+
         }
         $transaction->allow_commit();
 
