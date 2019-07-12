@@ -646,7 +646,9 @@ class external extends external_api {
         $enrolfields = [
                 'userid' => new external_value(PARAM_INT, 'Moodle user id'),
                 'courseid' => new external_value(PARAM_INT, 'Moodle Course id'),
-                'batchid' => new external_value(PARAM_INT, 'Batch id', VALUE_OPTIONAL)
+                'batchid' => new external_value(PARAM_INT,
+                        'Batch id. The user full unenrol the course when the batchid is null.Otherwise just unenrol batch\'s group',
+                        VALUE_OPTIONAL)
         ];
         return new external_function_parameters(
                 ['institutionkey' => new external_value(PARAM_ALPHANUM, 'Institution SecretKey'),

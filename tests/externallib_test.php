@@ -921,6 +921,16 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         external::get_lti_info($institution->secretkey, $course1->id);
     }
 
+    /**
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws dml_transaction_exception
+     * @throws invalid_parameter_exception
+     * @throws invalid_response_exception
+     * @throws moodle_exception
+     * @throws required_capability_exception
+     * @throws restricted_context_exception
+     */
     public function test_manual_enrol() {
         global $DB;
         $this->resetAfterTest();
@@ -939,13 +949,30 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         $this->assignUserCapability('moodle/course:view', $context->id, $roleid);
         $this->assignUserCapability('moodle/role:assign', $context->id, $roleid);
         $this->assignUserCapability('local/providerapi:assignbtcourse', context_system::instance()->id, $roleid);
-
+        $batch1 = $this->batch1;
         core_role_set_assign_allowed($roleid, 4); // 4 mean teacher.
+        try {
+            external::manual_enrol($institution->secretkey,
+                    array(array('userid' => $user->id, 'courseid' => $course1->id, 'batchid' => $batch1->id,
+                            'roleshortname' => 'teacher')));
+            $this->fail('The Course is not member of institutuion');
+        } catch (moodle_exception $e) {
+            $this->assertSame('notexistcourse', $e->errorcode);
+        }
+        $this->assertEquals(0, $DB->count_records('user_enrolments'));
         $providergenerator->create_sharedcourse(array(
                 'institutionid' => $institution->id,
                 'courseids' => array($course1->id)
         ));
-        $batch1 = $this->batch1;
+        try {
+            external::manual_enrol($institution->secretkey,
+                    array(array('userid' => $user->id, 'courseid' => $course1->id, 'batchid' => $batch1->id,
+                            'roleshortname' => 'teacher')));
+            $this->fail('The Course is not member of batch');
+        } catch (moodle_exception $e) {
+            $this->assertSame('notexistcourseinbatch', $e->errorcode);
+        }
+        $this->assertEquals(0, $DB->count_records('user_enrolments'));
         external::assign_course_to_batch($institution->secretkey, $batch1->id, array($course1field));
         $btcourse = $DB->get_record_sql(
                 "SELECT bt.* FROM {local_providerapi_btcourses} bt
@@ -959,8 +986,124 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
                         'roleshortname' => 'teacher')));
         $response = external_api::clean_returnvalue(external::manual_enrol_returns(), $response);
         $this->assertEquals(1, count($response));
+        $response = reset($response);
+        $this->assertTrue($response['enrolstatus']);
+        $this->assertTrue($response['groupstatus']);
+        $this->assertEquals($course1->id, $response['courseid']);
+        $this->assertEquals($user->id, $response['userid']);
         $this->assertEquals(1, $DB->count_records('user_enrolments', array('enrolid' => $instance1->id)));
         $this->assertEquals(1, $DB->count_records('groups_members', array('groupid' => $btcourse->groupid, 'userid' => $user->id)));
 
+        $institution->remove_member($user->id);
+        $DB->delete_records('user_enrolments');
+        try {
+            external::manual_enrol($institution->secretkey,
+                    array(array('userid' => $user->id, 'courseid' => $course1->id, 'batchid' => $batch1->id,
+                            'roleshortname' => 'teacher')));
+            $this->fail('The user is not member of institutuion');
+
+        } catch (moodle_exception $e) {
+            $this->assertSame('notexistuser', $e->errorcode);
+        }
+        $this->assertEquals(0, $DB->count_records('user_enrolments'));
+        $institution->add_member($user->id);
+        $this->unassignUserCapability('enrol/manual:enrol', $context->id, $roleid);
+        try {
+            external::manual_enrol($institution->secretkey,
+                    array(array('userid' => $user->id, 'courseid' => $course1->id, 'batchid' => $batch1->id,
+                            'roleshortname' => 'teacher')));
+            $this->fail('Exception expected if not having capability to enrol');
+
+        } catch (moodle_exception $e) {
+            $this->assertInstanceOf('required_capability_exception', $e);
+            $this->assertSame('nopermissions', $e->errorcode);
+        }
+        $this->assignUserCapability('enrol/manual:enrol', $context->id, $roleid);
+        $this->assertEquals(0, $DB->count_records('user_enrolments'));
+        try {
+            external::manual_enrol($institution->secretkey,
+                    array(array('userid' => $user->id, 'courseid' => $course1->id, 'batchid' => $batch1->id,
+                            'roleshortname' => 'nonteacher')));
+            $this->fail('The role is not exist');
+
+        } catch (moodle_exception $e) {
+            $this->assertSame('notexistrole', $e->errorcode);
+        }
+        $this->assertEquals(0, $DB->count_records('user_enrolments'));
     }
+
+    /**
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws dml_transaction_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     * @throws required_capability_exception
+     * @throws restricted_context_exception
+     */
+    public function test_manual_unenrol() {
+        global $DB, $CFG;
+        require_once($CFG->libdir . '/enrollib.php');
+        require_once($CFG->dirroot . '/group/lib.php');
+        $this->resetAfterTest();
+        $user = self::getDataGenerator()->create_user();
+        $this->setUser($user);
+        $enrol = enrol_get_plugin('manual');
+        $institution = $this->institution;
+        $institution->add_member($user->id);
+        $generator = $this->getDataGenerator();
+        $providergenerator = $generator->get_plugin_generator('local_providerapi');
+
+        $course1 = self::getDataGenerator()->create_course();
+        $course1field = array('courseid' => $course1->id);
+        $context = context_course::instance($course1->id);
+        $instance = $DB->get_record('enrol', array('courseid' => $course1->id, 'enrol' => 'manual'), '*', MUST_EXIST);
+        $roleid = $this->assignUserCapability('enrol/manual:enrol', $context->id);
+        $this->assignUserCapability('enrol/manual:unenrol', $context->id, $roleid);
+        $this->assignUserCapability('moodle/course:view', $context->id, $roleid);
+        $this->assignUserCapability('moodle/role:assign', $context->id, $roleid);
+        $this->assignUserCapability('local/providerapi:assignbtcourse', context_system::instance()->id, $roleid);
+        $batch1 = $this->batch1;
+        core_role_set_assign_allowed($roleid, 4); // 4 mean teacher.
+        $providergenerator->create_sharedcourse(array(
+                'institutionid' => $institution->id,
+                'courseids' => array($course1->id)
+        ));
+        external::assign_course_to_batch($institution->secretkey, $batch1->id, array($course1field));
+        $btcourse = $DB->get_record_sql(
+                "SELECT bt.* FROM {local_providerapi_btcourses} bt
+                      JOIN {local_providerapi_courses} sc ON sc.id = bt.sharedcourseid
+                      JOIN {course} c ON c.id = sc.courseid
+                      WHERE c.id = :courseid
+                      AND bt.batchid = :batchid", array('courseid' => $course1->id, 'batchid' => $batch1->id));
+        $enrol->enrol_user($instance, $user->id, 4);
+        groups_add_member($btcourse->groupid, $user->id, 'enrol_manual', $instance->id);
+        $this->assertTrue(is_enrolled($context, $user));
+
+        external::manual_unenrol($institution->secretkey,
+                array(array('userid' => $user->id, 'courseid' => $course1->id, 'batchid' => $batch1->id)));
+        $this->assertTrue(is_enrolled($context, $user));
+        $this->assertFalse(groups_is_member($btcourse->groupid, $user->id));
+        $enrol->enrol_user($instance, $user->id, 4);
+        groups_add_member($btcourse->groupid, $user->id, 'enrol_manual', $instance->id);
+        $this->unassignUserCapability('enrol/manual:unenrol', $context->id, $roleid);
+        try {
+            external::manual_unenrol($institution->secretkey,
+                    array(array('userid' => $user->id, 'courseid' => $course1->id, 'batchid' => $batch1->id)));
+            $this->fail('Exception expected if not having capability to unenrol');
+
+        } catch (moodle_exception $e) {
+            $this->assertInstanceOf('required_capability_exception', $e);
+            $this->assertSame('nopermissions', $e->errorcode);
+        }
+        $this->assignUserCapability('enrol/manual:unenrol', $context->id, $roleid);
+        $this->assertTrue(is_enrolled($context, $user));
+        $this->assertTrue(groups_is_member($btcourse->groupid, $user->id));
+
+        external::manual_unenrol($institution->secretkey,
+                array(array('userid' => $user->id, 'courseid' => $course1->id)));
+        $this->assertFalse(is_enrolled($context, $user));
+        $this->assertFalse(groups_is_member($btcourse->groupid, $user->id));
+    }
+
 }
