@@ -24,9 +24,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_providerapi\local\batch\batch;
 use local_providerapi\local\batch\btcourse;
 use local_providerapi\local\course\course;
 use local_providerapi\local\helper;
+use local_providerapi\local\institution\institution;
 use local_providerapi\webservice\course\external;
 
 defined('MOODLE_INTERNAL') || die();
@@ -41,6 +43,41 @@ require_once($CFG->dirroot . '/local/providerapi/locallib.php');
 class local_providerapi_externallib_testcase extends externallib_advanced_testcase {
 
     /**
+     * @var institution
+     */
+    private $institution;
+
+    /**
+     * @var batch
+     */
+    private $batch1;
+    /**
+     * @var batch
+     */
+    private $batch2;
+
+    /**
+     * @throws coding_exception
+     */
+    protected function setUp() {
+        $generator = $this->getDataGenerator();
+        $providergenerator = $generator->get_plugin_generator('local_providerapi');
+        $this->institution = $providergenerator->create_institution();
+
+        $this->batch1 = $providergenerator->create_batch(array(
+                'institutionid' => $this->institution->id,
+                'name' => 'testbatch1',
+                'source' => PROVIDERAPI_SOURCEWS
+        ));
+        $this->batch2 = $providergenerator->create_batch(array(
+                'institutionid' => $this->institution->id,
+                'name' => 'testbatch2',
+                'source' => PROVIDERAPI_SOURCEWS
+        ));
+
+    }
+
+    /**
      * @throws coding_exception
      * @throws dml_exception
      * @throws invalid_parameter_exception
@@ -48,9 +85,8 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
      */
     public function test_create_user() {
         $this->resetAfterTest();
-        $generator = $this->getDataGenerator();
-        $providergenerator = $generator->get_plugin_generator('local_providerapi');
-        $institution = $providergenerator->create_institution();
+
+        $institution = $this->institution;
 
         $contextid = context_system::instance()->id;
         $roleid = $this->assignUserCapability('local/providerapi:create_user', $contextid);
@@ -115,9 +151,8 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
      */
     public function test_create_user_same_idnumber() {
         $this->resetAfterTest();
-        $generator = $this->getDataGenerator();
-        $providergenerator = $generator->get_plugin_generator('local_providerapi');
-        $institution = $providergenerator->create_institution();
+
+        $institution = $this->institution;
 
         $contextid = context_system::instance()->id;
         $this->assignUserCapability('local/providerapi:create_user', $contextid);
@@ -152,9 +187,8 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
      */
     public function test_update_user_same_idnumber() {
         $this->resetAfterTest();
-        $generator = $this->getDataGenerator();
-        $providergenerator = $generator->get_plugin_generator('local_providerapi');
-        $institution = $providergenerator->create_institution();
+
+        $institution = $this->institution;
         $contextid = context_system::instance()->id;
         $roleid = $this->assignUserCapability('local/providerapi:create_user', $contextid);
         $this->assignUserCapability('local/providerapi:update_user', $contextid, $roleid);
@@ -209,9 +243,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
     public function test_delete_user() {
         global $DB;
         $this->resetAfterTest();
-        $generator = $this->getDataGenerator();
-        $providergenerator = $generator->get_plugin_generator('local_providerapi');
-        $institution = $providergenerator->create_institution();
+        $institution = $this->institution;
         $contextid = context_system::instance()->id;
         $roleid = $this->assignUserCapability('local/providerapi:create_user', $contextid);
         $this->assignUserCapability('local/providerapi:delete_user', $contextid, $roleid);
@@ -273,8 +305,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
     public function test_delete_user_other_institutuion() {
         $this->resetAfterTest();
         $generator = $this->getDataGenerator();
-        $providergenerator = $generator->get_plugin_generator('local_providerapi');
-        $institution = $providergenerator->create_institution();
+        $institution = $this->institution;
 
         $contextid = context_system::instance()->id;
         $this->assignUserCapability('local/providerapi:delete_user', $contextid);
@@ -296,7 +327,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         $this->resetAfterTest();
         $generator = $this->getDataGenerator();
         $providergenerator = $generator->get_plugin_generator('local_providerapi');
-        $institution = $providergenerator->create_institution();
+        $institution = $this->institution;
         $course1 = $generator->create_course();
         $course2 = $generator->create_course();
 
@@ -333,9 +364,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
      */
     public function test_create_batches() {
         $this->resetAfterTest();
-        $generator = $this->getDataGenerator();
-        $providergenerator = $generator->get_plugin_generator('local_providerapi');
-        $institution = $providergenerator->create_institution();
+        $institution = $this->institution;
 
         $contextid = context_system::instance()->id;
         $roleid = $this->assignUserCapability('local/providerapi:addbatch', $contextid);
@@ -382,9 +411,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
      */
     public function test_create_same_name_batch() {
         $this->resetAfterTest();
-        $generator = $this->getDataGenerator();
-        $providergenerator = $generator->get_plugin_generator('local_providerapi');
-        $institution = $providergenerator->create_institution();
+        $institution = $this->institution;
 
         $contextid = context_system::instance()->id;
         $this->assignUserCapability('local/providerapi:addbatch', $contextid);
@@ -413,9 +440,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
      */
     public function test_create_invalid_capacity() {
         $this->resetAfterTest();
-        $generator = $this->getDataGenerator();
-        $providergenerator = $generator->get_plugin_generator('local_providerapi');
-        $institution = $providergenerator->create_institution();
+        $institution = $this->institution;
 
         $contextid = context_system::instance()->id;
         $this->assignUserCapability('local/providerapi:addbatch', $contextid);
@@ -450,9 +475,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
     public function test_update_batches() {
         global $DB;
         $this->resetAfterTest();
-        $generator = $this->getDataGenerator();
-        $providergenerator = $generator->get_plugin_generator('local_providerapi');
-        $institution = $providergenerator->create_institution();
+        $institution = $this->institution;
 
         $contextid = context_system::instance()->id;
         $roleid = $this->assignUserCapability('local/providerapi:addbatch', $contextid);
@@ -477,7 +500,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         );
         \local_providerapi\webservice\batch\external::update_batches($institution->secretkey, array($batch2));
 
-        $this->assertTrue($DB->record_exists(\local_providerapi\local\batch\batch::$dbname,
+        $this->assertTrue($DB->record_exists(batch::$dbname,
                 array('id' => $batchrecords['id'], 'name' => 'test12', 'capacity' => 111)));
 
         // Call without required capability.
@@ -500,9 +523,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
     public function test_delete_batches() {
         global $DB;
         $this->resetAfterTest();
-        $generator = $this->getDataGenerator();
-        $providergenerator = $generator->get_plugin_generator('local_providerapi');
-        $institution = $providergenerator->create_institution();
+        $institution = $this->institution;
 
         $contextid = context_system::instance()->id;
         $roleid = $this->assignUserCapability('local/providerapi:addbatch', $contextid);
@@ -523,7 +544,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         \local_providerapi\webservice\batch\external::delete_batches($institution->secretkey,
                 array(array('id' => $batchrecords['id'])));
 
-        $this->assertNotTrue($DB->record_exists(\local_providerapi\local\batch\batch::$dbname, array('id' => $batchrecords['id'])));
+        $this->assertNotTrue($DB->record_exists(batch::$dbname, array('id' => $batchrecords['id'])));
 
         // Call without required capability.
         $this->unassignUserCapability('local/providerapi:deletebatch', $contextid, $roleid);
@@ -545,9 +566,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
      */
     public function test_get_batches() {
         $this->resetAfterTest();
-        $generator = $this->getDataGenerator();
-        $providergenerator = $generator->get_plugin_generator('local_providerapi');
-        $institution = $providergenerator->create_institution();
+        $institution = $this->institution;
 
         $contextid = context_system::instance()->id;
         $roleid = $this->assignUserCapability('local/providerapi:addbatch', $contextid);
@@ -593,9 +612,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
      */
     public function test_assign_batchmember() {
         $this->resetAfterTest();
-        $generator = $this->getDataGenerator();
-        $providergenerator = $generator->get_plugin_generator('local_providerapi');
-        $institution = $providergenerator->create_institution();
+        $institution = $this->institution;
 
         $contextid = context_system::instance()->id;
         $roleid = $this->assignUserCapability('local/providerapi:create_user', $contextid);
@@ -640,7 +657,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
                 $batchrecords);
         $this->assertEquals(1, count($batchrecords));
         $batchrecords = reset($batchrecords);
-        $batch = \local_providerapi\local\batch\batch::get($batchrecords['id']);
+        $batch = batch::get($batchrecords['id']);
         $assignrecords =
                 \local_providerapi\webservice\batch\external::assign_batchmembers($institution->secretkey, $batch->id, $users);
         $assignrecords =
@@ -671,9 +688,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
      */
     public function test_unassign_batchmember() {
         $this->resetAfterTest();
-        $generator = $this->getDataGenerator();
-        $providergenerator = $generator->get_plugin_generator('local_providerapi');
-        $institution = $providergenerator->create_institution();
+        $institution = $this->institution;
 
         $contextid = context_system::instance()->id;
         $roleid = $this->assignUserCapability('local/providerapi:create_user', $contextid);
@@ -719,7 +734,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
                 $batchrecords);
         $this->assertEquals(1, count($batchrecords));
         $batchrecords = reset($batchrecords);
-        $batch = \local_providerapi\local\batch\batch::get($batchrecords['id']);
+        $batch = batch::get($batchrecords['id']);
         $assignrecords =
                 \local_providerapi\webservice\batch\external::assign_batchmembers($institution->secretkey, $batch->id, $users);
         $assignrecords =
@@ -766,7 +781,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         $this->resetAfterTest();
         $generator = $this->getDataGenerator();
         $providergenerator = $generator->get_plugin_generator('local_providerapi');
-        $institution = $providergenerator->create_institution();
+        $institution = $this->institution;
 
         $contextid = context_system::instance()->id;
         $roleid = $this->assignUserCapability('local/providerapi:assignbtcourse', $contextid);
@@ -781,11 +796,7 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
                 'institutionid' => $institution->id,
                 'courseids' => array($course1->id)
         ));
-        $batch1 = $providergenerator->create_batch(array(
-                'institutionid' => $institution->id,
-                'name' => 'testbatch1',
-                'source' => PROVIDERAPI_SOURCEWS
-        ));
+        $batch1 = $this->batch1;
 
         $assigncourses =
                 external::assign_course_to_batch($institution->secretkey, $batch1->id, array($course1field, $course2field));
@@ -879,11 +890,11 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
      * @throws restricted_context_exception
      */
     public function test_get_lti_info() {
-        global $DB, $CFG;
+        global $CFG;
         $this->resetAfterTest();
         $generator = $this->getDataGenerator();
         $providergenerator = $generator->get_plugin_generator('local_providerapi');
-        $institution = $providergenerator->create_institution();
+        $institution = $this->institution;
 
         $contextid = context_system::instance()->id;
         $roleid = $this->assignUserCapability('local/providerapi:get_lti_info', $contextid);
@@ -909,4 +920,190 @@ class local_providerapi_externallib_testcase extends externallib_advanced_testca
         $this->expectException('required_capability_exception');
         external::get_lti_info($institution->secretkey, $course1->id);
     }
+
+    /**
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws dml_transaction_exception
+     * @throws invalid_parameter_exception
+     * @throws invalid_response_exception
+     * @throws moodle_exception
+     * @throws required_capability_exception
+     * @throws restricted_context_exception
+     */
+    public function test_manual_enrol() {
+        global $DB;
+        $this->resetAfterTest();
+        $user = self::getDataGenerator()->create_user();
+        $this->setUser($user);
+        $institution = $this->institution;
+        $institution->add_member($user->id);
+        $generator = $this->getDataGenerator();
+        $providergenerator = $generator->get_plugin_generator('local_providerapi');
+
+        $course1 = self::getDataGenerator()->create_course();
+        $course1field = array('courseid' => $course1->id);
+        $context = context_course::instance($course1->id);
+        $instance1 = $DB->get_record('enrol', array('courseid' => $course1->id, 'enrol' => 'manual'), '*', MUST_EXIST);
+        $roleid = $this->assignUserCapability('enrol/manual:enrol', $context->id);
+        $this->assignUserCapability('moodle/course:view', $context->id, $roleid);
+        $this->assignUserCapability('moodle/role:assign', $context->id, $roleid);
+        $this->assignUserCapability('local/providerapi:assignbtcourse', context_system::instance()->id, $roleid);
+        $batch1 = $this->batch1;
+        core_role_set_assign_allowed($roleid, 4); // 4 mean teacher.
+        try {
+            external::manual_enrol($institution->secretkey,
+                    array(array('userid' => $user->id, 'courseid' => $course1->id, 'batchid' => $batch1->id,
+                            'roleshortname' => 'teacher')));
+            $this->fail('The Course is not member of institutuion');
+        } catch (moodle_exception $e) {
+            $this->assertSame('notexistcourse', $e->errorcode);
+        }
+        $this->assertEquals(0, $DB->count_records('user_enrolments'));
+        $providergenerator->create_sharedcourse(array(
+                'institutionid' => $institution->id,
+                'courseids' => array($course1->id)
+        ));
+        try {
+            external::manual_enrol($institution->secretkey,
+                    array(array('userid' => $user->id, 'courseid' => $course1->id, 'batchid' => $batch1->id,
+                            'roleshortname' => 'teacher')));
+            $this->fail('The Course is not member of batch');
+        } catch (moodle_exception $e) {
+            $this->assertSame('notexistcourseinbatch', $e->errorcode);
+        }
+        $this->assertEquals(0, $DB->count_records('user_enrolments'));
+        external::assign_course_to_batch($institution->secretkey, $batch1->id, array($course1field));
+        $btcourse = $DB->get_record_sql(
+                "SELECT bt.* FROM {local_providerapi_btcourses} bt
+                      JOIN {local_providerapi_courses} sc ON sc.id = bt.sharedcourseid
+                      JOIN {course} c ON c.id = sc.courseid
+                      WHERE c.id = :courseid
+                      AND bt.batchid = :batchid", array('courseid' => $course1->id, 'batchid' => $batch1->id));
+
+        $response = external::manual_enrol($institution->secretkey,
+                array(array('userid' => $user->id, 'courseid' => $course1->id, 'batchid' => $batch1->id,
+                        'roleshortname' => 'teacher')));
+        $response = external_api::clean_returnvalue(external::manual_enrol_returns(), $response);
+        $this->assertEquals(1, count($response));
+        $response = reset($response);
+        $this->assertTrue($response['enrolstatus']);
+        $this->assertTrue($response['groupstatus']);
+        $this->assertEquals($course1->id, $response['courseid']);
+        $this->assertEquals($user->id, $response['userid']);
+        $this->assertEquals(1, $DB->count_records('user_enrolments', array('enrolid' => $instance1->id)));
+        $this->assertEquals(1, $DB->count_records('groups_members', array('groupid' => $btcourse->groupid, 'userid' => $user->id)));
+
+        $institution->remove_member($user->id);
+        $DB->delete_records('user_enrolments');
+        try {
+            external::manual_enrol($institution->secretkey,
+                    array(array('userid' => $user->id, 'courseid' => $course1->id, 'batchid' => $batch1->id,
+                            'roleshortname' => 'teacher')));
+            $this->fail('The user is not member of institutuion');
+
+        } catch (moodle_exception $e) {
+            $this->assertSame('notexistuser', $e->errorcode);
+        }
+        $this->assertEquals(0, $DB->count_records('user_enrolments'));
+        $institution->add_member($user->id);
+        $this->unassignUserCapability('enrol/manual:enrol', $context->id, $roleid);
+        try {
+            external::manual_enrol($institution->secretkey,
+                    array(array('userid' => $user->id, 'courseid' => $course1->id, 'batchid' => $batch1->id,
+                            'roleshortname' => 'teacher')));
+            $this->fail('Exception expected if not having capability to enrol');
+
+        } catch (moodle_exception $e) {
+            $this->assertInstanceOf('required_capability_exception', $e);
+            $this->assertSame('nopermissions', $e->errorcode);
+        }
+        $this->assignUserCapability('enrol/manual:enrol', $context->id, $roleid);
+        $this->assertEquals(0, $DB->count_records('user_enrolments'));
+        try {
+            external::manual_enrol($institution->secretkey,
+                    array(array('userid' => $user->id, 'courseid' => $course1->id, 'batchid' => $batch1->id,
+                            'roleshortname' => 'nonteacher')));
+            $this->fail('The role is not exist');
+
+        } catch (moodle_exception $e) {
+            $this->assertSame('notexistrole', $e->errorcode);
+        }
+        $this->assertEquals(0, $DB->count_records('user_enrolments'));
+    }
+
+    /**
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws dml_transaction_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     * @throws required_capability_exception
+     * @throws restricted_context_exception
+     */
+    public function test_manual_unenrol() {
+        global $DB, $CFG;
+        require_once($CFG->libdir . '/enrollib.php');
+        require_once($CFG->dirroot . '/group/lib.php');
+        $this->resetAfterTest();
+        $user = self::getDataGenerator()->create_user();
+        $this->setUser($user);
+        $enrol = enrol_get_plugin('manual');
+        $institution = $this->institution;
+        $institution->add_member($user->id);
+        $generator = $this->getDataGenerator();
+        $providergenerator = $generator->get_plugin_generator('local_providerapi');
+
+        $course1 = self::getDataGenerator()->create_course();
+        $course1field = array('courseid' => $course1->id);
+        $context = context_course::instance($course1->id);
+        $instance = $DB->get_record('enrol', array('courseid' => $course1->id, 'enrol' => 'manual'), '*', MUST_EXIST);
+        $roleid = $this->assignUserCapability('enrol/manual:enrol', $context->id);
+        $this->assignUserCapability('enrol/manual:unenrol', $context->id, $roleid);
+        $this->assignUserCapability('moodle/course:view', $context->id, $roleid);
+        $this->assignUserCapability('moodle/role:assign', $context->id, $roleid);
+        $this->assignUserCapability('local/providerapi:assignbtcourse', context_system::instance()->id, $roleid);
+        $batch1 = $this->batch1;
+        core_role_set_assign_allowed($roleid, 4); // 4 mean teacher.
+        $providergenerator->create_sharedcourse(array(
+                'institutionid' => $institution->id,
+                'courseids' => array($course1->id)
+        ));
+        external::assign_course_to_batch($institution->secretkey, $batch1->id, array($course1field));
+        $btcourse = $DB->get_record_sql(
+                "SELECT bt.* FROM {local_providerapi_btcourses} bt
+                      JOIN {local_providerapi_courses} sc ON sc.id = bt.sharedcourseid
+                      JOIN {course} c ON c.id = sc.courseid
+                      WHERE c.id = :courseid
+                      AND bt.batchid = :batchid", array('courseid' => $course1->id, 'batchid' => $batch1->id));
+        $enrol->enrol_user($instance, $user->id, 4);
+        groups_add_member($btcourse->groupid, $user->id, 'enrol_manual', $instance->id);
+        $this->assertTrue(is_enrolled($context, $user));
+
+        external::manual_unenrol($institution->secretkey,
+                array(array('userid' => $user->id, 'courseid' => $course1->id, 'batchid' => $batch1->id)));
+        $this->assertTrue(is_enrolled($context, $user));
+        $this->assertFalse(groups_is_member($btcourse->groupid, $user->id));
+        $enrol->enrol_user($instance, $user->id, 4);
+        groups_add_member($btcourse->groupid, $user->id, 'enrol_manual', $instance->id);
+        $this->unassignUserCapability('enrol/manual:unenrol', $context->id, $roleid);
+        try {
+            external::manual_unenrol($institution->secretkey,
+                    array(array('userid' => $user->id, 'courseid' => $course1->id, 'batchid' => $batch1->id)));
+            $this->fail('Exception expected if not having capability to unenrol');
+
+        } catch (moodle_exception $e) {
+            $this->assertInstanceOf('required_capability_exception', $e);
+            $this->assertSame('nopermissions', $e->errorcode);
+        }
+        $this->assignUserCapability('enrol/manual:unenrol', $context->id, $roleid);
+        $this->assertTrue(is_enrolled($context, $user));
+        $this->assertTrue(groups_is_member($btcourse->groupid, $user->id));
+
+        external::manual_unenrol($institution->secretkey,
+                array(array('userid' => $user->id, 'courseid' => $course1->id)));
+        $this->assertFalse(is_enrolled($context, $user));
+        $this->assertFalse(groups_is_member($btcourse->groupid, $user->id));
+    }
+
 }

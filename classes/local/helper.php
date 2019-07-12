@@ -201,12 +201,13 @@ class helper {
 
     /**
      * @param int $courseid
+     * @param int $strictness
      * @return mixed
      * @throws \dml_exception
      */
-    public static function get_tool_by_courseid(int $courseid) {
+    public static function get_tool_by_courseid(int $courseid, $strictness = MUST_EXIST) {
         global $DB;
-        return $DB->get_record('local_api_tools', array('courseid' => $courseid), '*', MUST_EXIST);
+        return $DB->get_record('local_api_tools', array('courseid' => $courseid), '*', $strictness);
     }
 
     /**

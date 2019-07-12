@@ -171,6 +171,22 @@ $functions = array(
                 'type' => 'read',
                 'capabilities' => 'local/providerapi:get_lti_info',
                 'services' => array('providerapi')
+        ),
+        'local_providerapi_manual_enrol' => array(
+                'classname' => 'local_providerapi\webservice\course\external',
+                'methodname' => 'manual_enrol',
+                'description' => 'Enrol and add batch group',
+                'type' => 'write',
+                'capabilities' => 'enrol/manual:enrol,moodle/course:view,moodle/role:assign',
+                'services' => array('providerapi')
+        ),
+        'local_providerapi_manual_unenrol' => array(
+                'classname' => 'local_providerapi\webservice\course\external',
+                'methodname' => 'manual_unenrol',
+                'description' => 'Complete Unenrol and drop all batch group',
+                'type' => 'write',
+                'capabilities' => 'enrol/manual:unenrol',
+                'services' => array('providerapi')
         )
 
 );

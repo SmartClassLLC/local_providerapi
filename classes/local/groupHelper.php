@@ -26,7 +26,9 @@
 
 namespace local_providerapi\local;
 
+use dml_exception;
 use local_providerapi\local\batch\btcourse;
+use moodle_exception;
 use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
@@ -44,7 +46,7 @@ class groupHelper {
     /**
      * @param stdClass $data
      * @return int
-     * @throws \moodle_exception
+     * @throws moodle_exception
      */
     public static function create_group(stdClass $data) {
         $data->description = 'Created by Providerapi Local Plugin.DO NOT DELETE via Web Interface ';
@@ -55,7 +57,7 @@ class groupHelper {
     /**
      * @param stdClass $data
      * @return bool
-     * @throws \moodle_exception
+     * @throws moodle_exception
      */
     public static function update_group(stdClass $data) {
         return groups_update_group($data);
@@ -70,8 +72,8 @@ class groupHelper {
     }
 
     /**
-     * @throws \dml_exception
-     * @throws \moodle_exception
+     * @throws dml_exception
+     * @throws moodle_exception
      */
     public static function check_group_instances() {
         global $DB;
@@ -97,8 +99,8 @@ class groupHelper {
 
     /**
      * @param $batchid
-     * @throws \dml_exception
-     * @throws \moodle_exception
+     * @throws dml_exception
+     * @throws moodle_exception
      */
     public static function update_group_instance_names($batchid) {
         global $DB;
