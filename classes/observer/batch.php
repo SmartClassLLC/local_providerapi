@@ -94,7 +94,7 @@ function btcoursedeleted(btcourse_deleted $event) {
     if ($enrolinstanceid) {
         $enrol = enrolHelper::instance('cohort')->get_enrol();
         $enrolinstance = $DB->get_record('enrol', array('id' => $enrolinstanceid));
-        if ($enrolinstance && $enrol->can_delete_instance($enrolinstance)) {
+        if ($enrolinstance) {
             $enrol->delete_instance($enrolinstance);
         }
     }
