@@ -109,6 +109,7 @@ class helper {
         $tool->courseid = $courseid;
         $tool->contextid = context_course::instance($courseid, MUST_EXIST)->id;
         $tool->secret = random_string(32);
+        $tool->gradesync = 1;
         $tool->timecreated = time();
         $tool->timemodified = $tool->timecreated;
         if ($tool->id = $DB->insert_record('local_api_tools', $tool)) {

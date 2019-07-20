@@ -537,5 +537,10 @@ function xmldb_local_providerapi_upgrade($oldversion) {
         }
         upgrade_plugin_savepoint(true, 2019070504, 'local', 'providerapi');
     }
+    if ($oldversion < 2019072000) {
+        global $DB;
+        $DB->set_field('local_api_tools', 'gradesync', 1);
+        upgrade_plugin_savepoint(true, 2019072000, 'local', 'providerapi');
+    }
     return true;
 }

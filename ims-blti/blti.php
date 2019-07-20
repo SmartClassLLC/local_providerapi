@@ -1,5 +1,6 @@
 <?php
-
+namespace local_providerapi;
+global $CFG;
 require_once($CFG->dirroot . '/local/providerapi/ims-blti/OAuth.php');
 require_once($CFG->dirroot . '/local/providerapi/ims-blti/TrivialOAuthDataStore.php');
 
