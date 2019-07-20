@@ -1,6 +1,8 @@
 <?php
 
-require_once($CFG->dirroot . '/enrol/lti/ims-blti/OAuth.php');
+namespace local_providerapi;
+global $CFG;
+require_once($CFG->dirroot . '/local/providerapi/ims-blti/OAuth.php');
 
 /**
  * A Trivial memory-based store - no support for tokens
@@ -13,15 +15,15 @@ class TrivialOAuthDataStore extends OAuthDataStore {
     }
 
     function lookup_consumer($consumer_key) {
-        if ( strpos($consumer_key, "http://" ) === 0 ) {
-            $consumer = new OAuthConsumer($consumer_key,"secret", NULL);
+        if (strpos($consumer_key, "http://") === 0) {
+            $consumer = new OAuthConsumer($consumer_key, "secret", null);
             return $consumer;
         }
-        if ( $this->consumers[$consumer_key] ) {
-            $consumer = new OAuthConsumer($consumer_key,$this->consumers[$consumer_key], NULL);
+        if ($this->consumers[$consumer_key]) {
+            $consumer = new OAuthConsumer($consumer_key, $this->consumers[$consumer_key], null);
             return $consumer;
         }
-        return NULL;
+        return null;
     }
 
     function lookup_token($consumer, $token_type, $token) {
@@ -33,16 +35,17 @@ class TrivialOAuthDataStore extends OAuthDataStore {
     function lookup_nonce($consumer, $token, $nonce, $timestamp) {
         // Should add some clever logic to keep nonces from
         // being reused - for no we are really trusting
-    // that the timestamp will save us
-        return NULL;
+        // that the timestamp will save us
+        return null;
     }
 
     function new_request_token($consumer) {
-        return NULL;
+        return null;
     }
 
     function new_access_token($token, $consumer) {
-        return NULL;
+        return null;
     }
 }
+
 ?>
