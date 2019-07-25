@@ -48,6 +48,10 @@ function local_providerapi_getinstitution() {
     return $SESSION->institution;
 }
 
+/**
+ * @throws coding_exception
+ * @throws dml_exception
+ */
 function local_providerapi_sync_grades() {
     global $DB, $CFG;
 
@@ -163,7 +167,7 @@ function local_providerapi_sync_grades() {
                     }
 
                     if (strpos(strtolower($response), 'success') !== false) {
-                        $DB->set_field('enrol_lti_users', 'lastgrade', grade_floatval($grade), array('id' => $ltiuser->id));
+                        $DB->set_field('local_api_users', 'lastgrade', grade_floatval($grade), array('id' => $ltiuser->id));
                         mtrace("Success - The grade '$floatgrade' $mtracecontent was sent.");
                         $sendcount = $sendcount + 1;
                     } else {
