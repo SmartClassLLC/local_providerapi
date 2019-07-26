@@ -164,7 +164,7 @@ class course extends core_course_list_element {
 
         $wheres = array();
         $params = array();
-        $select = "DISTINCT sc.id,sc.createrid, c.fullname AS coursefullname,c.shortname AS courseshortname," .
+        $select = "DISTINCT sc.id,sc.createrid, c.fullname AS coursefullname,c.shortname AS courseshortname,c.id AS courseid," .
                 context_helper::get_preload_record_columns_sql('ctx');
         $joins = array('{local_providerapi_courses} sc');
         $joins[] = 'JOIN {course} c ON c.id = sc.courseid';

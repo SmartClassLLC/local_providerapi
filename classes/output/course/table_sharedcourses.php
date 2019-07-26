@@ -26,8 +26,11 @@
 
 namespace local_providerapi\output\course;
 
+use coding_exception;
 use confirm_action;
 use context_system;
+use dml_exception;
+use moodle_exception;
 use moodle_url;
 use pix_icon;
 use table_sql;
@@ -58,8 +61,8 @@ class table_sharedcourses extends table_sql implements \renderable {
      *
      * @param $baseurl
      * @param $pagesize
-     * @throws \coding_exception
-     * @throws \dml_exception
+     * @throws coding_exception
+     * @throws dml_exception
      */
     public function __construct($baseurl, $pagesize) {
         parent::__construct('table_sharedcourses');
@@ -110,7 +113,7 @@ class table_sharedcourses extends table_sql implements \renderable {
     }
 
     /**
-     * @throws \coding_exception
+     * @throws coding_exception
      */
     public function wrap_html_start() {
         $o = '';
@@ -123,8 +126,34 @@ class table_sharedcourses extends table_sql implements \renderable {
     /**
      * @param $row
      * @return string
-     * @throws \dml_exception
-     * @throws \moodle_exception
+     * @throws moodle_exception
+     */
+    public function col_coursefullname($row) {
+        if ($this->is_downloading()) {
+            return format_string($row->coursefullname);
+        } else {
+            return \html_writer::link(new moodle_url('/course/view.php', array('id' => $row->courseid)), $row->coursefullname);
+        }
+    }
+
+    /**
+     * @param $row
+     * @return string
+     * @throws moodle_exception
+     */
+    public function col_courseshortname($row) {
+        if ($this->is_downloading()) {
+            return format_string($row->courseshortname);
+        } else {
+            return \html_writer::link(new moodle_url('/course/view.php', array('id' => $row->courseid)), $row->courseshortname);
+        }
+    }
+
+    /**
+     * @param $row
+     * @return string
+     * @throws dml_exception
+     * @throws moodle_exception
      */
     public function col_createrid($row) {
         $user = \core_user::get_user($row->createrid);
@@ -140,6 +169,8 @@ class table_sharedcourses extends table_sql implements \renderable {
     /**
      * @param $row
      * @return string
+     * @throws coding_exception
+     * @throws moodle_exception
      */
     public function col_manage($row) {
         global $OUTPUT;
