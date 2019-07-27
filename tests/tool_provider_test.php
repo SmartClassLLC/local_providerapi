@@ -25,14 +25,14 @@
  */
 
 use core\session\manager;
-use local_providerapi\local\data_connector;
-use local_providerapi\local\helper;
-use local_providerapi\local\tool_provider;
 use IMSGlobal\LTI\HTTPMessage;
 use IMSGlobal\LTI\ToolProvider\ResourceLink;
 use IMSGlobal\LTI\ToolProvider\ToolConsumer;
 use IMSGlobal\LTI\ToolProvider\ToolProvider;
 use IMSGlobal\LTI\ToolProvider\User;
+use local_providerapi\local\data_connector;
+use local_providerapi\local\helper;
+use local_providerapi\local\tool_provider;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -230,7 +230,6 @@ class local_providerapi_tool_provider_testcase extends advanced_testcase {
     public function test_on_register() {
         global $CFG, $DB;
         $tool = $this->tool;
-
         $dataconnector = new data_connector();
         $consumer = new dummy_local_api_tool_consumer('testkey', $dataconnector, false, true);
         $consumer->ltiVersion = ToolProvider::LTI_VERSION2;

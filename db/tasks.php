@@ -43,14 +43,5 @@ $tasks = [
                 'day' => '*',
                 'month' => '*',
                 'dayofweek' => '*',
-        ],
-        [
-                'classname' => 'local_providerapi\task\sync_grades',
-                'blocking' => 0,
-                'minute' => '*/30',
-                'hour' => '*',
-                'day' => '*',
-                'dayofweek' => '*',
-                'month' => '*'
-        ],
+        ]
 ];
