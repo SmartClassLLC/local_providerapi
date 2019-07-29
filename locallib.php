@@ -51,6 +51,7 @@ function local_providerapi_getinstitution() {
 /**
  * @throws coding_exception
  * @throws dml_exception
+ * @deprecated
  */
 function local_providerapi_sync_grades() {
     global $DB, $CFG;

@@ -187,6 +187,14 @@ $functions = array(
                 'type' => 'write',
                 'capabilities' => 'enrol/manual:unenrol',
                 'services' => array('providerapi')
+        ),
+        'local_providerapi_get_grade_items' => array(
+                'classname' => 'local_providerapi\webservice\course\external',
+                'methodname' => 'get_grade_items',
+                'description' => 'Get user\'s grades in course',
+                'type' => 'read',
+                'capabilities' => 'gradereport/user:view,moodle/grade:viewall,moodle/site:accessallgroups',
+                'services' => array('providerapi')
         )
 
 );
