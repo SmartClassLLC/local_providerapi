@@ -202,7 +202,9 @@ $functions = array(
 $services = array(
         'ProviderApi' => array(
                 'functions' => array(
-                        'local_providerapi_checkinstitution'
+                        'local_providerapi_checkinstitution',
+                        'core_competency_create_competency_framework',
+                        'core_competency_create_competency',
                 ),
                 'restrictedusers' => 1,
                 'enabled' => 1,
