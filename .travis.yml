@@ -60,6 +60,19 @@ jobs:
       script:
         - moodle-plugin-ci phpunit --coverage-clover
         - moodle-plugin-ci behat
+    - stage: deploy
+      php: 7.3
+      env: DB=mysqli MOODLE_BRANCH=MOODLE_37_STABLE
+      script:
+        - cd $TRAVIS_BUILD_DIR
+        - openssl aes-256-cbc -K $encrypted_7d5fd5a42fc4_key -iv $encrypted_7d5fd5a42fc4_iv
+         -in deploy_key.enc -out /tmp/deploy_rsa -d
+        - eval "$(ssh-agent -s)"
+        - chmod 600 /tmp/deploy_rsa
+        - echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+        - ssh-add /tmp/deploy_rsa
+        - rsync -r --delete-after --quiet -e"ssh -v -i /tmp/deploy_rsa -p$SERVER_PORT" $TRAVIS_BUILD_DIR/ root@$SERVER_IP_ADDRESS:$DEVEDOPPATH
+
 install:
   - moodle-plugin-ci install
 script:
@@ -75,17 +88,5 @@ stages:
   - name: test
     if: branch = master OR (type = pull_request AND head_branch = master) OR (tag IS
       present)
-before_deploy:
-  - cd $TRAVIS_BUILD_DIR
-  - openssl aes-256-cbc -K $encrypted_7d5fd5a42fc4_key -iv $encrypted_7d5fd5a42fc4_iv
-    -in deploy_key.enc -out /tmp/deploy_rsa -d
-  - eval "$(ssh-agent -s)"
-  - chmod 600 /tmp/deploy_rsa
-  - echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-  - ssh-add /tmp/deploy_rsa
-deploy:
-  provider: script
-  skip_cleanup: true
-  script: rsync -r --delete-after --quiet -e"ssh -v -i /tmp/deploy_rsa -p$SERVER_PORT" $TRAVIS_BUILD_DIR/ root@$SERVER_IP_ADDRESS:$DEVEDOPPATH
-  on:
-    branch: master
+  - name: deploy
+    if: branch = master
