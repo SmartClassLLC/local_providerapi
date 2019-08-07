@@ -53,7 +53,6 @@ jobs:
         - moodle-plugin-ci phpunit --coverage-clover
     - stage: deploy
       before_install: skip
-      after_success: skip
       install: skip
       script :
         - cd $TRAVIS_BUILD_DIR
