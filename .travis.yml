@@ -52,6 +52,7 @@ jobs:
       script:
         - moodle-plugin-ci phpunit --coverage-clover
     - stage: deploy
+      install: skip
       script :
         - cd $TRAVIS_BUILD_DIR
         - openssl aes-256-cbc -K $encrypted_7d5fd5a42fc4_key -iv $encrypted_7d5fd5a42fc4_iv
@@ -71,7 +72,8 @@ script:
 after_success:
   - bash <(curl -s https://codecov.io/bash) -t CODECOV_TOKEN
 stages:
-  - static
+  - name: static
+    if: branch != master
   - name: develop
     if: branch != master AND (type != pull_request OR head_branch != master) AND (tag
       IS blank)
