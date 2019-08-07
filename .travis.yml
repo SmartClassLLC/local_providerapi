@@ -9,6 +9,9 @@ cache:
   directories:
     - "$HOME/.composer/cache"
     - "$HOME/.npm"
+php:
+  - 7.2
+  - 7.3
 matrix:
   exclude:
     - php: 7.2
